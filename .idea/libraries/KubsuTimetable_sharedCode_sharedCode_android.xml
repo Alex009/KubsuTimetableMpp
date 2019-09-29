@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="KubsuTimetable.sharedCode.sharedCode-android">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/sharedCode/build/libs/sharedCode-android.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
