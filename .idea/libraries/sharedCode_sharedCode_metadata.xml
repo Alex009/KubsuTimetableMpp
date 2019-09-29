@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="sharedCode.sharedCode-metadata">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/sharedCode/build/libs/sharedCode-metadata.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
