@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("multiplatform")
+    id("com.squareup.sqldelight")
 }
 
 repositories {
@@ -10,9 +11,15 @@ repositories {
     mavenCentral()
 }
 
-kotlin {
+sqldelight {
+    database("MyDatabase") {
+        packageName = "com.kubsu.timetable.data.db"
+    }
+}
 
+kotlin {
     jvm("android")
+
     // This is for iPhone emulator
     // Switch here to iosArm64 (or iosArm32) to build library for iPhone device
     iosX64("ios") {
@@ -25,7 +32,8 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-common"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:$coroutineVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutineVersion")
+                implementation("com.squareup.sqldelight:runtime:1.2.0")
             }
         }
         val commonTest by getting {
@@ -38,6 +46,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib"))
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion")
+                implementation("com.squareup.sqldelight:android-driver:1.2.0")
             }
         }
         val androidTest by getting {
@@ -48,11 +57,11 @@ kotlin {
         }
         val iosMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-native:$coroutineVersion")
             }
         }
         val iosTest by getting  {
         }
+
         all {
             languageSettings.enableLanguageFeature("InlineClasses")
         }
