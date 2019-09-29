@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/KubsuTimetable.iml" filepath="$PROJECT_DIR$/KubsuTimetable.iml" />
+      <module fileurl="file://$PROJECT_DIR$/androidApp/androidApp.iml" filepath="$PROJECT_DIR$/androidApp/androidApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sharedCode/sharedCode.iml" filepath="$PROJECT_DIR$/sharedCode/sharedCode.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sharedCode/sharedCode_androidMain.iml" filepath="$PROJECT_DIR$/sharedCode/sharedCode_androidMain.iml" group="sharedCode" />
+      <module fileurl="file://$PROJECT_DIR$/sharedCode/sharedCode_androidTest.iml" filepath="$PROJECT_DIR$/sharedCode/sharedCode_androidTest.iml" group="sharedCode" />
+      <module fileurl="file://$PROJECT_DIR$/sharedCode/sharedCode_commonMain.iml" filepath="$PROJECT_DIR$/sharedCode/sharedCode_commonMain.iml" group="sharedCode" />
+      <module fileurl="file://$PROJECT_DIR$/sharedCode/sharedCode_commonTest.iml" filepath="$PROJECT_DIR$/sharedCode/sharedCode_commonTest.iml" group="sharedCode" />
+      <module fileurl="file://$PROJECT_DIR$/sharedCode/sharedCode_iosMain.iml" filepath="$PROJECT_DIR$/sharedCode/sharedCode_iosMain.iml" group="sharedCode" />
+      <module fileurl="file://$PROJECT_DIR$/sharedCode/sharedCode_iosTest.iml" filepath="$PROJECT_DIR$/sharedCode/sharedCode_iosTest.iml" group="sharedCode" />
+    </modules>
+  </component>
+</project>

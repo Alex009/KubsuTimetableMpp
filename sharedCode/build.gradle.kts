@@ -1,4 +1,8 @@
-apply plugin: 'kotlin-multiplatform'
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+plugins {
+    kotlin("multiplatform")
+}
 
 repositories {
     google()
@@ -17,36 +21,37 @@ kotlin {
         }
     }
     sourceSets {
-        commonMain {
+        val coroutineVersion = "1.3.2"
+        val commonMain by getting {
             dependencies {
-                implementation kotlin('stdlib-common')
-                implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-common:$coroutines_version"
+                implementation(kotlin("stdlib-common"))
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:$coroutineVersion")
             }
         }
-        commonTest {
+        val commonTest by getting {
             dependencies {
-        		implementation kotlin('test-common')
-        		implementation kotlin('test-annotations-common')
+        		implementation(kotlin("test-common"))
+        		implementation(kotlin("test-annotations-common"))
             }
         }
-        androidMain {
+        val androidMain by getting {
             dependencies {
-                implementation kotlin('stdlib')
-                implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
+                implementation(kotlin("stdlib"))
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion")
             }
         }
-        androidTest {
+        val androidTest by getting {
             dependencies {
-                implementation kotlin('test')
-                implementation kotlin('test-junit')
+                implementation(kotlin("test"))
+                implementation(kotlin("test-junit"))
             }
         }
-        iosMain {
+        val iosMain by getting {
             dependencies {
-                implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-native:$coroutines_version"
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-native:$coroutineVersion")
             }
         }
-        iosTest {
+        val iosTest by getting  {
         }
         all {
             languageSettings.enableLanguageFeature("InlineClasses")
@@ -54,8 +59,15 @@ kotlin {
     }
 }
 
-configurations {
-    compileClasspath
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs = listOf()
+    }
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
 
 // This task attaches native framework built from ios module to Xcode project
@@ -63,7 +75,7 @@ configurations {
 // Xcode runs this task itself during its build process.
 // Before opening the project from iosApp directory in Xcode,
 // make sure all Gradle infrastructure exists (gradle.wrapper, gradlew).
-task copyFramework {
+/*task copyFramework {
     def buildType = project.findProperty('kotlin.build.type') ?: 'DEBUG'
     def target = project.findProperty('kotlin.target') ?: 'ios'
     dependsOn kotlin.targets."$target".binaries.getFramework(buildType).linkTask
@@ -78,4 +90,4 @@ task copyFramework {
             include 'app.framework.dSYM'
         }
     }
-}
+}*/

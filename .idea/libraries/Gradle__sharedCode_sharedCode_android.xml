@@ -1,5 +1,5 @@
 <component name="libraryTable">
-  <library name="KubsuTimetable.sharedCode.sharedCode-android">
+  <library name="Gradle: sharedCode.sharedCode-android">
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/sharedCode/build/libs/sharedCode-android.jar!/" />
     </CLASSES>

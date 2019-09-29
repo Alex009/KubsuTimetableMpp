@@ -1,5 +1,5 @@
 <component name="libraryTable">
-  <library name="KubsuTimetable.sharedCode.sharedCode-metadata">
+  <library name="sharedCode.sharedCode-metadata">
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/sharedCode/build/libs/sharedCode-metadata.jar!/" />
     </CLASSES>

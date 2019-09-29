@@ -1,3 +1,0 @@
-rootProject.name = 'KubsuTimetable'
-
-include ':sharedCode', ':androidApp'

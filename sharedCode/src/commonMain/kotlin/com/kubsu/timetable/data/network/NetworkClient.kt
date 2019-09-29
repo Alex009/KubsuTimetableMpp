@@ -1,6 +1,6 @@
 package com.kubsu.timetable.data.network
 
-import arrow.core.Either
+import com.kubsu.timetable.Either
 import com.kubsu.timetable.AuthFail
 import com.kubsu.timetable.NetworkFailure
 import com.kubsu.timetable.WrapperFailure
