@@ -1,6 +1,6 @@
 package com.kubsu.timetable.data.mapper.timetable.data
 
-import com.kubsu.timetable.data.db.ClassTimeDb
+import com.kubsu.timetable.data.db.timetable.ClassTimeDb
 import com.kubsu.timetable.data.network.dto.timetable.data.ClassTimeNetworkDto
 import com.kubsu.timetable.domain.entity.timetable.data.ClassTimeEntity
 

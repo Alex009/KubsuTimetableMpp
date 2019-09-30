@@ -4,10 +4,10 @@ import com.kubsu.timetable.AuthFail
 import com.kubsu.timetable.Either
 import com.kubsu.timetable.NetworkFailure
 import com.kubsu.timetable.WrapperFailure
-import com.kubsu.timetable.data.db.ClassQueries
-import com.kubsu.timetable.data.db.LecturerQueries
-import com.kubsu.timetable.data.db.SubscriptionQueries
-import com.kubsu.timetable.data.db.TimetableQueries
+import com.kubsu.timetable.data.db.timetable.ClassQueries
+import com.kubsu.timetable.data.db.timetable.LecturerQueries
+import com.kubsu.timetable.data.db.timetable.SubscriptionQueries
+import com.kubsu.timetable.data.db.timetable.TimetableQueries
 import com.kubsu.timetable.data.mapper.UserMapper
 import com.kubsu.timetable.data.network.NetworkClient
 import com.kubsu.timetable.data.storage.user.UserStorage

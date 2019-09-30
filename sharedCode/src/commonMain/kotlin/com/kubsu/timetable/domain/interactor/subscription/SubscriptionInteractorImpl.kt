@@ -1,18 +1,16 @@
 package com.kubsu.timetable.domain.interactor.subscription
 
-import com.kubsu.timetable.Either
-import com.kubsu.timetable.def
-import com.kubsu.timetable.NetworkFailure
+import com.kubsu.timetable.*
+import com.kubsu.timetable.data.storage.user.UserStorage
 import com.kubsu.timetable.domain.entity.timetable.data.SubscriptionEntity
 import com.kubsu.timetable.domain.entity.timetable.select.FacultyEntity
 import com.kubsu.timetable.domain.entity.timetable.select.GroupEntity
 import com.kubsu.timetable.domain.entity.timetable.select.OccupationEntity
 import com.kubsu.timetable.domain.entity.timetable.select.SubgroupEntity
-import com.kubsu.timetable.domain.interactor.auth.AuthGateway
 
 class SubscriptionInteractorImpl(
     private val subscriptionGateway: SubscriptionGateway,
-    private val authGateway: AuthGateway
+    private val userStorage: UserStorage
 ) : SubscriptionInteractor {
     override suspend fun selectFacultyList(): Either<NetworkFailure, List<FacultyEntity>> = def {
         subscriptionGateway.selectFacultyList()
@@ -40,25 +38,38 @@ class SubscriptionInteractorImpl(
         subgroupId: Int,
         subscriptionName: String,
         isMain: Boolean
-    ): Either<NetworkFailure, Unit> = def {
-        val user = authGateway.getUserOrNull()
+    ): Either<WrapperFailure<NoActiveUserFailure>, Unit> = def {
+        val user = userStorage.get()
 
         if (user != null)
-            subscriptionGateway.createSubscription(user.id, subgroupId, subscriptionName, isMain)
+            subscriptionGateway
+                .createSubscription(user.id, subgroupId, subscriptionName, isMain)
+                .mapLeft { WrapperFailure(NoActiveUserFailure) }
         else
-            Either.right(Unit) //TODO переделать как ошибку
+            Either.left(WrapperFailure(NoActiveUserFailure))
     }
 
-    override suspend fun getSubscriptionById(id: Int): Either<NetworkFailure, SubscriptionEntity> = def {
-        subscriptionGateway.getSubscriptionById(id)
+    override suspend fun getSubscriptionById(id: Int): Either<WrapperFailure<NoActiveUserFailure>, SubscriptionEntity> =
+        def {
+            val user = userStorage.get()
+
+            if (user != null)
+                subscriptionGateway
+                    .getSubscriptionById(id, user.id)
+                    .mapLeft { WrapperFailure(NoActiveUserFailure) }
+            else
+                Either.left(WrapperFailure(NoActiveUserFailure))
     }
 
-    override suspend fun getAllSubscriptions(): Either<NetworkFailure, List<SubscriptionEntity>> = def {
-        val user = authGateway.getUserOrNull()
+    override suspend fun getAllSubscriptions(): Either<WrapperFailure<NoActiveUserFailure>, List<SubscriptionEntity>> =
+        def {
+            val user = userStorage.get()
 
         if (user != null)
-            subscriptionGateway.getAllSubscriptions(user.id)
+            subscriptionGateway
+                .getAllSubscriptions(user.id)
+                .mapLeft { WrapperFailure(NoActiveUserFailure) }
         else
-            Either.right(emptyList()) //TODO переделать как ошибку
+            Either.left(WrapperFailure(NoActiveUserFailure))
     }
 }

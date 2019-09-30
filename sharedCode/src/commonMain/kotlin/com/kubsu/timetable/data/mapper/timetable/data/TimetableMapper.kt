@@ -1,10 +1,9 @@
 package com.kubsu.timetable.data.mapper.timetable.data
 
-import com.kubsu.timetable.data.db.TimetableDb
+import com.kubsu.timetable.data.db.timetable.TimetableDb
 import com.kubsu.timetable.data.network.dto.timetable.data.TimetableNetworkDto
 import com.kubsu.timetable.domain.entity.timetable.data.ClassEntity
 import com.kubsu.timetable.domain.entity.timetable.data.TimetableEntity
-import com.kubsu.timetable.domain.entity.timetable.data.TypeOfWeek
 
 object TimetableMapper {
     fun toEntity(
@@ -13,7 +12,7 @@ object TimetableMapper {
     ): TimetableEntity =
         TimetableEntity(
             id = networkDto.id,
-            typeOfWeek = TypeOfWeek.convert(networkDto.typeOfWeek),
+            typeOfWeek = TypeOfWeekMapper.toEntity(networkDto.typeOfWeek),
             subgroupId = networkDto.subgroupId,
             classList = classList
         )
@@ -24,7 +23,7 @@ object TimetableMapper {
     ): TimetableEntity =
         TimetableEntity(
             id = timetable.id,
-            typeOfWeek = TypeOfWeek.convert(timetable.typeOfWeek),
+            typeOfWeek = TypeOfWeekMapper.toEntity(timetable.typeOfWeek),
             subgroupId = timetable.subgroupId,
             classList = classList
         )
@@ -32,7 +31,7 @@ object TimetableMapper {
     fun toDbDto(entity: TimetableEntity): TimetableDb =
         TimetableDb.Impl(
             id = entity.id,
-            typeOfWeek = entity.typeOfWeek.number,
+            typeOfWeek = TypeOfWeekMapper.value(entity.typeOfWeek),
             subgroupId = entity.subgroupId
         )
 
@@ -46,7 +45,7 @@ object TimetableMapper {
     fun toNetworkDto(entity: TimetableEntity): TimetableNetworkDto =
         TimetableNetworkDto(
             id = entity.id,
-            typeOfWeek = entity.typeOfWeek.number,
+            typeOfWeek = TypeOfWeekMapper.value(entity.typeOfWeek),
             subgroupId = entity.subgroupId
         )
 

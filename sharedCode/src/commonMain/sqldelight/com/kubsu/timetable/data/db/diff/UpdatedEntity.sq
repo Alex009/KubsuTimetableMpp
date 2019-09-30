@@ -1,0 +1,23 @@
+CREATE TABLE updatedEntityDb(
+id INTEGER as Int NOT NULL PRIMARY KEY AUTOINCREMENT,
+dataDiffId INTEGER as Int NOT NULL,
+updatedId INTEGER as Int NOT NULL
+);
+
+update:
+INSERT OR REPLACE INTO updatedEntityDb(dataDiffId, updatedId) VALUES (?,?);
+
+selectAll:
+SELECT * FROM updatedEntityDb;
+
+selectById:
+SELECT * FROM updatedEntityDb WHERE id = ?;
+
+selectByDataDiffId:
+SELECT * FROM updatedEntityDb WHERE dataDiffId = ?;
+
+deleteById:
+DELETE FROM updatedEntityDb WHERE id = ?;
+
+deleteAll:
+DELETE FROM updatedEntityDb;

@@ -13,7 +13,6 @@ import com.kubsu.timetable.data.network.dto.timetable.select.OccupationNetworkDt
 import com.kubsu.timetable.data.network.dto.timetable.select.SubgroupNetworkDto
 import com.kubsu.timetable.data.network.response.DiffResponse
 import com.kubsu.timetable.data.network.response.SyncResponse
-import com.kubsu.timetable.domain.entity.Timestamp
 
 interface NetworkClient {
     // User info
@@ -47,7 +46,8 @@ interface NetworkClient {
     suspend fun selectClassTimeById(id: Int): Either<NetworkFailure, ClassTimeNetworkDto>
 
     // Update
-    suspend fun diff(timestamp: Timestamp): Either<NetworkFailure, DiffResponse>
-    suspend fun sync(basename: BasenameNetworkDto, existsIds: List<Int>): Either<NetworkFailure, SyncResponse>
-    suspend fun <T> meta(basename: BasenameNetworkDto, updatedIds: List<Int>): Either<NetworkFailure, List<T>>
+    suspend fun diff(timestamp: Long): Either<NetworkFailure, DiffResponse>
+
+    suspend fun sync(basename: String, existsIds: List<Int>): Either<NetworkFailure, SyncResponse>
+    suspend fun <T> meta(basename: String, updatedIds: List<Int>): Either<NetworkFailure, List<T>>
 }

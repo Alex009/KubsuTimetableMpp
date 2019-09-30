@@ -1,0 +1,29 @@
+CREATE TABLE dataDiffDb(
+id INTEGER as Int NOT NULL PRIMARY KEY AUTOINCREMENT,
+basename TEXT NOT NULL,
+userId INTEGER as Int NOT NULL
+);
+
+update:
+INSERT OR REPLACE INTO dataDiffDb(basename, userId) VALUES (?,?);
+
+lastInsertRowId:
+SELECT last_insert_rowid();
+
+selectAll:
+SELECT * FROM dataDiffDb;
+
+selectById:
+SELECT * FROM dataDiffDb WHERE id = ?;
+
+selectByBasename:
+SELECT * FROM dataDiffDb WHERE basename = ?;
+
+selectByUserId:
+SELECT * FROM dataDiffDb WHERE userId = ?;
+
+deleteById:
+DELETE FROM dataDiffDb WHERE id = ?;
+
+deleteAll:
+DELETE FROM dataDiffDb;

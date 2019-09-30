@@ -2,10 +2,10 @@ package com.kubsu.timetable.data.gateway
 
 import com.kubsu.timetable.Either
 import com.kubsu.timetable.NetworkFailure
-import com.kubsu.timetable.data.db.ClassQueries
-import com.kubsu.timetable.data.db.ClassTimeQueries
-import com.kubsu.timetable.data.db.LecturerQueries
-import com.kubsu.timetable.data.db.TimetableQueries
+import com.kubsu.timetable.data.db.timetable.ClassQueries
+import com.kubsu.timetable.data.db.timetable.ClassTimeQueries
+import com.kubsu.timetable.data.db.timetable.LecturerQueries
+import com.kubsu.timetable.data.db.timetable.TimetableQueries
 import com.kubsu.timetable.data.mapper.MainInfoMapper
 import com.kubsu.timetable.data.mapper.timetable.data.ClassMapper
 import com.kubsu.timetable.data.mapper.timetable.data.ClassTimeMapper

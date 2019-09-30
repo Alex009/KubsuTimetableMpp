@@ -2,4 +2,6 @@ package com.kubsu.timetable.domain.entity
 
 inline class Timestamp(val value: Long)
 
-expect fun createTimestamp(): Timestamp
+fun createTimestamp(): Timestamp {
+    TODO("Make expect")
+}

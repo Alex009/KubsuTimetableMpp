@@ -6,4 +6,15 @@ sealed class Basename {
     object Lecturer : Basename()
     object Class : Basename()
     object MainInfo : Basename()
+
+    companion object {
+        val list: List<Basename>
+            get() = listOf(
+                Subscription,
+                Timetable,
+                Lecturer,
+                Class,
+                MainInfo
+            )
+    }
 }

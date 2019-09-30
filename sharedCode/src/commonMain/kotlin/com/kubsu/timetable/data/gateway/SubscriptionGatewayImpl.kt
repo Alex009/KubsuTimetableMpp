@@ -2,8 +2,8 @@ package com.kubsu.timetable.data.gateway
 
 import com.kubsu.timetable.Either
 import com.kubsu.timetable.NetworkFailure
-import com.kubsu.timetable.data.db.SubscriptionDb
-import com.kubsu.timetable.data.db.SubscriptionQueries
+import com.kubsu.timetable.data.db.timetable.SubscriptionDb
+import com.kubsu.timetable.data.db.timetable.SubscriptionQueries
 import com.kubsu.timetable.data.mapper.timetable.data.SubscriptionMapper
 import com.kubsu.timetable.data.mapper.timetable.select.FacultyMapper
 import com.kubsu.timetable.data.mapper.timetable.select.GroupMapper

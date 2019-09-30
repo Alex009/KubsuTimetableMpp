@@ -46,6 +46,8 @@ class WrapperFailure<out D : DomainFailure> {
  */
 sealed class DomainFailure : Failure()
 
+object NoActiveUserFailure : DomainFailure()
+
 /**
  * User authentication failure.
  */

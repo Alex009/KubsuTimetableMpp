@@ -1,0 +1,23 @@
+CREATE TABLE deletedEntityDb(
+id INTEGER as Int NOT NULL PRIMARY KEY AUTOINCREMENT,
+dataDiffId INTEGER as Int NOT NULL,
+deletedId INTEGER as Int NOT NULL
+);
+
+update:
+INSERT OR REPLACE INTO deletedEntityDb(dataDiffId, deletedId) VALUES (?, ?);
+
+selectAll:
+SELECT * FROM deletedEntityDb;
+
+selectById:
+SELECT * FROM deletedEntityDb WHERE id = ?;
+
+selectByDataDiffId:
+SELECT * FROM deletedEntityDb WHERE dataDiffId = ?;
+
+deleteById:
+DELETE FROM deletedEntityDb WHERE id = ?;
+
+deleteAll:
+DELETE FROM deletedEntityDb;
