@@ -1,0 +1,28 @@
+CREATE TABLE classDb(
+id INTEGER as Int NOT NULL PRIMARY KEY,
+title TEXT NOT NULL,
+typeOfClass INTEGER as Int NOT NULL,
+classroom TEXT NOT NULL,
+classTimeId INTEGER as Int NOT NULL,
+day INTEGER as Int NOT NULL,
+lecturerId INTEGER as Int NOT NULL,
+timetableId INTEGER as Int NOT NULL
+);
+
+update:
+INSERT OR REPLACE INTO classDb(id, title, typeOfClass, classroom, classTimeId, day, lecturerId, timetableId) VALUES ?;
+
+selectAll:
+SELECT * FROM classDb;
+
+selectById:
+SELECT * FROM classDb WHERE id = ?;
+
+selectByTimetableId:
+SELECT * FROM classDb WHERE timetableId = ?;
+
+deleteById:
+DELETE FROM classDb WHERE id = ?;
+
+deleteAll:
+DELETE FROM classDb;

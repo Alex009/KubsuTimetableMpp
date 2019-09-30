@@ -1,0 +1,25 @@
+CREATE TABLE subscriptionDb(
+id INTEGER as Int NOT NULL PRIMARY KEY,
+name TEXT NOT NULL,
+userId INTEGER as Int NOT NULL,
+subgroupId INTEGER as Int NOT NULL,
+isMain INTEGER AS Boolean NOT NULL DEFAULT 0
+);
+
+update:
+INSERT OR REPLACE INTO subscriptionDb(id, name, userId, subgroupId, isMain) VALUES ?;
+
+selectAll:
+SELECT * FROM subscriptionDb;
+
+selectById:
+SELECT * FROM subscriptionDb WHERE id = ?;
+
+selectByUserId:
+SELECT * FROM subscriptionDb WHERE userId = ?;
+
+deleteById:
+DELETE FROM subscriptionDb WHERE id = ?;
+
+deleteAll:
+DELETE FROM subscriptionDb;

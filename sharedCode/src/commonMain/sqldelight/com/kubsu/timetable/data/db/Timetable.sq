@@ -1,0 +1,23 @@
+CREATE TABLE timetableDb(
+id INTEGER as Int NOT NULL PRIMARY KEY,
+typeOfWeek INTEGER as Int NOT NULL,
+subgroupId INTEGER as Int NOT NULL
+);
+
+update:
+INSERT OR REPLACE INTO timetableDb(id, typeOfWeek, subgroupId) VALUES ?;
+
+selectAll:
+SELECT * FROM timetableDb;
+
+selectById:
+SELECT * FROM timetableDb WHERE id = ?;
+
+selectBySubgroupId:
+SELECT * FROM timetableDb WHERE subgroupId = ?;
+
+deleteById:
+DELETE FROM timetableDb WHERE id = ?;
+
+deleteAll:
+DELETE FROM timetableDb;

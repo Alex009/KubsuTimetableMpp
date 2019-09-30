@@ -1,20 +1,16 @@
 package com.kubsu.timetable.data.network
 
-import com.kubsu.timetable.Either
 import com.kubsu.timetable.AuthFail
+import com.kubsu.timetable.Either
 import com.kubsu.timetable.NetworkFailure
 import com.kubsu.timetable.WrapperFailure
-import com.kubsu.timetable.data.network.dto.BasenameNetworkDto
 import com.kubsu.timetable.data.network.dto.MainInfoNetworkDto
 import com.kubsu.timetable.data.network.dto.UserNetworkDto
-import com.kubsu.timetable.data.network.dto.data.ClassNetworkDto
-import com.kubsu.timetable.data.network.dto.data.LecturerNetworkDto
-import com.kubsu.timetable.data.network.dto.data.SubscriptionNetworkDto
-import com.kubsu.timetable.data.network.dto.data.TimetableNetworkDto
-import com.kubsu.timetable.data.network.dto.select.FacultyNetworkDto
-import com.kubsu.timetable.data.network.dto.select.GroupNetworkDto
-import com.kubsu.timetable.data.network.dto.select.OccupationNetworkDto
-import com.kubsu.timetable.data.network.dto.select.SubgroupNetworkDto
+import com.kubsu.timetable.data.network.dto.timetable.data.*
+import com.kubsu.timetable.data.network.dto.timetable.select.FacultyNetworkDto
+import com.kubsu.timetable.data.network.dto.timetable.select.GroupNetworkDto
+import com.kubsu.timetable.data.network.dto.timetable.select.OccupationNetworkDto
+import com.kubsu.timetable.data.network.dto.timetable.select.SubgroupNetworkDto
 import com.kubsu.timetable.data.network.response.DiffResponse
 import com.kubsu.timetable.data.network.response.SyncResponse
 import com.kubsu.timetable.domain.entity.Timestamp
@@ -48,7 +44,7 @@ interface NetworkClient {
     suspend fun selectTimetableListForUser(): Either<NetworkFailure, List<TimetableNetworkDto>>
     suspend fun selectClassesByTimetableId(timetableId: Int): Either<NetworkFailure, List<ClassNetworkDto>>
     suspend fun selectLecturerById(id: Int): Either<NetworkFailure, LecturerNetworkDto>
-    suspend fun selectClassTimeById(id: Int): Either<NetworkFailure, ClassNetworkDto>
+    suspend fun selectClassTimeById(id: Int): Either<NetworkFailure, ClassTimeNetworkDto>
 
     // Update
     suspend fun diff(timestamp: Timestamp): Either<NetworkFailure, DiffResponse>

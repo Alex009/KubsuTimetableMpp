@@ -1,4 +1,4 @@
-package com.kubsu.timetable.data.network.dto.data
+package com.kubsu.timetable.data.network.dto.timetable.data
 
 class LecturerNetworkDto(
     val id: Int,

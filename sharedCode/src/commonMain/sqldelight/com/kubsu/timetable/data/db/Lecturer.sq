@@ -1,0 +1,21 @@
+CREATE TABLE lecturerDb(
+id INTEGER as Int NOT NULL PRIMARY KEY,
+name TEXT NOT NULL,
+surname TEXT NOT NULL,
+patronymic TEXT NOT NULL
+);
+
+update:
+INSERT OR REPLACE INTO lecturerDb(id, name, surname, patronymic) VALUES ?;
+
+selectAll:
+SELECT * FROM lecturerDb;
+
+selectById:
+SELECT * FROM lecturerDb WHERE id = ?;
+
+deleteById:
+DELETE FROM lecturerDb WHERE id = ?;
+
+deleteAll:
+DELETE FROM lecturerDb;
