@@ -1,16 +1,16 @@
 package com.kubsu.timetable.domain.interactor.subscription
 
 import com.kubsu.timetable.*
-import com.kubsu.timetable.data.storage.user.UserStorage
 import com.kubsu.timetable.domain.entity.timetable.data.SubscriptionEntity
 import com.kubsu.timetable.domain.entity.timetable.select.FacultyEntity
 import com.kubsu.timetable.domain.entity.timetable.select.GroupEntity
 import com.kubsu.timetable.domain.entity.timetable.select.OccupationEntity
 import com.kubsu.timetable.domain.entity.timetable.select.SubgroupEntity
+import com.kubsu.timetable.domain.interactor.main.MainInteractor
 
 class SubscriptionInteractorImpl(
     private val subscriptionGateway: SubscriptionGateway,
-    private val userStorage: UserStorage
+    private val mainInteractor: MainInteractor
 ) : SubscriptionInteractor {
     override suspend fun selectFacultyList(): Either<NetworkFailure, List<FacultyEntity>> = def {
         subscriptionGateway.selectFacultyList()
@@ -39,7 +39,7 @@ class SubscriptionInteractorImpl(
         subscriptionName: String,
         isMain: Boolean
     ): Either<WrapperFailure<NoActiveUserFailure>, Unit> = def {
-        val user = userStorage.get()
+        val user = mainInteractor.getCurrentUser()
 
         if (user != null)
             subscriptionGateway
@@ -51,7 +51,7 @@ class SubscriptionInteractorImpl(
 
     override suspend fun getSubscriptionById(id: Int): Either<WrapperFailure<NoActiveUserFailure>, SubscriptionEntity> =
         def {
-            val user = userStorage.get()
+            val user = mainInteractor.getCurrentUser()
 
             if (user != null)
                 subscriptionGateway
@@ -63,7 +63,7 @@ class SubscriptionInteractorImpl(
 
     override suspend fun getAllSubscriptions(): Either<WrapperFailure<NoActiveUserFailure>, List<SubscriptionEntity>> =
         def {
-            val user = userStorage.get()
+            val user = mainInteractor.getCurrentUser()
 
         if (user != null)
             subscriptionGateway

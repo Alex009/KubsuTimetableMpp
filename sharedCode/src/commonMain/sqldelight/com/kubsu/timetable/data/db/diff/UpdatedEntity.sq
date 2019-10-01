@@ -10,14 +10,11 @@ INSERT OR REPLACE INTO updatedEntityDb(dataDiffId, updatedId) VALUES (?,?);
 selectAll:
 SELECT * FROM updatedEntityDb;
 
-selectById:
-SELECT * FROM updatedEntityDb WHERE id = ?;
-
 selectByDataDiffId:
 SELECT * FROM updatedEntityDb WHERE dataDiffId = ?;
 
-deleteById:
-DELETE FROM updatedEntityDb WHERE id = ?;
+deleteByDataDiffId:
+DELETE FROM updatedEntityDb WHERE dataDiffId = ?;
 
 deleteAll:
 DELETE FROM updatedEntityDb;

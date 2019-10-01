@@ -7,5 +7,6 @@ class ClassNetworkDto(
     val classroom: String,
     val classTimeId: Int,
     val weekday: Int,
-    val lecturerId: Int
+    val lecturerId: Int,
+    val timetableId: Int
 )

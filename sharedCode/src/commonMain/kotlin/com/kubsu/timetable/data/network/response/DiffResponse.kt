@@ -1,8 +1,10 @@
 package com.kubsu.timetable.data.network.response
 
-import com.kubsu.timetable.domain.entity.Timestamp
-
 class DiffResponse(
-    val timestamp: Timestamp,
+    val timestamp: Long,
     val basenameList: List<String>
-)
+) {
+    fun too() {
+
+    }
+}

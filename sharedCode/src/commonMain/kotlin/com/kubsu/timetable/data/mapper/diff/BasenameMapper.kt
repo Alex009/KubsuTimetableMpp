@@ -3,10 +3,10 @@ package com.kubsu.timetable.data.mapper.diff
 import com.kubsu.timetable.domain.entity.diff.Basename
 
 object BasenameMapper {
-    private const val subscriptionValue = "subscriptions"
-    private const val timetableValue = "timetables"
-    private const val lecturerValue = "lecturers"
-    private const val classValue = "classes"
+    private const val subscriptionValue = "subscription"
+    private const val timetableValue = "timetable"
+    private const val lecturerValue = "lecturer"
+    private const val classValue = "class"
     private const val mainInfoValue = "main_info"
 
     fun toEntity(value: String): Basename =

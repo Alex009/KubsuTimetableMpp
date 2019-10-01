@@ -1,9 +1,6 @@
 package com.kubsu.timetable.data.network.response
 
-import com.kubsu.timetable.domain.entity.Timestamp
-
-class SyncResponse(
+data class SyncResponse(
     val updatedIds: List<Int>,
-    val deletedIds: List<Int>,
-    val timestamp: Timestamp
+    val deletedIds: List<Int>
 )

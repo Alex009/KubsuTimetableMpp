@@ -39,12 +39,13 @@ android {
 }
 
 dependencies {
-    val kotlinVersion = property("kotlinVersion") as String
+    implementation(project(":sharedCode"))
+
+    val kotlinVersion = rootProject.ext["kotlinVersion"] as String
     implementation(fileTree("include" to "*.jar", "dir" to "libs"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
     implementation("androidx.appcompat:appcompat:1.1.0")
     implementation("com.android.support.constraint:constraint-layout:1.1.3")
-    implementation(project(":sharedCode"))
 
     testImplementation("junit:junit:4.12")
     androidTestImplementation("com.android.support.test:runner:1.0.2")

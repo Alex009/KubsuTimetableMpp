@@ -13,17 +13,14 @@ SELECT last_insert_rowid();
 selectAll:
 SELECT * FROM dataDiffDb;
 
-selectById:
-SELECT * FROM dataDiffDb WHERE id = ?;
-
-selectByBasename:
-SELECT * FROM dataDiffDb WHERE basename = ?;
+select:
+SELECT * FROM dataDiffDb WHERE basename = ? AND userId = ?;
 
 selectByUserId:
 SELECT * FROM dataDiffDb WHERE userId = ?;
 
-deleteById:
-DELETE FROM dataDiffDb WHERE id = ?;
+delete:
+DELETE FROM dataDiffDb WHERE basename = ? AND userId = ?;
 
 deleteAll:
 DELETE FROM dataDiffDb;

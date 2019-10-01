@@ -1,17 +1,14 @@
 package com.kubsu.timetable.domain.interactor.auth
 
-import com.kubsu.timetable.Either
-import com.kubsu.timetable.def
-import com.kubsu.timetable.AuthFail
-import com.kubsu.timetable.NetworkFailure
-import com.kubsu.timetable.WrapperFailure
-import com.kubsu.timetable.domain.entity.UserEntity
+import com.kubsu.timetable.*
+import com.kubsu.timetable.domain.interactor.main.MainGateway
 
 class AuthInteractorImpl(
-    private val gateway: AuthGateway
+    private val gateway: AuthGateway,
+    private val mainGateway: MainGateway
 ) : AuthInteractor {
     override suspend fun isUserAuthenticated(): Boolean = def {
-        gateway.getUserOrNull() != null
+        mainGateway.getCurrentUser() != null
     }
 
     override suspend fun signIn(

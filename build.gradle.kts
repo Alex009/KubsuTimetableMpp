@@ -1,20 +1,19 @@
-buildscript {
-    val kotlinVersion = "1.3.30"
-    extra["kotlinVersion"] = kotlinVersion
-    setProperty("kotlinVersion", kotlinVersion)
+val kotlinVersion = "1.3.50"
 
-    repositories {
-        google()
-        jcenter()
-    }
-    dependencies {
-        classpath("com.android.tools.build:gradle:3.5.0")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
-        classpath("com.squareup.sqldelight:gradle-plugin:1.2.0")
-    }
+plugins {
+    val kotlinVersion = "1.3.50"
+    val toolsGradleVersion = "3.5.0"
+    val sqldelightVersion = "1.2.0"
+
+    kotlin("multiplatform").version(kotlinVersion).apply(false)
+    kotlin("android").version(kotlinVersion).apply(false)
+    id("com.android.library").version(toolsGradleVersion).apply(false)
+    id("com.android.application").version(toolsGradleVersion).apply(false)
+    id("com.squareup.sqldelight").version(sqldelightVersion).apply(false)
 }
 
 allprojects {
+    ext["kotlinVersion"] = kotlinVersion
     repositories {
         google()
         jcenter()

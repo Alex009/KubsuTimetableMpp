@@ -10,7 +10,6 @@ import com.kubsu.timetable.domain.entity.timetable.data.LecturerEntity
 object ClassMapper {
     fun toEntity(
         networkDto: ClassNetworkDto,
-        timetableId: Int,
         classTime: ClassTimeEntity,
         lecturer: LecturerEntity
     ): ClassEntity =
@@ -22,7 +21,7 @@ object ClassMapper {
             classTime = classTime,
             day = DayMapper.toEntity(networkDto.weekday),
             lecturer = lecturer,
-            timetableId = timetableId
+            timetableId = networkDto.timetableId
         )
 
     fun toEntity(
@@ -56,8 +55,7 @@ object ClassMapper {
         )
 
     fun toDbDto(
-        networkDto: ClassNetworkDto,
-        timetableId: Int
+        networkDto: ClassNetworkDto
     ): ClassDb =
         ClassDb.Impl(
             id = networkDto.id,
@@ -67,7 +65,7 @@ object ClassMapper {
             classTimeId = networkDto.classTimeId,
             day = networkDto.weekday,
             lecturerId = networkDto.lecturerId,
-            timetableId = timetableId
+            timetableId = networkDto.timetableId
         )
 
     fun toNetworkDto(
@@ -80,7 +78,8 @@ object ClassMapper {
             classroom = entity.classroom,
             classTimeId = entity.classTime.id,
             weekday = DayMapper.value(entity.day),
-            lecturerId = entity.lecturer.id
+            lecturerId = entity.lecturer.id,
+            timetableId = entity.timetableId
         )
 
     fun toNetworkDto(
@@ -93,6 +92,7 @@ object ClassMapper {
             classroom = dbDto.classroom,
             classTimeId = dbDto.classTimeId,
             weekday = dbDto.day,
-            lecturerId = dbDto.lecturerId
+            lecturerId = dbDto.lecturerId,
+            timetableId = dbDto.timetableId
         )
 }

@@ -48,6 +48,34 @@ interface NetworkClient {
     // Update
     suspend fun diff(timestamp: Long): Either<NetworkFailure, DiffResponse>
 
-    suspend fun sync(basename: String, existsIds: List<Int>): Either<NetworkFailure, SyncResponse>
-    suspend fun <T> meta(basename: String, updatedIds: List<Int>): Either<NetworkFailure, List<T>>
+    suspend fun syncSubscription(
+        timestamp: Long,
+        existsIds: List<Int>
+    ): Either<NetworkFailure, SyncResponse>
+
+    suspend fun syncTimetable(
+        timestamp: Long,
+        existsIds: List<Int>
+    ): Either<NetworkFailure, SyncResponse>
+
+    suspend fun syncLecturer(
+        timestamp: Long,
+        existsIds: List<Int>
+    ): Either<NetworkFailure, SyncResponse>
+
+    suspend fun syncClass(
+        timestamp: Long,
+        existsIds: List<Int>
+    ): Either<NetworkFailure, SyncResponse>
+
+    suspend fun syncMainInfo(
+        timestamp: Long,
+        existsIds: List<Int>
+    ): Either<NetworkFailure, SyncResponse>
+
+    suspend fun metaSubscription(updatedIds: List<Int>): Either<NetworkFailure, List<SubscriptionNetworkDto>>
+    suspend fun metaTimetable(updatedIds: List<Int>): Either<NetworkFailure, List<TimetableNetworkDto>>
+    suspend fun metaLecturer(updatedIds: List<Int>): Either<NetworkFailure, List<LecturerNetworkDto>>
+    suspend fun metaClass(updatedIds: List<Int>): Either<NetworkFailure, List<ClassNetworkDto>>
+    suspend fun metaMainInfo(updatedId: Int): Either<NetworkFailure, MainInfoNetworkDto>
 }
