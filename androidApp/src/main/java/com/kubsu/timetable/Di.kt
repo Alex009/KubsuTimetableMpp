@@ -6,6 +6,7 @@ import android.os.Bundle
 import di.androidKodein
 import org.kodein.di.Kodein
 import org.kodein.di.erased.bind
+import org.kodein.di.erased.instance
 import org.kodein.di.erased.singleton
 
 fun appKodein(app: App) = Kodein {
@@ -15,7 +16,7 @@ fun appKodein(app: App) = Kodein {
         object : Application.ActivityLifecycleCallbacks {
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
                 (activity as? AppActivity)?.let {
-                    //it.interactor = instance()
+                    it.interactor = instance()
                 }
             }
 

@@ -7,12 +7,6 @@ class UserStorageImpl(
     settingsFactory: Settings.Factory
 ) : UserStorage,
     BaseStorage(settingsFactory.create("User")) {
-    private val idPropName = "id"
-    private val firstNamePropName = "first_name"
-    private val secondNamePropName = "second_name"
-    private val emailPropName = "email"
-    private val timestampPropName = "timestamp"
-
     override suspend fun set(user: UserStorageDto?) {
         set(idPropName, user?.id)
         set(firstNamePropName, user?.firstName)
@@ -43,5 +37,13 @@ class UserStorageImpl(
             )
         else
             null
+    }
+
+    private companion object {
+        private const val idPropName = "id"
+        private const val firstNamePropName = "first_name"
+        private const val secondNamePropName = "second_name"
+        private const val emailPropName = "email"
+        private const val timestampPropName = "timestamp"
     }
 }

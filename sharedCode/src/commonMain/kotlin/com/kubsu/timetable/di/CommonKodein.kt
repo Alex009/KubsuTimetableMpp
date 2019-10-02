@@ -109,5 +109,7 @@ internal val commonKodein = Kodein.Module("common_module") {
     bind<UserStorage>() with singleton { UserStorageImpl(instance()) }
 
     // Network
-    bind<NetworkClient>() with singleton { NetworkClientImpl() }
+    bind<NetworkClient>() with singleton {
+        NetworkClientImpl(engine = instance())
+    }
 }

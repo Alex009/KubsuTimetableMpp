@@ -33,10 +33,7 @@ android {
     }
 
     packagingOptions {
-        exclude("META-INF/kotlinx-io.kotlin_module")
-        exclude("META-INF/atomicfu.kotlin_module")
-        exclude("META-INF/kotlinx-coroutines-io.kotlin_module")
-        exclude("META-INF/kotlinx-coroutines-core.kotlin_module")
+        exclude("META-INF/*.kotlin_module")
     }
 }
 

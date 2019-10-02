@@ -45,16 +45,16 @@ object UserMapper {
     fun toNetworkDto(entity: UserEntity): UserNetworkDto =
         UserNetworkDto(
             id = entity.id,
+            email = entity.email,
             firstName = entity.firstName,
-            lastName = entity.lastName,
-            email = entity.email
+            lastName = entity.lastName
         )
 
     fun toNetworkDto(storageDto: UserStorageDto): UserNetworkDto =
         UserNetworkDto(
             id = storageDto.id,
+            email = storageDto.email,
             firstName = storageDto.firstName,
-            lastName = storageDto.lastName,
-            email = storageDto.email
+            lastName = storageDto.lastName
         )
 }

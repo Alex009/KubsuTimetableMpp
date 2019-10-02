@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("multiplatform")
+    id("kotlinx-serialization")
     id("com.android.library")
     id("com.squareup.sqldelight")
 }
@@ -34,7 +35,8 @@ kotlin {
         val coroutineVersion = "1.3.2"
         val sqldelightVersion = "1.2.0"
         val kodeinVersion = "6.4.0"
-        val klockVersion = "1.7.3"
+        val serializationVersion = "0.13.0"
+        val ktorVersion = "1.3.0-beta-1"
 
         val commonMain by getting {
             dependencies {
@@ -42,6 +44,14 @@ kotlin {
 
                 // Coroutine
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:$coroutineVersion")
+
+                // Network
+                implementation("io.ktor:ktor-client-core:$ktorVersion")
+                implementation("io.ktor:ktor-client-serialization:$ktorVersion")
+                implementation("io.ktor:ktor-client-logging:$ktorVersion")
+
+                // Serialization
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:$serializationVersion")
 
                 // Db
                 implementation("com.squareup.sqldelight:runtime:$sqldelightVersion")
@@ -54,7 +64,7 @@ kotlin {
                 implementation("com.russhwolf:multiplatform-settings:0.3.3")
 
                 // Time
-                implementation("com.soywiz.korlibs.klock:klock:$klockVersion")
+                implementation("com.soywiz.korlibs.klock:klock:1.7.3")
             }
         }
         val commonTest by getting {
@@ -73,6 +83,14 @@ kotlin {
                 // Coroutine
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutineVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion")
+
+                // Network
+                implementation("io.ktor:ktor-client-android:$ktorVersion")
+                implementation("io.ktor:ktor-client-serialization-jvm:$ktorVersion")
+                implementation("io.ktor:ktor-client-logging-jvm:$ktorVersion")
+
+                // Serialization
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serializationVersion")
 
                 // Db
                 implementation("com.squareup.sqldelight:android-driver:$sqldelightVersion")
@@ -95,6 +113,14 @@ kotlin {
                 // Coroutine
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-native:$coroutineVersion")
 
+                // Network
+                implementation("io.ktor:ktor-client-ios:$ktorVersion")
+                implementation("io.ktor:ktor-client-serialization-native:$ktorVersion")
+                implementation("io.ktor:ktor-client-logging-native:$ktorVersion")
+
+                // Serialization
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-native:$serializationVersion")
+
                 // Db
                 implementation("com.squareup.sqldelight:ios-driver:$sqldelightVersion")
             }
@@ -103,7 +129,11 @@ kotlin {
         }
 
         all {
-            languageSettings.enableLanguageFeature("InlineClasses")
+            languageSettings.apply {
+                this.enableLanguageFeature("InlineClasses") // language feature name
+                useExperimentalAnnotation("kotlin.Experimental") // annotation FQ-name
+                progressiveMode = true // false by default
+            }
         }
     }
 }
@@ -111,7 +141,6 @@ kotlin {
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         jvmTarget = "1.8"
-        //freeCompilerArgs = listOf()
     }
 }
 
@@ -148,8 +177,18 @@ android {
         }
     }
 
+    packagingOptions {
+        exclude("META-INF/*.kotlin_module")
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
     testOptions.unitTests.isIncludeAndroidResources = true
 }
+
 task("copyFramework") {
     val buildType = project.findProperty("kotlin.build.type") as? String ?: "DEBUG"
     val framework =

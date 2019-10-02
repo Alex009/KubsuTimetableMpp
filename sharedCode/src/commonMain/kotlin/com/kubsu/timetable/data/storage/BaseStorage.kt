@@ -4,13 +4,7 @@ import com.russhwolf.settings.Settings
 import com.russhwolf.settings.get
 import com.russhwolf.settings.set
 
-abstract class BaseStorage(val settings: Settings) {
-    private val defaultInt = -1
-    private val defaultLong = -1L
-    private val defaultFloat = -1.0F
-    private val defaultDouble = -1.0
-    private val defaultStr = "def_str"
-
+abstract class BaseStorage(private val settings: Settings) {
     fun getInt(key: String): Int? =
         settings[key, defaultInt].takeIf { it != defaultInt }
 
@@ -46,4 +40,12 @@ abstract class BaseStorage(val settings: Settings) {
 
     fun set(key: String, value: Boolean?): Unit =
         value?.let { settings[key] = it } ?: settings.remove(key)
+
+    private companion object {
+        private const val defaultInt = -1
+        private const val defaultLong = -1L
+        private const val defaultFloat = -1.0F
+        private const val defaultDouble = -1.0
+        private const val defaultStr = "def_str"
+    }
 }
