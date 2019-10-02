@@ -1,4 +1,4 @@
-package com.kubsu.timetable.data.db
+package platform
 
 import com.squareup.sqldelight.db.SqlDriver
 

@@ -1,6 +1,7 @@
-package com.kubsu.timetable.data.db
+package platform
 
 import android.content.Context
+import com.kubsu.timetable.data.db.MyDatabase
 import com.squareup.sqldelight.android.AndroidSqliteDriver
 import com.squareup.sqldelight.db.SqlDriver
 

@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
@@ -8,6 +11,7 @@ repositories {
     google()
     jcenter()
     mavenCentral()
+    maven(url = "https://dl.bintray.com/florent37/maven")
 }
 
 sqldelight {
@@ -22,33 +26,62 @@ kotlin {
     // Switch here to iosArm64 (or iosArm32) to build library for iPhone device
     iosX64("ios") {
         binaries {
-            framework()
+            framework("Shared")
         }
     }
 
     sourceSets {
         val coroutineVersion = "1.3.2"
         val sqldelightVersion = "1.2.0"
+        val kodeinVersion = "6.4.0"
+        val multiplatformPreferencesVersion = "1.0.0"
 
         val commonMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-common"))
+
+                // Coroutine
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:$coroutineVersion")
+
+                // Db
                 implementation("com.squareup.sqldelight:runtime:$sqldelightVersion")
+
+                // Di
+                implementation("org.kodein.di:kodein-di-core:$kodeinVersion")
+                implementation("org.kodein.di:kodein-di-erased:$kodeinVersion")
+
+                // Preferences
+                implementation("com.github.florent37:multiplatform-preferences:$multiplatformPreferencesVersion")
             }
         }
         val commonTest by getting {
             dependencies {
-        		implementation(kotlin("test-common"))
-        		implementation(kotlin("test-annotations-common"))
+                implementation(kotlin("test-common"))
+                implementation(kotlin("test-annotations-common"))
+
+                // Mock
                 implementation("io.mockk:mockk-common:1.9.3")
             }
         }
         val androidMain by getting {
             dependencies {
                 implementation(kotlin("stdlib"))
+
+                // Coroutine
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutineVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion")
+
+                // Db
                 implementation("com.squareup.sqldelight:android-driver:$sqldelightVersion")
+
+                // Di
+                implementation("org.kodein.di:kodein-di-framework-android-x:$kodeinVersion")
+
+                // Preferences
+                implementation("com.github.florent37:multiplatform-preferences-android:$multiplatformPreferencesVersion")
+
+                // Sugar
+                implementation("androidx.core:core-ktx:1.1.0")
             }
         }
         val androidTest by getting {
@@ -59,7 +92,14 @@ kotlin {
         }
         val iosMain by getting {
             dependencies {
+                // Coroutine
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-native:$coroutineVersion")
+
+                // Db
                 implementation("com.squareup.sqldelight:ios-driver:$sqldelightVersion")
+
+                // Preferences
+                implementation("com.github.florent37:multiplatform-preferences-ios:$multiplatformPreferencesVersion")
             }
         }
         val iosTest by getting {
@@ -71,14 +111,14 @@ kotlin {
     }
 }
 
-/*tasks.withType<KotlinCompile> {
+tasks.withType<KotlinCompile> {
     kotlinOptions {
         jvmTarget = "1.8"
-        freeCompilerArgs = listOf()
+        //freeCompilerArgs = listOf()
     }
 }
 
-tasks.withType<Test> {
+/*tasks.withType<Test> {
     useJUnitPlatform()
 }*/
 
@@ -113,7 +153,38 @@ android {
 
     testOptions.unitTests.isIncludeAndroidResources = true
 }
+task("copyFramework") {
+    val buildType = project.findProperty("kotlin.build.type") as? String ?: "DEBUG"
+    val framework =
+        (kotlin.targets["ios"] as KotlinNativeTarget).compilations["main"].target.binaries.findFramework(
+            "Shared",
+            buildType
+        )!!
+    dependsOn(framework.linkTask)
 
+    doLast {
+        val srcFile = framework.outputFile
+        val targetDir = project.property("configuration.build.dir") as? String ?: ""
+        copy {
+            from(srcFile.parent)
+            into(targetDir)
+            include("Shared.framework/**")
+            include("Shared.framework.dSYM")
+        }
+    }
+}
+
+task("iosTest") {
+    dependsOn("linkDebugTestIos")
+    doLast {
+        val testBinaryPath =
+            (kotlin.targets["ios"] as KotlinNativeTarget).binaries.getTest("DEBUG")
+                .outputFile.absolutePath
+        exec {
+            commandLine("xcrun", "simctl", "spawn", "iPhone Xʀ", testBinaryPath)
+        }
+    }
+}
 // This task attaches native framework built from ios module to Xcode project
 // (see iosApp directory). Don't run this task directly,
 // Xcode runs this task itself during its build process.

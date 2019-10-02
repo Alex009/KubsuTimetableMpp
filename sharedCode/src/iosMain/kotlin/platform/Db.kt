@@ -1,5 +1,6 @@
-package com.kubsu.timetable.data.db
+package platform
 
+import com.kubsu.timetable.data.db.MyDatabase
 import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.drivers.ios.NativeSqliteDriver
 

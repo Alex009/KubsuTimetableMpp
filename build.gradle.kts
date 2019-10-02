@@ -18,6 +18,7 @@ allprojects {
         google()
         jcenter()
         mavenCentral()
+        maven(url = "https://dl.bintray.com/florent37/maven")
     }
 
     // workaround for https://youtrack.jetbrains.com/issue/KT-27170
