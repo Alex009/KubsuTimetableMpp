@@ -1,44 +1,33 @@
 package com.kubsu.timetable.data.storage.user
 
-import com.github.florent37.preferences.Preferences
+import com.kubsu.timetable.data.storage.BaseStorage
+import com.russhwolf.settings.Settings
 
-class UserStorageImpl : UserStorage {
+class UserStorageImpl(
+    settingsFactory: Settings.Factory
+) : UserStorage,
+    BaseStorage(settingsFactory.create("User")) {
     private val idPropName = "id"
     private val firstNamePropName = "first_name"
     private val secondNamePropName = "second_name"
     private val emailPropName = "email"
     private val timestampPropName = "timestamp"
 
-    private val defaultInt = -1
-    private val defaultLong = -1L
-
-    private val pref = Preferences("User")
-
     override suspend fun set(user: UserStorageDto?) {
-        pref.run {
-            setInt(idPropName, user?.id ?: defaultInt)
-            setString(firstNamePropName, user?.firstName)
-            setString(secondNamePropName, user?.lastName)
-            setString(emailPropName, user?.email)
-            setLong(timestampPropName, user?.timestamp ?: defaultLong)
-        }
+        set(idPropName, user?.id)
+        set(firstNamePropName, user?.firstName)
+        set(secondNamePropName, user?.lastName)
+        set(emailPropName, user?.email)
+        set(timestampPropName, user?.timestamp)
     }
 
     override suspend fun get(): UserStorageDto? {
-        val id: Int?
-        val firstName: String?
-        val secondName: String?
-        val email: String?
-        val timestamp: Long?
-        getPrivatePreferences().let {
-            id = it.getInt(idPropName, defaultInt).takeIf { id -> id != defaultInt }
-            firstName = it.getString(firstNamePropName, null)
-            secondName = it.getString(secondNamePropName, null)
-            email = it.getString(emailPropName, null)
-            timestamp = it
-                .getLong(timestampPropName, defaultLong)
-                .takeIf { timestamp -> timestamp != defaultLong }
-        }
+        val id: Int? = getInt(idPropName)
+        val firstName: String? = getString(firstNamePropName)
+        val secondName: String? = getString(secondNamePropName)
+        val email: String? = getString(emailPropName)
+        val timestamp: Long? = getLong(timestampPropName)
+
         return if (id != null
             && firstName != null
             && secondName != null

@@ -1,11 +1,8 @@
 package platform
 
-import android.content.Context
 import com.kubsu.timetable.data.db.MyDatabase
 import com.squareup.sqldelight.android.AndroidSqliteDriver
 import com.squareup.sqldelight.db.SqlDriver
 
-actual class PlatformDriverArgs(val context: Context)
-
-actual fun createDriver(args: PlatformDriverArgs): SqlDriver =
+actual fun createDriver(args: PlatformArgs): SqlDriver =
     AndroidSqliteDriver(MyDatabase.Schema, args.context, "timetable.db")

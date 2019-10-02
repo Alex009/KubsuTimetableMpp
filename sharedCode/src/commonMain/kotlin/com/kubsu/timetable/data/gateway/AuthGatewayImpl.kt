@@ -11,7 +11,7 @@ import com.kubsu.timetable.data.db.timetable.*
 import com.kubsu.timetable.data.mapper.UserMapper
 import com.kubsu.timetable.data.network.NetworkClient
 import com.kubsu.timetable.data.storage.user.UserStorage
-import com.kubsu.timetable.domain.entity.createTimestamp
+import com.kubsu.timetable.domain.entity.Timestamp
 import com.kubsu.timetable.domain.interactor.auth.AuthGateway
 
 class AuthGatewayImpl(
@@ -33,7 +33,7 @@ class AuthGatewayImpl(
         networkClient
             .signIn(email, password)
             .map {
-                userStorage.set(UserMapper.toStorageDto(it, createTimestamp()))
+                userStorage.set(UserMapper.toStorageDto(it, Timestamp.create()))
             }
 
     override suspend fun registrationUser(

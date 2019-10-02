@@ -1,19 +1,19 @@
 package com.kubsu.timetable.data.storage.maininfo
 
-import com.github.florent37.preferences.Preferences
+import com.kubsu.timetable.data.storage.BaseStorage
+import com.russhwolf.settings.Settings
 
-class MainInfoStorageImpl : MainInfoStorage {
+class MainInfoStorageImpl(
+    settingsFactory: Settings.Factory
+) : MainInfoStorage,
+    BaseStorage(settingsFactory.create("main_info")) {
     private val isNumeratorPropName = "is_numerator"
-    private val pref = Preferences("MainInfo")
 
-    override suspend fun set(mainInfo: MainInfoStorageDto) =
-        pref.setBoolean(
-            isNumeratorPropName,
-            mainInfo.isNumerator
-        )
+    override suspend fun set(mainInfo: MainInfoStorageDto?) =
+        set(isNumeratorPropName, mainInfo?.isNumerator)
 
     override suspend fun get(): MainInfoStorageDto? {
-        val isNumerator: Boolean? = pref.getBoolean(isNumeratorPropName)
-        return if (isNumerator != null) MainInfoStorageDto(isNumerator) else null
+        val isNumerator: Boolean = getBoolean(isNumeratorPropName, false)
+        return MainInfoStorageDto(isNumerator)
     }
 }

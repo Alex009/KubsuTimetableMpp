@@ -1,7 +1,9 @@
 package com.kubsu.timetable.domain.entity
 
-inline class Timestamp(val value: Long)
+import com.soywiz.klock.DateTime
 
-fun createTimestamp(): Timestamp {
-    TODO("Make expect")
+inline class Timestamp(val value: Long) {
+    companion object {
+        fun create() = Timestamp(DateTime.nowUnixLong() / 1000)
+    }
 }

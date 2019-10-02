@@ -34,7 +34,7 @@ kotlin {
         val coroutineVersion = "1.3.2"
         val sqldelightVersion = "1.2.0"
         val kodeinVersion = "6.4.0"
-        val multiplatformPreferencesVersion = "1.0.0"
+        val klockVersion = "1.7.3"
 
         val commonMain by getting {
             dependencies {
@@ -51,7 +51,10 @@ kotlin {
                 implementation("org.kodein.di:kodein-di-erased:$kodeinVersion")
 
                 // Preferences
-                implementation("com.github.florent37:multiplatform-preferences:$multiplatformPreferencesVersion")
+                implementation("com.russhwolf:multiplatform-settings:0.3.3")
+
+                // Time
+                implementation("com.soywiz.korlibs.klock:klock:$klockVersion")
             }
         }
         val commonTest by getting {
@@ -77,9 +80,6 @@ kotlin {
                 // Di
                 implementation("org.kodein.di:kodein-di-framework-android-x:$kodeinVersion")
 
-                // Preferences
-                implementation("com.github.florent37:multiplatform-preferences-android:$multiplatformPreferencesVersion")
-
                 // Sugar
                 implementation("androidx.core:core-ktx:1.1.0")
             }
@@ -97,9 +97,6 @@ kotlin {
 
                 // Db
                 implementation("com.squareup.sqldelight:ios-driver:$sqldelightVersion")
-
-                // Preferences
-                implementation("com.github.florent37:multiplatform-preferences-ios:$multiplatformPreferencesVersion")
             }
         }
         val iosTest by getting {
@@ -127,7 +124,7 @@ android {
     compileSdkVersion(29)
 
     defaultConfig {
-        minSdkVersion(15)
+        minSdkVersion(16)
     }
 
     // By default the android gradle plugin expects to find the kotlin source files in
