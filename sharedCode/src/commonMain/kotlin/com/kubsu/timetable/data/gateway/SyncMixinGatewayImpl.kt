@@ -13,8 +13,8 @@ import com.kubsu.timetable.data.mapper.timetable.data.ClassMapper
 import com.kubsu.timetable.data.mapper.timetable.data.LecturerMapper
 import com.kubsu.timetable.data.mapper.timetable.data.SubscriptionMapper
 import com.kubsu.timetable.data.mapper.timetable.data.TimetableMapper
-import com.kubsu.timetable.data.network.NetworkClient
-import com.kubsu.timetable.data.network.response.SyncResponse
+import com.kubsu.timetable.data.network.client.update.UpdateDataNetworkClient
+import com.kubsu.timetable.data.network.dto.response.SyncResponse
 import com.kubsu.timetable.domain.entity.Timestamp
 import com.kubsu.timetable.domain.entity.UserEntity
 import com.kubsu.timetable.domain.entity.diff.Basename
@@ -32,7 +32,7 @@ class SyncMixinGatewayImpl(
     private val updatedEntityQueries: UpdatedEntityQueries,
     private val deletedEntityQueries: DeletedEntityQueries,
     private val mainGateway: MainGateway,
-    private val networkClient: NetworkClient
+    private val networkClient: UpdateDataNetworkClient
 ) : SyncMixinGateway {
     override fun registerDataDiff(entity: DataDiffEntity) {
         dataDiffQueries.update(

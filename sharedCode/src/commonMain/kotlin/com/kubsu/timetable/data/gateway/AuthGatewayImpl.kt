@@ -9,7 +9,7 @@ import com.kubsu.timetable.data.db.diff.DeletedEntityQueries
 import com.kubsu.timetable.data.db.diff.UpdatedEntityQueries
 import com.kubsu.timetable.data.db.timetable.*
 import com.kubsu.timetable.data.mapper.UserMapper
-import com.kubsu.timetable.data.network.NetworkClient
+import com.kubsu.timetable.data.network.client.user.UserInfoNetworkClient
 import com.kubsu.timetable.data.storage.user.UserStorage
 import com.kubsu.timetable.domain.entity.Timestamp
 import com.kubsu.timetable.domain.interactor.auth.AuthGateway
@@ -23,7 +23,7 @@ class AuthGatewayImpl(
     private val dataDiffQueries: DataDiffQueries,
     private val updatedEntityQueries: UpdatedEntityQueries,
     private val deletedEntityQueries: DeletedEntityQueries,
-    private val networkClient: NetworkClient,
+    private val networkClient: UserInfoNetworkClient,
     private val userStorage: UserStorage
 ) : AuthGateway {
     override suspend fun signIn(

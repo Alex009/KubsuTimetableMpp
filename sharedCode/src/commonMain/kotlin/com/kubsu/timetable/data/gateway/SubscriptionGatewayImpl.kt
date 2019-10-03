@@ -9,7 +9,8 @@ import com.kubsu.timetable.data.mapper.timetable.select.FacultyMapper
 import com.kubsu.timetable.data.mapper.timetable.select.GroupMapper
 import com.kubsu.timetable.data.mapper.timetable.select.OccupationMapper
 import com.kubsu.timetable.data.mapper.timetable.select.SubgroupMapper
-import com.kubsu.timetable.data.network.NetworkClient
+import com.kubsu.timetable.data.network.client.subscription.control.ControlSubscriptionNetworkClient
+import com.kubsu.timetable.data.network.client.subscription.create.CreateSubscriptionNetworkClient
 import com.kubsu.timetable.domain.entity.timetable.data.SubscriptionEntity
 import com.kubsu.timetable.domain.entity.timetable.select.FacultyEntity
 import com.kubsu.timetable.domain.entity.timetable.select.GroupEntity
@@ -19,25 +20,26 @@ import com.kubsu.timetable.domain.interactor.subscription.SubscriptionGateway
 
 class SubscriptionGatewayImpl(
     private val subscriptionQueries: SubscriptionQueries,
-    private val networkClient: NetworkClient
+    private val createNetworkClient: CreateSubscriptionNetworkClient,
+    private val controlNetworkClient: ControlSubscriptionNetworkClient
 ) : SubscriptionGateway {
     override suspend fun selectFacultyList(): Either<NetworkFailure, List<FacultyEntity>> =
-        networkClient
+        createNetworkClient
             .selectFacultyList()
             .map { list -> list.map(FacultyMapper::toEntity) }
 
     override suspend fun selectOccupationList(facultyId: Int): Either<NetworkFailure, List<OccupationEntity>> =
-        networkClient
+        createNetworkClient
             .selectOccupationList(facultyId)
             .map { list -> list.map { OccupationMapper.toEntity(it, facultyId) } }
 
     override suspend fun selectGroupList(occupationId: Int): Either<NetworkFailure, List<GroupEntity>> =
-        networkClient
+        createNetworkClient
             .selectGroupList(occupationId)
             .map { list -> list.map { GroupMapper.toEntity(it, occupationId) } }
 
     override suspend fun selectSubgroupList(groupId: Int): Either<NetworkFailure, List<SubgroupEntity>> =
-        networkClient
+        createNetworkClient
             .selectSubgroupList(groupId)
             .map { list -> list.map { SubgroupMapper.toEntity(it, groupId) } }
 
@@ -47,7 +49,7 @@ class SubscriptionGatewayImpl(
         subscriptionName: String,
         isMain: Boolean
     ): Either<NetworkFailure, Unit> =
-        networkClient
+        createNetworkClient
             .createSubscriptionAndReturnId(subgroupId, subscriptionName, isMain)
             .map { id ->
                 subscriptionQueries.update(
@@ -71,7 +73,7 @@ class SubscriptionGatewayImpl(
         return if (subscription != null)
             Either.right(SubscriptionMapper.toEntity(subscription))
         else
-            networkClient
+            controlNetworkClient
                 .selectSubscriptionById(id)
                 .map {
                     subscriptionQueries.update(SubscriptionMapper.toDbDto(it, userId))
@@ -85,7 +87,7 @@ class SubscriptionGatewayImpl(
         return if (subscriptionList.isNotEmpty())
             Either.right(subscriptionList.map(SubscriptionMapper::toEntity))
         else
-            networkClient
+            controlNetworkClient
                 .selectSubscriptionsForUser()
                 .map { list ->
                     list.map {

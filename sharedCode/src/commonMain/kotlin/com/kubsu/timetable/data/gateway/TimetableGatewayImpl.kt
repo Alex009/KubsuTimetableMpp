@@ -10,7 +10,7 @@ import com.kubsu.timetable.data.mapper.timetable.data.ClassMapper
 import com.kubsu.timetable.data.mapper.timetable.data.ClassTimeMapper
 import com.kubsu.timetable.data.mapper.timetable.data.LecturerMapper
 import com.kubsu.timetable.data.mapper.timetable.data.TimetableMapper
-import com.kubsu.timetable.data.network.NetworkClient
+import com.kubsu.timetable.data.network.client.timetable.TimetableNetworkClient
 import com.kubsu.timetable.data.network.dto.timetable.data.ClassNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.data.TimetableNetworkDto
 import com.kubsu.timetable.domain.entity.timetable.data.ClassEntity
@@ -27,7 +27,7 @@ class TimetableGatewayImpl(
     private val classQueries: ClassQueries,
     private val classTimeQueries: ClassTimeQueries,
     private val lecturerQueries: LecturerQueries,
-    private val networkClient: NetworkClient
+    private val networkClient: TimetableNetworkClient
 ) : TimetableGateway {
     override suspend fun getAllTimetables(
         subgroupId: Int
