@@ -3,14 +3,14 @@ package com.kubsu.timetable
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
-import di.androidKodein
+import di.androidModule
 import org.kodein.di.Kodein
 import org.kodein.di.erased.bind
 import org.kodein.di.erased.instance
 import org.kodein.di.erased.singleton
 
 fun appKodein(app: App) = Kodein {
-    import(androidKodein(app))
+    import(androidModule(app))
 
     bind<Application.ActivityLifecycleCallbacks>() with singleton {
         object : Application.ActivityLifecycleCallbacks {

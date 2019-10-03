@@ -8,7 +8,7 @@ import org.kodein.di.erased.bind
 import org.kodein.di.erased.singleton
 import platform.PlatformArgs
 
-val iosKodein = Kodein.Module("ios_kodein") {
+val iosModule = Kodein.Module("ios") {
     import(commonKodein)
 
     bind() from singleton { PlatformArgs() }
