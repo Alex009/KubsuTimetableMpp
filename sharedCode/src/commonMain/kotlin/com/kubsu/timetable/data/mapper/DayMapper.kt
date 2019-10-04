@@ -1,36 +1,27 @@
 package com.kubsu.timetable.data.mapper
 
-import com.kubsu.timetable.domain.entity.Day
+import com.kubsu.timetable.domain.entity.RussianKlockLocale
+import com.soywiz.klock.DayOfWeek
+import com.soywiz.klock.KlockLocale
 
 object DayMapper {
-    private const val mondayValue = 1
-    private const val tuesdayValue = 2
-    private const val wednesdayValue = 3
-    private const val thursdayValue = 4
-    private const val fridayValue = 5
-    private const val saturdayValue = 6
-    private const val sundayValue = 7
-
-    fun toEntity(value: Int): Day =
-        when (value) {
-            mondayValue -> Day.Monday
-            tuesdayValue -> Day.Tuesday
-            wednesdayValue -> Day.Wednesday
-            thursdayValue -> Day.Thursday
-            fridayValue -> Day.Friday
-            saturdayValue -> Day.Saturday
-            sundayValue -> Day.Sunday
-            else -> throw IllegalArgumentException("Unknown value: $value")
+    fun toEntity(
+        value: Int,
+        klockLocale: KlockLocale = RussianKlockLocale
+    ): DayOfWeek =
+        when (val firstDay = klockLocale.firstDayOfWeek) {
+            DayOfWeek.Monday -> if (value == 7) DayOfWeek[0] else DayOfWeek[value]
+            DayOfWeek.Sunday -> DayOfWeek[value - 1]
+            else -> throw IllegalStateException("No implementation for the first day: $firstDay")
         }
 
-    fun value(entity: Day): Int =
-        when (entity) {
-            Day.Monday -> mondayValue
-            Day.Tuesday -> tuesdayValue
-            Day.Wednesday -> wednesdayValue
-            Day.Thursday -> thursdayValue
-            Day.Friday -> fridayValue
-            Day.Saturday -> saturdayValue
-            Day.Sunday -> sundayValue
+    fun value(
+        entity: DayOfWeek,
+        klockLocale: KlockLocale = RussianKlockLocale
+    ): Int =
+        when (val firstDay = klockLocale.firstDayOfWeek) {
+            DayOfWeek.Monday -> entity.index1Monday
+            DayOfWeek.Sunday -> entity.index1Sunday
+            else -> throw IllegalStateException("No implementation for the first day: $firstDay")
         }
 }

@@ -1,6 +1,6 @@
 package com.kubsu.timetable.domain.entity.timetable.data
 
-import com.kubsu.timetable.domain.entity.Day
+import com.soywiz.klock.DayOfWeek
 
 data class ClassEntity(
     val id: Int,
@@ -8,7 +8,7 @@ data class ClassEntity(
     val typeOfClass: TypeOfClass,
     val classroom: String,
     val classTime: ClassTimeEntity,
-    val day: Day,
+    val day: DayOfWeek,
     val lecturer: LecturerEntity,
     val timetableId: Int
 )
