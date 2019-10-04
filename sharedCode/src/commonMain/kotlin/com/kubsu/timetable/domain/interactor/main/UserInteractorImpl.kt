@@ -9,7 +9,7 @@ class UserInteractorImpl(
     override suspend fun registrationUser(
         email: String,
         password: String
-    ): Either<RequestFailure<List<AuthFail>>, Unit> = def {
+    ): Either<RequestFailure<Set<RegistrationFail>>, Unit> = def {
         gateway.registrationUser(email, password)
     }
 

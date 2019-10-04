@@ -1,9 +1,6 @@
 package com.kubsu.timetable.data.network.client.user
 
-import com.kubsu.timetable.AuthFail
-import com.kubsu.timetable.Either
-import com.kubsu.timetable.NetworkFailure
-import com.kubsu.timetable.RequestFailure
+import com.kubsu.timetable.*
 import com.kubsu.timetable.data.network.dto.UserNetworkDto
 import com.kubsu.timetable.data.network.sender.NetworkSender
 import com.kubsu.timetable.data.network.sender.failure.ServerFailure
@@ -21,7 +18,7 @@ class UserInfoNetworkClientImpl(
     override suspend fun registration(
         email: String,
         password: String
-    ): Either<RequestFailure<List<AuthFail>>, Unit> =
+    ): Either<RequestFailure<Set<RegistrationFail>>, Unit> =
         with(networkSender) {
             handle {
                 post<Unit>("$baseUrl/api/$apiVersion/users/registration/") {
@@ -34,16 +31,37 @@ class UserInfoNetworkClientImpl(
                 }
             }.mapLeft {
                 if (it is ServerFailure.Response && it.code == 400)
-                    RequestFailure(handleResponseFail(it))
+                    RequestFailure(handleRegistrationFail(it))
                 else
                     RequestFailure(toNetworkFail(it))
             }
         }
 
+    @UseExperimental(UnstableDefault::class)
+    private fun handleRegistrationFail(response: ServerFailure.Response): Set<RegistrationFail> {
+        val incorrectData = Json.parse(RegistrationIncorrectData.serializer(), response.body)
+        return incorrectData.email.mapNotNull {
+            when (it) {
+                "invalid" -> RegistrationFail.InvalidEmail
+                "unique" -> RegistrationFail.NotUniqueEmail
+                else -> null
+            }
+        }.plus(
+            incorrectData.password.mapNotNull {
+                when (it) {
+                    "password_to_short" -> RegistrationFail.ShortPassword
+                    "password_to_common" -> RegistrationFail.CommonPassword
+                    "password_entirely_numeric" -> RegistrationFail.EntirelyNumericPassword
+                    else -> null
+                }
+            }
+        ).toSet()
+    }
+
     override suspend fun signIn(
         email: String,
         password: String
-    ): Either<RequestFailure<List<AuthFail>>, UserNetworkDto> =
+    ): Either<RequestFailure<SignInFail>, UserNetworkDto> =
         with(networkSender) {
             handle {
                 post<UserNetworkDto>("$baseUrl/api/$apiVersion/users/login/") {
@@ -56,17 +74,19 @@ class UserInfoNetworkClientImpl(
                 }
             }.mapLeft {
                 if (it is ServerFailure.Response && it.code == 400)
-                    RequestFailure(handleResponseFail(it))
+                    RequestFailure(handleSignInFail(it))
                 else
                     RequestFailure(toNetworkFail(it))
             }
         }
 
     @UseExperimental(UnstableDefault::class)
-    private fun handleResponseFail(response: ServerFailure.Response): List<AuthFail> {
-        val message = Json.parse(RegistrationIncorrectData.serializer(), response.body)
-        println(message)
-        return emptyList()
+    private fun handleSignInFail(response: ServerFailure.Response): SignInFail {
+        val incorrectData = Json.parse(SignInIncorrectData.serializer(), response.body)
+        return when {
+            incorrectData.accountDeleted != null -> SignInFail.AccountDeleted
+            else -> SignInFail.IncorrectEmailOrPassword
+        }
     }
 
     override suspend fun update(

@@ -11,7 +11,7 @@ class AuthInteractorImpl(
     override suspend fun signIn(
         email: String,
         password: String
-    ): Either<RequestFailure<List<AuthFail>>, UserEntity> = def {
+    ): Either<RequestFailure<SignInFail>, UserEntity> = def {
         authGateway.signIn(email, password)
     }
 

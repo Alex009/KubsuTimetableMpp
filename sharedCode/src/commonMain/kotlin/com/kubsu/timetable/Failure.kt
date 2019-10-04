@@ -28,11 +28,17 @@ object NoActiveUserFailure : DomainFailure()
 /**
  * User authentication failure.
  */
-sealed class AuthFail : DomainFailure() {
-    object EmptyEmail : AuthFail()
-    object EmptyPassword : AuthFail()
-    object IncorrectEmail : AuthFail()
-    object IncorrectPassword : AuthFail()
+sealed class SignInFail : DomainFailure() {
+    object IncorrectEmailOrPassword : SignInFail()
+    object AccountDeleted : SignInFail()
+}
+
+sealed class RegistrationFail : DomainFailure() {
+    object InvalidEmail : RegistrationFail()
+    object NotUniqueEmail : RegistrationFail()
+    object ShortPassword : RegistrationFail()
+    object CommonPassword : RegistrationFail()
+    object EntirelyNumericPassword : RegistrationFail()
 }
 
 /**

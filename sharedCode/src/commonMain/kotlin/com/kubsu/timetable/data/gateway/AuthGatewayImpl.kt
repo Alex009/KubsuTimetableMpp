@@ -1,9 +1,9 @@
 package com.kubsu.timetable.data.gateway
 
-import com.kubsu.timetable.AuthFail
 import com.kubsu.timetable.Either
 import com.kubsu.timetable.NetworkFailure
 import com.kubsu.timetable.RequestFailure
+import com.kubsu.timetable.SignInFail
 import com.kubsu.timetable.data.db.diff.DataDiffQueries
 import com.kubsu.timetable.data.db.diff.DeletedEntityQueries
 import com.kubsu.timetable.data.db.diff.UpdatedEntityQueries
@@ -30,7 +30,7 @@ class AuthGatewayImpl(
     override suspend fun signIn(
         email: String,
         password: String
-    ): Either<RequestFailure<List<AuthFail>>, UserEntity> =
+    ): Either<RequestFailure<SignInFail>, UserEntity> =
         networkClient
             .signIn(email, password)
             .map {

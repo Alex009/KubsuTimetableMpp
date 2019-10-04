@@ -1,8 +1,8 @@
 package com.kubsu.timetable.data.gateway
 
-import com.kubsu.timetable.AuthFail
 import com.kubsu.timetable.Either
 import com.kubsu.timetable.NetworkFailure
+import com.kubsu.timetable.RegistrationFail
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.data.mapper.UserMapper
 import com.kubsu.timetable.data.network.client.user.UserInfoNetworkClient
@@ -18,7 +18,7 @@ class UserInfoGatewayImpl(
     override suspend fun registrationUser(
         email: String,
         password: String
-    ): Either<RequestFailure<List<AuthFail>>, Unit> =
+    ): Either<RequestFailure<Set<RegistrationFail>>, Unit> =
         networkClient.registration(email, password)
 
     override suspend fun getCurrentUserOrNull(): UserEntity? =
