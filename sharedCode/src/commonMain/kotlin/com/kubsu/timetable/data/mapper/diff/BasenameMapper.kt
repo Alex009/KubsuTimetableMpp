@@ -7,7 +7,6 @@ object BasenameMapper {
     private const val timetableValue = "timetable"
     private const val lecturerValue = "lecturer"
     private const val classValue = "class"
-    private const val mainInfoValue = "main_info"
 
     fun toEntity(value: String): Basename =
         when (value) {
@@ -15,7 +14,6 @@ object BasenameMapper {
             timetableValue -> Basename.Timetable
             lecturerValue -> Basename.Lecturer
             classValue -> Basename.Class
-            mainInfoValue -> Basename.MainInfo
             else -> throw IllegalArgumentException("Unknown value: $value")
         }
 
@@ -25,6 +23,5 @@ object BasenameMapper {
             Basename.Timetable -> timetableValue
             Basename.Lecturer -> lecturerValue
             Basename.Class -> classValue
-            Basename.MainInfo -> mainInfoValue
         }
 }

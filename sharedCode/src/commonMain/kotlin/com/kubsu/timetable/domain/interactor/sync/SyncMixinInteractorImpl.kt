@@ -2,14 +2,14 @@ package com.kubsu.timetable.domain.interactor.sync
 
 import com.kubsu.timetable.*
 import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
-import com.kubsu.timetable.domain.interactor.main.MainGateway
+import com.kubsu.timetable.domain.interactor.main.UserInfoGateway
 
 class SyncMixinInteractorImpl(
     private val mixinGateway: SyncMixinGateway,
-    private val mainGateway: MainGateway
+    private val userInfoGateway: UserInfoGateway
 ) : SyncMixinInteractor {
-    override suspend fun updateData(): Either<WrapperFailure<NoActiveUserFailure>, Unit> = def {
-        val user = mainGateway.getCurrentUser()
+    override suspend fun updateData(): Either<RequestFailure<NoActiveUserFailure>, Unit> = def {
+        val user = userInfoGateway.getCurrentUserOrNull()
 
         return@def if (user != null) {
             val diffList = mixinGateway.getAvailableDiffList(user.id)
@@ -18,7 +18,7 @@ class SyncMixinInteractorImpl(
             val (newTimestamp, basenameList) = mixinGateway
                 .diff(user.timestamp)
                 .fold(
-                    ifLeft = { return@def Either.left(WrapperFailure<NoActiveUserFailure>(it)) },
+                    ifLeft = { return@def RequestFailure.eitherLeft(it) },
                     ifRight = { (timestamp, basenameList) -> timestamp to basenameList }
                 )
 
@@ -29,11 +29,11 @@ class SyncMixinInteractorImpl(
                     user = user
                 )
 
-            mainGateway.set(user.copy(timestamp = newTimestamp))
+            userInfoGateway.updateTimestamp(user, newTimestamp)
 
             Either.right(Unit)
         } else {
-            Either.left(WrapperFailure(NoActiveUserFailure))
+            RequestFailure.eitherLeft(NoActiveUserFailure)
         }
     }
 

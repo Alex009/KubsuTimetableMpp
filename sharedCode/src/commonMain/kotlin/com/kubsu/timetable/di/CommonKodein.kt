@@ -9,7 +9,7 @@ import org.kodein.di.Kodein
 
 internal val commonKodein = Kodein.Module("common") {
     // domain
-    import(mainModule)
+    import(userModule)
     import(timetableModule)
     import(subscriptionModule)
     import(authModule)

@@ -7,11 +7,11 @@ import com.kubsu.timetable.domain.entity.timetable.data.SubscriptionEntity
 import com.kubsu.timetable.domain.entity.timetable.data.TimetableEntity
 
 class TimetableInteractorImpl(
-    private val gateway: TimetableGateway
+    private val timetableGateway: TimetableGateway
 ) : TimetableInteractor {
     override suspend fun getAllTimetables(
         subscription: SubscriptionEntity
     ): Either<NetworkFailure, List<TimetableEntity>> = def {
-        gateway.getAllTimetables(subscription.id)
+        timetableGateway.getAll(subscription.id)
     }
 }

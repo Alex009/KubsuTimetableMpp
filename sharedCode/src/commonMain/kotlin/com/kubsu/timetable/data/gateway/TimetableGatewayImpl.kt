@@ -29,7 +29,7 @@ class TimetableGatewayImpl(
     private val lecturerQueries: LecturerQueries,
     private val networkClient: TimetableNetworkClient
 ) : TimetableGateway {
-    override suspend fun getAllTimetables(
+    override suspend fun getAll(
         subgroupId: Int
     ): Either<NetworkFailure, List<TimetableEntity>> {
         val timetableDbList = timetableQueries

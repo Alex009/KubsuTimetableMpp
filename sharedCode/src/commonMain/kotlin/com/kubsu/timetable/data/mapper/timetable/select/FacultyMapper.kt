@@ -7,14 +7,12 @@ object FacultyMapper {
     fun toEntity(networkDto: FacultyNetworkDto): FacultyEntity =
         FacultyEntity(
             id = networkDto.id,
-            title = networkDto.title,
-            shortTitle = networkDto.shortTitle
+            title = networkDto.title
         )
 
     fun toNetworkDto(entity: FacultyEntity): FacultyNetworkDto =
         FacultyNetworkDto(
             id = entity.id,
-            title = entity.title,
-            shortTitle = entity.shortTitle
+            title = entity.title
         )
 }

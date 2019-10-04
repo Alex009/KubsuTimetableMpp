@@ -7,6 +7,6 @@ import com.kubsu.timetable.data.network.dto.timetable.data.SubscriptionNetworkDt
 interface ControlSubscriptionNetworkClient {
     suspend fun selectSubscriptionsForUser(): Either<NetworkFailure, List<SubscriptionNetworkDto>>
     suspend fun selectSubscriptionById(id: Int): Either<NetworkFailure, SubscriptionNetworkDto>
-    suspend fun update(subscription: SubscriptionNetworkDto): Either<NetworkFailure, SubscriptionNetworkDto>
-    suspend fun deleteSubscription(id: Int): Either<NetworkFailure, SubscriptionNetworkDto>
+    suspend fun update(subscription: SubscriptionNetworkDto): Either<NetworkFailure, Unit>
+    suspend fun deleteSubscription(id: Int): Either<NetworkFailure, Unit>
 }

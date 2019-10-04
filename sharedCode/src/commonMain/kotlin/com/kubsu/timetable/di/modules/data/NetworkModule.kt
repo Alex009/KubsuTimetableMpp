@@ -1,7 +1,5 @@
 package com.kubsu.timetable.di.modules.data
 
-import com.kubsu.timetable.data.network.client.maininfo.MainInfoNetworkClient
-import com.kubsu.timetable.data.network.client.maininfo.MainInfoNetworkClientImpl
 import com.kubsu.timetable.data.network.client.subscription.control.ControlSubscriptionNetworkClient
 import com.kubsu.timetable.data.network.client.subscription.control.ControlSubscriptionNetworkClientImpl
 import com.kubsu.timetable.data.network.client.subscription.create.CreateSubscriptionNetworkClient
@@ -22,27 +20,26 @@ import org.kodein.di.erased.singleton
 internal val networkModule = Kodein.Module("network") {
     bind<NetworkSender>() with singleton { NetworkSenderImpl(instance()) }
 
-    // main info
-    bind<MainInfoNetworkClient>() with singleton { MainInfoNetworkClientImpl() }
-
     // subscription
     bind<ControlSubscriptionNetworkClient>() with singleton {
-        ControlSubscriptionNetworkClientImpl()
+        ControlSubscriptionNetworkClientImpl(instance())
     }
     bind<CreateSubscriptionNetworkClient>() with singleton {
-        CreateSubscriptionNetworkClientImpl()
+        CreateSubscriptionNetworkClientImpl(instance())
     }
 
     // timetable
     bind<TimetableNetworkClient>() with singleton {
-        TimetableNetworkClientImpl()
+        TimetableNetworkClientImpl(instance())
     }
 
     // update data
     bind<UpdateDataNetworkClient>() with singleton {
-        UpdateDataNetworkClientImpl()
+        UpdateDataNetworkClientImpl(instance())
     }
 
     // user info
-    bind<UserInfoNetworkClient>() with singleton { UserInfoNetworkClientImpl(instance()) }
+    bind<UserInfoNetworkClient>() with singleton {
+        UserInfoNetworkClientImpl(instance())
+    }
 }

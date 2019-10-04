@@ -3,7 +3,7 @@ package com.kubsu.timetable.data.gateway
 import com.kubsu.timetable.AuthFail
 import com.kubsu.timetable.Either
 import com.kubsu.timetable.NetworkFailure
-import com.kubsu.timetable.WrapperFailure
+import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.data.db.diff.DataDiffQueries
 import com.kubsu.timetable.data.db.diff.DeletedEntityQueries
 import com.kubsu.timetable.data.db.diff.UpdatedEntityQueries
@@ -12,6 +12,7 @@ import com.kubsu.timetable.data.mapper.UserMapper
 import com.kubsu.timetable.data.network.client.user.UserInfoNetworkClient
 import com.kubsu.timetable.data.storage.user.UserStorage
 import com.kubsu.timetable.domain.entity.Timestamp
+import com.kubsu.timetable.domain.entity.UserEntity
 import com.kubsu.timetable.domain.interactor.auth.AuthGateway
 
 class AuthGatewayImpl(
@@ -29,18 +30,14 @@ class AuthGatewayImpl(
     override suspend fun signIn(
         email: String,
         password: String
-    ): Either<WrapperFailure<AuthFail>, Unit> =
+    ): Either<RequestFailure<List<AuthFail>>, UserEntity> =
         networkClient
             .signIn(email, password)
             .map {
-                userStorage.set(UserMapper.toStorageDto(it, Timestamp.create()))
+                val timestamp = Timestamp.create()
+                userStorage.set(UserMapper.toStorageDto(it, timestamp))
+                UserMapper.toEntity(it, timestamp)
             }
-
-    override suspend fun registrationUser(
-        email: String,
-        password: String
-    ): Either<WrapperFailure<AuthFail>, Unit> =
-        networkClient.registration(email, password)
 
     override suspend fun logout(): Either<NetworkFailure, Unit> {
         if (userStorage.get() != null) {

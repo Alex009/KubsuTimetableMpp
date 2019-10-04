@@ -2,7 +2,6 @@ package com.kubsu.timetable.data.gateway
 
 import com.kubsu.timetable.Either
 import com.kubsu.timetable.NetworkFailure
-import com.kubsu.timetable.data.db.timetable.SubscriptionDb
 import com.kubsu.timetable.data.db.timetable.SubscriptionQueries
 import com.kubsu.timetable.data.mapper.timetable.data.SubscriptionMapper
 import com.kubsu.timetable.data.mapper.timetable.select.FacultyMapper
@@ -43,28 +42,19 @@ class SubscriptionGatewayImpl(
             .selectSubgroupList(groupId)
             .map { list -> list.map { SubgroupMapper.toEntity(it, groupId) } }
 
-    override suspend fun createSubscription(
+    override suspend fun create(
         userId: Int,
         subgroupId: Int,
         subscriptionName: String,
         isMain: Boolean
     ): Either<NetworkFailure, Unit> =
         createNetworkClient
-            .createSubscriptionAndReturnId(subgroupId, subscriptionName, isMain)
-            .map { id ->
-                subscriptionQueries.update(
-                    SubscriptionDb.Impl(
-                        id = id,
-                        name = subscriptionName,
-                        userId = userId,
-                        subgroupId = subgroupId,
-                        isMain = isMain
-                    )
-                )
+            .createSubscription(subgroupId, subscriptionName, isMain)
+            .map { subscription ->
+                subscriptionQueries.update(SubscriptionMapper.toDbDto(subscription, userId))
             }
 
-
-    override suspend fun getSubscriptionById(
+    override suspend fun getById(
         id: Int,
         userId: Int
     ): Either<NetworkFailure, SubscriptionEntity> {
@@ -81,7 +71,7 @@ class SubscriptionGatewayImpl(
                 }
     }
 
-    override suspend fun getAllSubscriptions(userId: Int): Either<NetworkFailure, List<SubscriptionEntity>> {
+    override suspend fun getAll(userId: Int): Either<NetworkFailure, List<SubscriptionEntity>> {
         val subscriptionList = subscriptionQueries.selectByUserId(userId).executeAsList()
 
         return if (subscriptionList.isNotEmpty())
@@ -96,4 +86,18 @@ class SubscriptionGatewayImpl(
                     }
                 }
     }
+
+    override suspend fun update(subscription: SubscriptionEntity): Either<NetworkFailure, Unit> =
+        controlNetworkClient
+            .update(SubscriptionMapper.toNetworkDto(subscription))
+            .map {
+                subscriptionQueries.update(SubscriptionMapper.toDbDto(subscription))
+            }
+
+    override suspend fun deleteById(id: Int): Either<NetworkFailure, Unit> =
+        controlNetworkClient
+            .deleteSubscription(id)
+            .map {
+                subscriptionQueries.deleteById(id)
+            }
 }

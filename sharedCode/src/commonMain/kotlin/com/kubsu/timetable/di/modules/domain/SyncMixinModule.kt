@@ -22,8 +22,7 @@ internal val syncMixinModule = Kodein.Module("syncMixin") {
             dataDiffQueries = db.dataDiffQueries,
             updatedEntityQueries = db.updatedEntityQueries,
             deletedEntityQueries = db.deletedEntityQueries,
-            networkClient = instance(),
-            mainGateway = instance()
+            networkClient = instance()
         )
     }
 }

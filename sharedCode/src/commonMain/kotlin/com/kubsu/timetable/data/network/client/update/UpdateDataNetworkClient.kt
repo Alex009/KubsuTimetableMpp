@@ -2,7 +2,6 @@ package com.kubsu.timetable.data.network.client.update
 
 import com.kubsu.timetable.Either
 import com.kubsu.timetable.NetworkFailure
-import com.kubsu.timetable.data.network.dto.MainInfoNetworkDto
 import com.kubsu.timetable.data.network.dto.response.DiffResponse
 import com.kubsu.timetable.data.network.dto.response.SyncResponse
 import com.kubsu.timetable.data.network.dto.timetable.data.ClassNetworkDto
@@ -33,14 +32,8 @@ interface UpdateDataNetworkClient {
         existsIds: List<Int>
     ): Either<NetworkFailure, SyncResponse>
 
-    suspend fun syncMainInfo(
-        timestamp: Long,
-        existsIds: List<Int>
-    ): Either<NetworkFailure, SyncResponse>
-
     suspend fun metaSubscription(updatedIds: List<Int>): Either<NetworkFailure, List<SubscriptionNetworkDto>>
     suspend fun metaTimetable(updatedIds: List<Int>): Either<NetworkFailure, List<TimetableNetworkDto>>
     suspend fun metaLecturer(updatedIds: List<Int>): Either<NetworkFailure, List<LecturerNetworkDto>>
     suspend fun metaClass(updatedIds: List<Int>): Either<NetworkFailure, List<ClassNetworkDto>>
-    suspend fun metaMainInfo(updatedId: Int): Either<NetworkFailure, MainInfoNetworkDto>
 }

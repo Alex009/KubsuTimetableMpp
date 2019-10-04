@@ -3,7 +3,7 @@ package com.kubsu.timetable.domain.interactor.subscription
 import com.kubsu.timetable.Either
 import com.kubsu.timetable.NetworkFailure
 import com.kubsu.timetable.NoActiveUserFailure
-import com.kubsu.timetable.WrapperFailure
+import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.domain.entity.timetable.data.SubscriptionEntity
 import com.kubsu.timetable.domain.entity.timetable.select.FacultyEntity
 import com.kubsu.timetable.domain.entity.timetable.select.GroupEntity
@@ -19,13 +19,17 @@ interface SubscriptionInteractor {
 
     suspend fun selectSubgroupList(group: GroupEntity): Either<NetworkFailure, List<SubgroupEntity>>
 
-    suspend fun createSubscription(
+    suspend fun create(
         subgroupId: Int,
         subscriptionName: String,
         isMain: Boolean
-    ): Either<WrapperFailure<NoActiveUserFailure>, Unit>
+    ): Either<RequestFailure<NoActiveUserFailure>, Unit>
 
-    suspend fun getSubscriptionById(id: Int): Either<WrapperFailure<NoActiveUserFailure>, SubscriptionEntity>
+    suspend fun getById(id: Int): Either<RequestFailure<NoActiveUserFailure>, SubscriptionEntity>
 
-    suspend fun getAllSubscriptions(): Either<WrapperFailure<NoActiveUserFailure>, List<SubscriptionEntity>>
+    suspend fun getAll(): Either<RequestFailure<NoActiveUserFailure>, List<SubscriptionEntity>>
+
+    suspend fun update(subscription: SubscriptionEntity): Either<NetworkFailure, Unit>
+
+    suspend fun deleteById(id: Int): Either<NetworkFailure, Unit>
 }

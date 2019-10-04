@@ -17,6 +17,8 @@ fun appKodein(app: App) = Kodein {
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
                 (activity as? AppActivity)?.let {
                     it.interactor = instance()
+                    it.userInteractor = instance()
+                    it.subscriptionInteractor = instance()
                 }
             }
 

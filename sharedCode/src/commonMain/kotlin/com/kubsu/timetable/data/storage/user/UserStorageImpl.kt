@@ -18,20 +18,19 @@ class UserStorageImpl(
     override suspend fun get(): UserStorageDto? {
         val id: Int? = getInt(idPropName)
         val firstName: String? = getString(firstNamePropName)
-        val secondName: String? = getString(secondNamePropName)
+        val lastName: String? = getString(secondNamePropName)
         val email: String? = getString(emailPropName)
         val timestamp: Long? = getLong(timestampPropName)
-
         return if (id != null
             && firstName != null
-            && secondName != null
+            && lastName != null
             && email != null
             && timestamp != null
         )
             UserStorageDto(
                 id = id,
                 firstName = firstName,
-                lastName = secondName,
+                lastName = lastName,
                 email = email,
                 timestamp = timestamp
             )

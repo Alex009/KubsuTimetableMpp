@@ -8,37 +8,14 @@ sealed class Failure
 /**
  * Base class for network requests.
  */
-sealed class NetworkFailure : Failure() {
-    class SomeFailure(val debugMessage: String) : NetworkFailure()
-    object Connection : NetworkFailure()
-}
+sealed class NetworkFailure(val debugMessage: String?) : Failure() {
+    class UnknownFailure(
+        debugMessage: String?,
+        val code: Int,
+        val body: String
+    ) : NetworkFailure(debugMessage)
 
-/**
- * Contains either a network failure or a domain failure.
- */
-class WrapperFailure<out D : DomainFailure> {
-    val network: NetworkFailure?
-    val domain: D?
-
-    constructor(networkFailure: NetworkFailure) {
-        network = networkFailure
-        domain = null
-    }
-
-    constructor(domainFailure: D) {
-        network = null
-        domain = domainFailure
-    }
-
-    inline fun <C> fold(
-        ifNetworkFailure: (NetworkFailure) -> C,
-        ifDomainFailure: (D) -> C
-    ): C =
-        when {
-            network != null -> ifNetworkFailure(network)
-            domain != null -> ifDomainFailure(domain)
-            else -> throw IllegalStateException()
-        }
+    class Connection(debugMessage: String?) : NetworkFailure(debugMessage)
 }
 
 /**
@@ -56,4 +33,43 @@ sealed class AuthFail : DomainFailure() {
     object EmptyPassword : AuthFail()
     object IncorrectEmail : AuthFail()
     object IncorrectPassword : AuthFail()
+}
+
+/**
+ * Contains either a network failure or a domain failure.
+ */
+class RequestFailure<out DomainFailure> {
+    val network: NetworkFailure?
+    val domain: DomainFailure?
+
+    constructor(networkFailure: NetworkFailure) {
+        network = networkFailure
+        domain = null
+    }
+
+    constructor(domainFailure: DomainFailure) {
+        network = null
+        domain = domainFailure
+    }
+
+    inline fun <C> fold(
+        ifNetworkFailure: (NetworkFailure) -> C,
+        ifDomainFailure: (DomainFailure) -> C
+    ): C =
+        when {
+            network != null -> ifNetworkFailure(network)
+            domain != null -> ifDomainFailure(domain)
+            else -> throw IllegalStateException()
+        }
+
+    companion object {
+        fun eitherLeft(failure: NetworkFailure): Either<RequestFailure<Nothing>, Nothing> =
+            Either.left(RequestFailure(failure))
+
+        fun <D> eitherLeft(failure: D): Either<RequestFailure<D>, Nothing> =
+            Either.left(RequestFailure(failure))
+
+        fun <R> eitherRight(right: R): Either<RequestFailure<Nothing>, R> =
+            Either.right(right)
+    }
 }

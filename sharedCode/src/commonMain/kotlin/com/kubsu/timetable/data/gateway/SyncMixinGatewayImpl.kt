@@ -19,7 +19,6 @@ import com.kubsu.timetable.domain.entity.Timestamp
 import com.kubsu.timetable.domain.entity.UserEntity
 import com.kubsu.timetable.domain.entity.diff.Basename
 import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
-import com.kubsu.timetable.domain.interactor.main.MainGateway
 import com.kubsu.timetable.domain.interactor.sync.SyncMixinGateway
 import com.kubsu.timetable.flatMap
 
@@ -31,7 +30,6 @@ class SyncMixinGatewayImpl(
     private val dataDiffQueries: DataDiffQueries,
     private val updatedEntityQueries: UpdatedEntityQueries,
     private val deletedEntityQueries: DeletedEntityQueries,
-    private val mainGateway: MainGateway,
     private val networkClient: UpdateDataNetworkClient
 ) : SyncMixinGateway {
     override fun registerDataDiff(entity: DataDiffEntity) {
@@ -85,13 +83,12 @@ class SyncMixinGatewayImpl(
         }
     }
 
-    private suspend fun deleteData(basename: Basename, deletedIds: List<Int>) =
+    private fun deleteData(basename: Basename, deletedIds: List<Int>) =
         when (basename) {
             Basename.Subscription -> deletedIds.forEach(subscriptionQueries::deleteById)
             Basename.Timetable -> deletedIds.forEach(timetableQueries::deleteById)
             Basename.Lecturer -> deletedIds.forEach(lecturerQueries::deleteById)
             Basename.Class -> deletedIds.forEach(classQueries::deleteById)
-            Basename.MainInfo -> mainGateway.setMainInfoEntity(null)
         }
 
     override suspend fun diff(timestamp: Timestamp): Either<NetworkFailure, Pair<Timestamp, List<Basename>>> =
@@ -133,9 +130,6 @@ class SyncMixinGatewayImpl(
 
             Basename.Class ->
                 networkClient.syncClass(timestamp, existsIds)
-
-            Basename.MainInfo ->
-                networkClient.syncMainInfo(timestamp, existsIds)
         }
 
     override suspend fun meta(
@@ -179,13 +173,6 @@ class SyncMixinGatewayImpl(
                     .map { list ->
                         for (`class` in list)
                             classQueries.update(ClassMapper.toDbDto(`class`))
-                    }
-
-            Basename.MainInfo ->
-                networkClient
-                    .metaMainInfo(updatedIds.last())
-                    .map { mainInfo ->
-                        mainGateway.setMainInfoNetworkDto(mainInfo)
                     }
         }
 }

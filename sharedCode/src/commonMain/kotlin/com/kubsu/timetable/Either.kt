@@ -162,6 +162,12 @@ inline fun <A, B, C> Either<A, B>.flatMap(f: (B) -> Either<A, C>): Either<A, C> 
         is Either.Left -> this
     }
 
+inline fun <A, B, C> Either<A, B>.flatMapLeft(f: (A) -> Either<C, B>): Either<C, B> =
+    when (this) {
+        is Either.Right -> this
+        is Either.Left -> f(a)
+    }
+
 /**
  * Returns the value from this [Either.Right] or the given argument if this is a [Either.Left].
  *

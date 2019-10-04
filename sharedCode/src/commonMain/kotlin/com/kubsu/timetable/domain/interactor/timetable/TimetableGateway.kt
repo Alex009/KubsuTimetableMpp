@@ -5,5 +5,5 @@ import com.kubsu.timetable.NetworkFailure
 import com.kubsu.timetable.domain.entity.timetable.data.TimetableEntity
 
 interface TimetableGateway {
-    suspend fun getAllTimetables(subgroupId: Int): Either<NetworkFailure, List<TimetableEntity>>
+    suspend fun getAll(subgroupId: Int): Either<NetworkFailure, List<TimetableEntity>>
 }
