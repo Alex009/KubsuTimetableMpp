@@ -5,17 +5,16 @@ package com.kubsu.timetable
  */
 sealed class Failure
 
-/**
- * Base class for network requests.
- */
-sealed class NetworkFailure(val debugMessage: String?) : Failure() {
-    class UnknownFailure(
-        debugMessage: String?,
+sealed class DataFailure : Failure() {
+    class UnknownResponse(
         val code: Int,
-        val body: String
-    ) : NetworkFailure(debugMessage)
+        val body: String,
+        val debugMessage: String? = null
+    ) : DataFailure()
 
-    class Connection(debugMessage: String?) : NetworkFailure(debugMessage)
+    object NotAuthenticated : DataFailure()
+
+    class ConnectionToRepository(val debugMessage: String?) : DataFailure()
 }
 
 /**
@@ -23,59 +22,52 @@ sealed class NetworkFailure(val debugMessage: String?) : Failure() {
  */
 sealed class DomainFailure : Failure()
 
-object NoActiveUserFailure : DomainFailure()
-
 /**
  * User authentication failure.
  */
 sealed class SignInFail : DomainFailure() {
     object IncorrectEmailOrPassword : SignInFail()
-    object AccountDeleted : SignInFail()
+    object AccountInactivate : SignInFail()
+    object InvalidEmail : SignInFail()
 }
 
-sealed class RegistrationFail : DomainFailure() {
-    object InvalidEmail : RegistrationFail()
-    object NotUniqueEmail : RegistrationFail()
-    object ShortPassword : RegistrationFail()
-    object CommonPassword : RegistrationFail()
-    object EntirelyNumericPassword : RegistrationFail()
+sealed class UserInfoFail : DomainFailure() {
+    object InvalidEmail : UserInfoFail()
+    object NotUniqueEmail : UserInfoFail()
+    object ShortPassword : UserInfoFail()
+    object CommonPassword : UserInfoFail()
+    object EntirelyNumericPassword : UserInfoFail()
+}
+
+sealed class UserUpdateFail : DomainFailure() {
+    object TooLongFirstName : UserUpdateFail()
+    object TooLongLastName : UserUpdateFail()
+    class Info(val fail: UserInfoFail) : UserUpdateFail()
+}
+
+sealed class SubscriptionFail : DomainFailure() {
+    object TooLongTitle : SubscriptionFail()
+    object SubgroupDoesNotExist : SubscriptionFail()
+    object SubscriptionAlreadyExists : SubscriptionFail()
 }
 
 /**
  * Contains either a network failure or a domain failure.
  */
-class RequestFailure<out DomainFailure> {
-    val network: NetworkFailure?
-    val domain: DomainFailure?
+class RequestFailure<D>(
+    val domain: D? = null,
+    val data: List<DataFailure>? = null
+) {
+    constructor(dataFail: DataFailure) : this(data = listOf(dataFail))
 
-    constructor(networkFailure: NetworkFailure) {
-        network = networkFailure
-        domain = null
-    }
+    fun plus(requestFailure: RequestFailure<D>, domainPlus: (D?, D?) -> D?): RequestFailure<D> =
+        RequestFailure(
+            domain = domainPlus(domain, requestFailure.domain),
+            data = data
+                ?.plus(requestFailure.data ?: emptyList())
+                ?.toList()
+        )
 
-    constructor(domainFailure: DomainFailure) {
-        network = null
-        domain = domainFailure
-    }
-
-    inline fun <C> fold(
-        ifNetworkFailure: (NetworkFailure) -> C,
-        ifDomainFailure: (DomainFailure) -> C
-    ): C =
-        when {
-            network != null -> ifNetworkFailure(network)
-            domain != null -> ifDomainFailure(domain)
-            else -> throw IllegalStateException()
-        }
-
-    companion object {
-        fun eitherLeft(failure: NetworkFailure): Either<RequestFailure<Nothing>, Nothing> =
-            Either.left(RequestFailure(failure))
-
-        fun <D> eitherLeft(failure: D): Either<RequestFailure<D>, Nothing> =
-            Either.left(RequestFailure(failure))
-
-        fun <R> eitherRight(right: R): Either<RequestFailure<Nothing>, R> =
-            Either.right(right)
-    }
+    fun <R> mapDomain(block: (D?) -> R?): RequestFailure<R> =
+        RequestFailure(block(domain))
 }

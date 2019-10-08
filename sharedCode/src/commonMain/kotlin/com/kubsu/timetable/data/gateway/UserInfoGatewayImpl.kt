@@ -1,15 +1,15 @@
 package com.kubsu.timetable.data.gateway
 
 import com.kubsu.timetable.Either
-import com.kubsu.timetable.NetworkFailure
-import com.kubsu.timetable.RegistrationFail
 import com.kubsu.timetable.RequestFailure
+import com.kubsu.timetable.UserInfoFail
+import com.kubsu.timetable.UserUpdateFail
 import com.kubsu.timetable.data.mapper.UserMapper
 import com.kubsu.timetable.data.network.client.user.UserInfoNetworkClient
 import com.kubsu.timetable.data.storage.user.UserStorage
 import com.kubsu.timetable.domain.entity.Timestamp
 import com.kubsu.timetable.domain.entity.UserEntity
-import com.kubsu.timetable.domain.interactor.main.UserInfoGateway
+import com.kubsu.timetable.domain.interactor.userInfo.UserInfoGateway
 
 class UserInfoGatewayImpl(
     private val networkClient: UserInfoNetworkClient,
@@ -18,7 +18,7 @@ class UserInfoGatewayImpl(
     override suspend fun registrationUser(
         email: String,
         password: String
-    ): Either<RequestFailure<Set<RegistrationFail>>, Unit> =
+    ): Either<RequestFailure<List<UserInfoFail>>, Unit> =
         networkClient.registration(email, password)
 
     override suspend fun getCurrentUserOrNull(): UserEntity? =
@@ -26,7 +26,9 @@ class UserInfoGatewayImpl(
             .get()
             ?.let(UserMapper::toEntity)
 
-    override suspend fun updateUserInfo(user: UserEntity): Either<NetworkFailure, Unit> =
+    override suspend fun updateUserInfo(
+        user: UserEntity
+    ): Either<RequestFailure<List<UserUpdateFail>>, Unit> =
         networkClient
             .update(UserMapper.toNetworkDto(user))
             .map {

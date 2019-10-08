@@ -1,6 +1,6 @@
 package com.kubsu.timetable.data.network.sender.failure
 
-import com.kubsu.timetable.NetworkFailure
+import com.kubsu.timetable.DataFailure
 
 sealed class ServerFailure {
     class Response(
@@ -12,11 +12,11 @@ sealed class ServerFailure {
     class Connection(val message: String?) : ServerFailure()
 }
 
-fun toNetworkFail(failure: ServerFailure): NetworkFailure =
+fun toNetworkFail(failure: ServerFailure): DataFailure =
     when (failure) {
         is ServerFailure.Response ->
-            NetworkFailure.UnknownFailure(failure.message, failure.code, failure.body)
+            DataFailure.UnknownResponse(failure.code, failure.body, failure.message)
 
         is ServerFailure.Connection ->
-            NetworkFailure.Connection(failure.message)
+            DataFailure.ConnectionToRepository(failure.message)
     }

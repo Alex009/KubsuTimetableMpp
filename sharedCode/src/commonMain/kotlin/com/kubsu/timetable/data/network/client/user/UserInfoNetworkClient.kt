@@ -7,12 +7,12 @@ interface UserInfoNetworkClient {
     suspend fun registration(
         email: String,
         password: String
-    ): Either<RequestFailure<Set<RegistrationFail>>, Unit>
+    ): Either<RequestFailure<List<UserInfoFail>>, Unit>
 
     suspend fun signIn(
         email: String,
         password: String
-    ): Either<RequestFailure<SignInFail>, UserNetworkDto>
+    ): Either<RequestFailure<List<SignInFail>>, UserNetworkDto>
 
-    suspend fun update(user: UserNetworkDto): Either<NetworkFailure, Unit>
+    suspend fun update(user: UserNetworkDto): Either<RequestFailure<List<UserUpdateFail>>, Unit>
 }

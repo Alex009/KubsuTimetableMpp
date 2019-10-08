@@ -1,7 +1,7 @@
 package com.kubsu.timetable.data.gateway
 
+import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.Either
-import com.kubsu.timetable.NetworkFailure
 import com.kubsu.timetable.data.db.diff.*
 import com.kubsu.timetable.data.db.timetable.ClassQueries
 import com.kubsu.timetable.data.db.timetable.LecturerQueries
@@ -91,7 +91,7 @@ class SyncMixinGatewayImpl(
             Basename.Class -> deletedIds.forEach(classQueries::deleteById)
         }
 
-    override suspend fun diff(timestamp: Timestamp): Either<NetworkFailure, Pair<Timestamp, List<Basename>>> =
+    override suspend fun diff(timestamp: Timestamp): Either<DataFailure, Pair<Timestamp, List<Basename>>> =
         networkClient
             .diff(timestamp.value)
             .map {
@@ -104,7 +104,7 @@ class SyncMixinGatewayImpl(
         basename: Basename,
         availableDiff: DataDiffEntity,
         user: UserEntity
-    ): Either<NetworkFailure, Unit> {
+    ): Either<DataFailure, Unit> {
         val existsIds = availableDiff.updatedIds + availableDiff.deletedIds
         return sync(basename, existsIds, user.timestamp.value)
             .flatMap { (updatedIds, deletedIds) ->
@@ -117,7 +117,7 @@ class SyncMixinGatewayImpl(
         basename: Basename,
         existsIds: List<Int>,
         timestamp: Long
-    ): Either<NetworkFailure, SyncResponse> =
+    ): Either<DataFailure, SyncResponse> =
         when (basename) {
             Basename.Subscription ->
                 networkClient.syncSubscription(timestamp, existsIds)
@@ -136,7 +136,7 @@ class SyncMixinGatewayImpl(
         basename: Basename,
         userId: Int,
         updatedIds: List<Int>
-    ): Either<NetworkFailure, Unit> =
+    ): Either<DataFailure, Unit> =
         when (basename) {
             Basename.Subscription ->
                 networkClient

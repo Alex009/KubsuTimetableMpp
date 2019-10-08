@@ -3,8 +3,8 @@ package com.kubsu.timetable
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.kubsu.timetable.domain.interactor.auth.AuthInteractor
-import com.kubsu.timetable.domain.interactor.main.UserInteractor
 import com.kubsu.timetable.domain.interactor.subscription.SubscriptionInteractor
+import com.kubsu.timetable.domain.interactor.userInfo.UserInteractor
 
 class AppActivity : AppCompatActivity() {
     lateinit var interactor: AuthInteractor
@@ -14,15 +14,17 @@ class AppActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        println(isNumerator())
     }
 
-    private fun handleNetworkFail(fail: NetworkFailure) =
+    private fun handleNetworkFail(fail: DataFailure) =
         when (fail) {
-            is NetworkFailure.UnknownFailure ->
+            is DataFailure.UnknownResponse ->
                 println("Unknown fail: code = ${fail.code}, body = ${fail.body}, message = ${fail.debugMessage}")
 
-            is NetworkFailure.Connection ->
+            is DataFailure.NotAuthenticated ->
+                println("NotAuthenticated")
+
+            is DataFailure.ConnectionToRepository ->
                 println("Connection fail: message = ${fail.debugMessage}")
         }
 }

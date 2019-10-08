@@ -1,6 +1,9 @@
 package com.kubsu.timetable.data.network.client.user
 
 import com.kubsu.timetable.*
+import com.kubsu.timetable.data.network.client.user.incorrectdata.RegistrationIncorrectData
+import com.kubsu.timetable.data.network.client.user.incorrectdata.SignInIncorrectData
+import com.kubsu.timetable.data.network.client.user.incorrectdata.UserIncorrectData
 import com.kubsu.timetable.data.network.dto.UserNetworkDto
 import com.kubsu.timetable.data.network.sender.NetworkSender
 import com.kubsu.timetable.data.network.sender.failure.ServerFailure
@@ -9,16 +12,16 @@ import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.http.Parameters
-import kotlinx.serialization.UnstableDefault
 import kotlinx.serialization.json.Json
 
 class UserInfoNetworkClientImpl(
-    private val networkSender: NetworkSender
+    private val networkSender: NetworkSender,
+    private val json: Json
 ) : UserInfoNetworkClient {
     override suspend fun registration(
         email: String,
         password: String
-    ): Either<RequestFailure<Set<RegistrationFail>>, Unit> =
+    ): Either<RequestFailure<List<UserInfoFail>>, Unit> =
         with(networkSender) {
             handle {
                 post<Unit>("$baseUrl/api/$apiVersion/users/registration/") {
@@ -31,37 +34,62 @@ class UserInfoNetworkClientImpl(
                 }
             }.mapLeft {
                 if (it is ServerFailure.Response && it.code == 400)
-                    RequestFailure(handleRegistrationFail(it))
+                    parseRegistrationFail(it)
                 else
                     RequestFailure(toNetworkFail(it))
             }
         }
 
-    @UseExperimental(UnstableDefault::class)
-    private fun handleRegistrationFail(response: ServerFailure.Response): Set<RegistrationFail> {
-        val incorrectData = Json.parse(RegistrationIncorrectData.serializer(), response.body)
-        return incorrectData.email.mapNotNull {
+    private fun parseRegistrationFail(response: ServerFailure.Response): RequestFailure<List<UserInfoFail>> {
+        val incorrectData = json.parse(RegistrationIncorrectData.serializer(), response.body)
+        return handleUserInfoFail(
+            responseCode = response.code,
+            responseBody = response.body,
+            emailFailList = incorrectData.email,
+            passwordFailList = incorrectData.password
+        )
+    }
+
+    private fun handleUserInfoFail(
+        responseCode: Int,
+        responseBody: String,
+        emailFailList: List<String>,
+        passwordFailList: List<String>
+    ): RequestFailure<List<UserInfoFail>> {
+        val failList = emailFailList.map {
             when (it) {
-                "invalid" -> RegistrationFail.InvalidEmail
-                "unique" -> RegistrationFail.NotUniqueEmail
-                else -> null
+                "invalid" -> UserInfoFail.InvalidEmail
+                "unique" -> UserInfoFail.NotUniqueEmail
+                else -> DataFailure.UnknownResponse(
+                    responseCode,
+                    responseBody,
+                    "Unknown param: $it"
+                )
             }
         }.plus(
-            incorrectData.password.mapNotNull {
+            passwordFailList.map {
                 when (it) {
-                    "password_to_short" -> RegistrationFail.ShortPassword
-                    "password_to_common" -> RegistrationFail.CommonPassword
-                    "password_entirely_numeric" -> RegistrationFail.EntirelyNumericPassword
-                    else -> null
+                    "password_to_short" -> UserInfoFail.ShortPassword
+                    "password_to_common" -> UserInfoFail.CommonPassword
+                    "password_entirely_numeric" -> UserInfoFail.EntirelyNumericPassword
+                    else -> DataFailure.UnknownResponse(
+                        responseCode,
+                        responseBody,
+                        "Unknown param: $it"
+                    )
                 }
             }
-        ).toSet()
+        )
+        return RequestFailure(
+            domain = failList.filterIsInstance<UserInfoFail>(),
+            data = failList.filterIsInstance<DataFailure>()
+        )
     }
 
     override suspend fun signIn(
         email: String,
         password: String
-    ): Either<RequestFailure<SignInFail>, UserNetworkDto> =
+    ): Either<RequestFailure<List<SignInFail>>, UserNetworkDto> =
         with(networkSender) {
             handle {
                 post<UserNetworkDto>("$baseUrl/api/$apiVersion/users/login/") {
@@ -74,24 +102,51 @@ class UserInfoNetworkClientImpl(
                 }
             }.mapLeft {
                 if (it is ServerFailure.Response && it.code == 400)
-                    RequestFailure(handleSignInFail(it))
+                    parseSignInFail(it)
                 else
                     RequestFailure(toNetworkFail(it))
             }
         }
 
-    @UseExperimental(UnstableDefault::class)
-    private fun handleSignInFail(response: ServerFailure.Response): SignInFail {
-        val incorrectData = Json.parse(SignInIncorrectData.serializer(), response.body)
-        return when {
-            incorrectData.accountDeleted != null -> SignInFail.AccountDeleted
-            else -> SignInFail.IncorrectEmailOrPassword
-        }
+    private fun parseSignInFail(response: ServerFailure.Response): RequestFailure<List<SignInFail>> {
+        val incorrectData = json.parse(SignInIncorrectData.serializer(), response.body)
+        return handleSignInFail(
+            responseCode = response.code,
+            responseBody = response.body,
+            allFailList = incorrectData.all,
+            emailFailList = incorrectData.email
+        )
+    }
+
+    private fun handleSignInFail(
+        responseCode: Int,
+        responseBody: String,
+        allFailList: List<String>,
+        emailFailList: List<String>
+    ): RequestFailure<List<SignInFail>> {
+        val failList = allFailList.map {
+            when (it) {
+                "incorrect_email_or_password" -> SignInFail.AccountInactivate
+                "account_inactivate" -> SignInFail.IncorrectEmailOrPassword
+                else -> DataFailure.UnknownResponse(responseCode, responseBody)
+            }
+        }.plus(
+            emailFailList.map {
+                when (it) {
+                    "invalid" -> SignInFail.InvalidEmail
+                    else -> DataFailure.UnknownResponse(responseCode, responseBody)
+                }
+            }
+        )
+        return RequestFailure(
+            domain = failList.filterIsInstance<SignInFail>(),
+            data = failList.filterIsInstance<DataFailure>()
+        )
     }
 
     override suspend fun update(
         user: UserNetworkDto
-    ): Either<NetworkFailure, Unit> =
+    ): Either<RequestFailure<List<UserUpdateFail>>, Unit> =
         with(networkSender) {
             handle {
                 patch<Unit>("$baseUrl/api/$apiVersion/users/info/") {
@@ -102,6 +157,67 @@ class UserInfoNetworkClientImpl(
                         }
                     )
                 }
-            }.mapLeft(::toNetworkFail)
+            }.mapLeft {
+                if (it is ServerFailure.Response && (it.code == 400 || it.code == 403))
+                    if (it.code == 403)
+                        RequestFailure(DataFailure.NotAuthenticated)
+                    else
+                        parseUpdateFail(it)
+                else
+                    RequestFailure(toNetworkFail(it))
+            }
         }
+
+    private fun parseUpdateFail(response: ServerFailure.Response): RequestFailure<List<UserUpdateFail>> {
+        val incorrectData = json.parse(UserIncorrectData.serializer(), response.body)
+        return handleUpdateFail(
+            responseCode = response.code,
+            responseBody = response.body,
+            emailFailList = incorrectData.email,
+            passwordFailList = incorrectData.password,
+            firstNameFailList = incorrectData.firstName,
+            lastNameFailList = incorrectData.lastName
+        )
+    }
+
+    private fun handleUpdateFail(
+        responseCode: Int,
+        responseBody: String,
+        emailFailList: List<String>,
+        passwordFailList: List<String>,
+        firstNameFailList: List<String>,
+        lastNameFailList: List<String>
+    ): RequestFailure<List<UserUpdateFail>> {
+        val userInfoRequestFail: RequestFailure<List<UserUpdateFail>> =
+            handleUserInfoFail(responseCode, responseBody, emailFailList, passwordFailList)
+                .mapDomain { it?.map(UserUpdateFail::Info) as? List<UserUpdateFail> ?: emptyList() }
+
+        val failList = firstNameFailList.map {
+            when (it) {
+                "max_length" -> UserUpdateFail.TooLongFirstName
+                else -> DataFailure.UnknownResponse(responseCode, responseBody)
+            }
+        }.plus(
+            lastNameFailList.map {
+                when (it) {
+                    "max_length" -> UserUpdateFail.TooLongLastName
+                    else -> DataFailure.UnknownResponse(responseCode, responseBody)
+                }
+            }
+        )
+
+        val maxLengthRequestFail = RequestFailure(
+            domain = failList.filterIsInstance<UserUpdateFail>(),
+            data = failList.filterIsInstance<DataFailure>()
+        )
+
+        return userInfoRequestFail.plus(
+            maxLengthRequestFail,
+            domainPlus = { first, second ->
+                first
+                    ?.plus(second ?: emptyList())
+                    ?.toList()
+            }
+        )
+    }
 }

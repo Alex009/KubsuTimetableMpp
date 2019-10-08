@@ -15,10 +15,12 @@ import io.ktor.client.features.logging.Logger
 import io.ktor.client.features.logging.Logging
 import io.ktor.client.features.logging.SIMPLE
 import io.ktor.utils.io.readRemaining
-import kotlinx.serialization.UnstableDefault
 import kotlinx.serialization.json.Json
 
-class NetworkSenderImpl(private val engine: HttpClientEngine) : NetworkSender {
+class NetworkSenderImpl(
+    private val engine: HttpClientEngine,
+    private val json: Json
+) : NetworkSender {
     override val apiVersion = "v1"
     override val baseUrl = "http://kubsu-timetable.info"
 
@@ -42,7 +44,6 @@ class NetworkSenderImpl(private val engine: HttpClientEngine) : NetworkSender {
         HttpClient(engine, createConfig())
     }
 
-    @UseExperimental(UnstableDefault::class)
     private fun createConfig() =
         HttpClientConfig<HttpClientEngineConfig>().apply {
             install(Logging) {
@@ -55,7 +56,7 @@ class NetworkSenderImpl(private val engine: HttpClientEngine) : NetworkSender {
                 }
             }
             install(JsonFeature) {
-                serializer = KotlinxSerializer(Json.nonstrict)
+                serializer = KotlinxSerializer(json)
             }
         }
 }

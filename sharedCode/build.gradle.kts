@@ -81,7 +81,6 @@ kotlin {
                 implementation(kotlin("stdlib"))
 
                 // Coroutine
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutineVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion")
 
                 // Network

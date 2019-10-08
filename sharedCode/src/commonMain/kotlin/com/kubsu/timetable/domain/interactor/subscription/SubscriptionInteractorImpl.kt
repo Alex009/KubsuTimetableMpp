@@ -6,31 +6,31 @@ import com.kubsu.timetable.domain.entity.timetable.select.FacultyEntity
 import com.kubsu.timetable.domain.entity.timetable.select.GroupEntity
 import com.kubsu.timetable.domain.entity.timetable.select.OccupationEntity
 import com.kubsu.timetable.domain.entity.timetable.select.SubgroupEntity
-import com.kubsu.timetable.domain.interactor.main.UserInteractor
+import com.kubsu.timetable.domain.interactor.userInfo.UserInteractor
 
 class SubscriptionInteractorImpl(
     private val subscriptionGateway: SubscriptionGateway,
     private val userInteractor: UserInteractor
 ) : SubscriptionInteractor {
-    override suspend fun selectFacultyList(): Either<NetworkFailure, List<FacultyEntity>> = def {
+    override suspend fun selectFacultyList(): Either<DataFailure, List<FacultyEntity>> = def {
         subscriptionGateway.selectFacultyList()
     }
 
     override suspend fun selectOccupationList(
         faculty: FacultyEntity
-    ): Either<NetworkFailure, List<OccupationEntity>> = def {
+    ): Either<DataFailure, List<OccupationEntity>> = def {
         subscriptionGateway.selectOccupationList(faculty.id)
     }
 
     override suspend fun selectGroupList(
         occupation: OccupationEntity
-    ): Either<NetworkFailure, List<GroupEntity>> = def {
+    ): Either<DataFailure, List<GroupEntity>> = def {
         subscriptionGateway.selectGroupList(occupation.id)
     }
 
     override suspend fun selectSubgroupList(
         group: GroupEntity
-    ): Either<NetworkFailure, List<SubgroupEntity>> = def {
+    ): Either<DataFailure, List<SubgroupEntity>> = def {
         subscriptionGateway.selectSubgroupList(group.id)
     }
 
@@ -38,48 +38,40 @@ class SubscriptionInteractorImpl(
         subgroupId: Int,
         subscriptionName: String,
         isMain: Boolean
-    ): Either<RequestFailure<NoActiveUserFailure>, Unit> = def {
+    ): Either<RequestFailure<List<SubscriptionFail>>, Unit> = def {
         val user = userInteractor.getCurrentUserOrNull()
 
         if (user != null)
-            subscriptionGateway
-                .create(user.id, subgroupId, subscriptionName, isMain)
-                .flatMapLeft { RequestFailure.eitherLeft(it) }
+            subscriptionGateway.create(user.id, subgroupId, subscriptionName, isMain)
         else
-            RequestFailure.eitherLeft(NoActiveUserFailure)
+            Either.left(RequestFailure(DataFailure.NotAuthenticated))
     }
 
-    override suspend fun getById(id: Int): Either<RequestFailure<NoActiveUserFailure>, SubscriptionEntity> =
-        def {
-            val user = userInteractor.getCurrentUserOrNull()
-
-            if (user != null)
-                subscriptionGateway
-                    .getById(id, user.id)
-                    .flatMapLeft { RequestFailure.eitherLeft(it) }
-            else
-                RequestFailure.eitherLeft(NoActiveUserFailure)
-    }
-
-    override suspend fun getAll(): Either<RequestFailure<NoActiveUserFailure>, List<SubscriptionEntity>> =
-        def {
-            val user = userInteractor.getCurrentUserOrNull()
+    override suspend fun getById(id: Int): Either<DataFailure, SubscriptionEntity> = def {
+        val user = userInteractor.getCurrentUserOrNull()
 
         if (user != null)
-            subscriptionGateway
-                .getAll(user.id)
-                .flatMapLeft { RequestFailure.eitherLeft(it) }
+            subscriptionGateway.getById(id, user.id)
         else
-            RequestFailure.eitherLeft(NoActiveUserFailure)
-        }
+            Either.left(DataFailure.NotAuthenticated)
+    }
+
+    override suspend fun getAll(): Either<DataFailure, List<SubscriptionEntity>> = def {
+        val user = userInteractor.getCurrentUserOrNull()
+
+        if (user != null)
+            subscriptionGateway.getAll(user.id)
+        else
+            Either.left(DataFailure.NotAuthenticated)
+    }
 
     override suspend fun update(
         subscription: SubscriptionEntity
-    ): Either<NetworkFailure, Unit> = def {
+    ): Either<RequestFailure<List<SubscriptionFail>>, Unit> = def {
         subscriptionGateway.update(subscription)
     }
 
-    override suspend fun deleteById(id: Int): Either<NetworkFailure, Unit> = def {
+    override suspend fun deleteById(id: Int): Either<DataFailure, Unit> = def {
         subscriptionGateway.deleteById(id)
     }
 }

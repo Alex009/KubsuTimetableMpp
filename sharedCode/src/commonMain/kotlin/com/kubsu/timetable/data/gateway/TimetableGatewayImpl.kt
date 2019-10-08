@@ -1,7 +1,7 @@
 package com.kubsu.timetable.data.gateway
 
+import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.Either
-import com.kubsu.timetable.NetworkFailure
 import com.kubsu.timetable.data.db.timetable.ClassQueries
 import com.kubsu.timetable.data.db.timetable.ClassTimeQueries
 import com.kubsu.timetable.data.db.timetable.LecturerQueries
@@ -31,7 +31,7 @@ class TimetableGatewayImpl(
 ) : TimetableGateway {
     override suspend fun getAll(
         subgroupId: Int
-    ): Either<NetworkFailure, List<TimetableEntity>> {
+    ): Either<DataFailure, List<TimetableEntity>> {
         val timetableDbList = timetableQueries
             .selectBySubgroupId(subgroupId)
             .executeAsList()
@@ -52,7 +52,7 @@ class TimetableGatewayImpl(
                 }
     }
 
-    private suspend fun List<TimetableNetworkDto>.toTimetableEntityList(): Either<NetworkFailure, List<TimetableEntity>> {
+    private suspend fun List<TimetableNetworkDto>.toTimetableEntityList(): Either<DataFailure, List<TimetableEntity>> {
         return Either.right(
             map { timetable ->
                 val classList = selectClassList(timetable.id)
@@ -65,7 +65,7 @@ class TimetableGatewayImpl(
         )
     }
 
-    private suspend fun selectClassList(timetableId: Int): Either<NetworkFailure, List<ClassEntity>> {
+    private suspend fun selectClassList(timetableId: Int): Either<DataFailure, List<ClassEntity>> {
         val classDbList = classQueries
             .selectByTimetableId(timetableId)
             .executeAsList()
@@ -86,7 +86,7 @@ class TimetableGatewayImpl(
                 }
     }
 
-    private suspend fun List<ClassNetworkDto>.toClassEntityList(): Either<NetworkFailure, List<ClassEntity>> =
+    private suspend fun List<ClassNetworkDto>.toClassEntityList(): Either<DataFailure, List<ClassEntity>> =
         coroutineScope {
             Either.right(
                 map { clazz ->
@@ -110,7 +110,7 @@ class TimetableGatewayImpl(
             )
         }
 
-    private suspend fun selectClassTime(id: Int): Either<NetworkFailure, ClassTimeEntity> {
+    private suspend fun selectClassTime(id: Int): Either<DataFailure, ClassTimeEntity> {
         val classTime = classTimeQueries
             .selectById(id)
             .executeAsOneOrNull()
@@ -126,7 +126,7 @@ class TimetableGatewayImpl(
                 }
     }
 
-    private suspend fun selectLecturer(id: Int): Either<NetworkFailure, LecturerEntity> {
+    private suspend fun selectLecturer(id: Int): Either<DataFailure, LecturerEntity> {
         val lecturer = lecturerQueries
             .selectById(id)
             .executeAsOneOrNull()

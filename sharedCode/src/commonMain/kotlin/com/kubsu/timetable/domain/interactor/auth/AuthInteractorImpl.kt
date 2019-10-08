@@ -2,7 +2,7 @@ package com.kubsu.timetable.domain.interactor.auth
 
 import com.kubsu.timetable.*
 import com.kubsu.timetable.domain.entity.UserEntity
-import com.kubsu.timetable.domain.interactor.main.UserInfoGateway
+import com.kubsu.timetable.domain.interactor.userInfo.UserInfoGateway
 
 class AuthInteractorImpl(
     private val authGateway: AuthGateway,
@@ -11,7 +11,7 @@ class AuthInteractorImpl(
     override suspend fun signIn(
         email: String,
         password: String
-    ): Either<RequestFailure<SignInFail>, UserEntity> = def {
+    ): Either<RequestFailure<List<SignInFail>>, UserEntity> = def {
         authGateway.signIn(email, password)
     }
 
@@ -19,7 +19,7 @@ class AuthInteractorImpl(
         userInfoGateway.getCurrentUserOrNull() != null
     }
 
-    override suspend fun logout(): Either<NetworkFailure, Unit> = def {
+    override suspend fun logout(): Either<DataFailure, Unit> = def {
         authGateway.logout()
     }
 }

@@ -1,9 +1,9 @@
 package com.kubsu.timetable.di.modules.domain
 
 import com.kubsu.timetable.data.gateway.UserInfoGatewayImpl
-import com.kubsu.timetable.domain.interactor.main.UserInfoGateway
-import com.kubsu.timetable.domain.interactor.main.UserInteractor
-import com.kubsu.timetable.domain.interactor.main.UserInteractorImpl
+import com.kubsu.timetable.domain.interactor.userInfo.UserInfoGateway
+import com.kubsu.timetable.domain.interactor.userInfo.UserInteractor
+import com.kubsu.timetable.domain.interactor.userInfo.UserInteractorImpl
 import org.kodein.di.Kodein
 import org.kodein.di.erased.bind
 import org.kodein.di.erased.instance

@@ -1,7 +1,7 @@
 package com.kubsu.timetable
 
 sealed class Either<out A, out B> {
-    fun <A> identity(a: A): A = a
+    inline fun <reified A> identity(a: A): A = a
 
     /**
      * Returns `true` if this is a [Right], `false` otherwise.
@@ -39,18 +39,6 @@ sealed class Either<out A, out B> {
         is Right -> ifRight(b)
         is Left -> ifLeft(a)
     }
-
-    fun <C> foldLeft(initial: C, rightOperation: (C, B) -> C): C =
-        when (this) {
-            is Right -> rightOperation(initial, b)
-            is Left -> initial
-        }
-
-    fun <C> foldRight(initial: C, rightOperation: (B, C) -> C): C =
-        when (this) {
-            is Right -> rightOperation(b, initial)
-            is Left -> initial
-        }
 
     /**
      * If this is a `Left`, then return the left value in `Right` or vice versa.
@@ -107,7 +95,7 @@ sealed class Either<out A, out B> {
      * left.exists { it > 10 }      // Result: false
      * ```
      */
-    fun exists(predicate: (B) -> Boolean): Boolean =
+    inline fun exists(predicate: (B) -> Boolean): Boolean =
         fold({ false }, { predicate(it) })
 
     /**
@@ -130,10 +118,8 @@ sealed class Either<out A, out B> {
      */
     @Suppress("DataClassPrivateConstructor")
     data class Right<out B> @PublishedApi internal constructor(val b: B) : Either<Nothing, B>() {
-        override val isLeft
-            get() = false
-        override val isRight
-            get() = true
+        override val isLeft = false
+        override val isRight = true
 
         companion object {
             operator fun <B> invoke(b: B): Either<Nothing, B> = Right(b)
@@ -147,10 +133,6 @@ sealed class Either<out A, out B> {
     }
 }
 
-fun <L> Left(left: L): Either<L, Nothing> = Either.left(left)
-
-fun <R> Right(right: R): Either<Nothing, R> = Either.right(right)
-
 /**
  * Binds the given function across [Either.Right].
  *
@@ -162,12 +144,6 @@ inline fun <A, B, C> Either<A, B>.flatMap(f: (B) -> Either<A, C>): Either<A, C> 
         is Either.Left -> this
     }
 
-inline fun <A, B, C> Either<A, B>.flatMapLeft(f: (A) -> Either<C, B>): Either<C, B> =
-    when (this) {
-        is Either.Right -> this
-        is Either.Left -> f(a)
-    }
-
 /**
  * Returns the value from this [Either.Right] or the given argument if this is a [Either.Left].
  *
@@ -177,7 +153,7 @@ inline fun <A, B, C> Either<A, B>.flatMapLeft(f: (A) -> Either<C, B>): Either<C,
  * Left(12).getOrElse(17)  // Result: 17
  * ```
  */
-inline fun <B> Either<*, B>.getOrElse(default: () -> B): B =
+inline fun <reified B> Either<*, B>.getOrElse(default: () -> B): B =
     fold({ default() }, ::identity)
 
 /**
@@ -189,7 +165,7 @@ inline fun <B> Either<*, B>.getOrElse(default: () -> B): B =
  * Left(12).orNull()  // Result: null
  * ```
  */
-fun <B> Either<*, B>.orNull(): B? =
+inline fun <reified B> Either<*, B>.orNull(): B? =
     getOrElse { null }
 
 /**
@@ -202,27 +178,8 @@ fun <B> Either<*, B>.orNull(): B? =
  * Left(12).getOrHandle { it + 5 } // Result: 17
  * ```
  */
-inline fun <A, B> Either<A, B>.getOrHandle(default: (A) -> B): B =
+inline fun <reified A, reified B> Either<A, B>.getOrHandle(default: (A) -> B): B =
     fold({ default(it) }, ::identity)
-
-/**
- * * Returns [Either.Right] with the existing value of [Either.Right] if this is a [Either.Right] and the given predicate
- * holds for the right value.
- * * Returns `Left(default)` if this is a [Either.Right] and the given predicate does not
- * hold for the right value.
- * * Returns [Either.Left] with the existing value of [Either.Left] if this is a [Either.Left].
- *
- * Example:
- * ```
- * Right(12).filterOrElse({ it > 10 }, { -1 }) // Result: Right(12)
- * Right(7).filterOrElse({ it > 10 }, { -1 })  // Result: Left(-1)
- *
- * val left: Either<Int, Int> = Left(12)
- * left.filterOrElse({ it > 10 }, { -1 })      // Result: Left(12)
- * ```
- */
-inline fun <A, B> Either<A, B>.filterOrElse(predicate: (B) -> Boolean, default: () -> A): Either<A, B> =
-    flatMap { if (predicate(it)) Right(it) else Left(default()) }
 
 /**
  * * Returns [Either.Right] with the existing value of [Either.Right] if this is a [Either.Right] and the given
@@ -290,7 +247,7 @@ fun <A> A.right(): Either<Nothing, A> = Either.Right(this)
  * null.rightIfNotNull { "left" }    // Left(a="left")
  * ```
  */
-fun <A, B> B?.rightIfNotNull(default: () -> A): Either<A, B> = when (this) {
+inline fun <A, B> B?.rightIfNotNull(default: () -> A): Either<A, B> = when (this) {
     null -> Either.Left(default())
     else -> Either.Right(this)
 }

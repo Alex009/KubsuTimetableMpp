@@ -1,4 +1,4 @@
-package com.kubsu.timetable.data.network.client.user
+package com.kubsu.timetable.data.network.client.user.incorrectdata
 
 import kotlinx.serialization.Serializable
 
