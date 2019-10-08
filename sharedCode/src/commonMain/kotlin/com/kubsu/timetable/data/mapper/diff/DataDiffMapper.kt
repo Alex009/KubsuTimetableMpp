@@ -2,7 +2,7 @@ package com.kubsu.timetable.data.mapper.diff
 
 import com.kubsu.timetable.data.db.diff.DeletedEntityDb
 import com.kubsu.timetable.data.db.diff.UpdatedEntityDb
-import com.kubsu.timetable.domain.entity.diff.Basename
+import com.kubsu.timetable.domain.entity.Basename
 import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
 
 object DataDiffMapper {

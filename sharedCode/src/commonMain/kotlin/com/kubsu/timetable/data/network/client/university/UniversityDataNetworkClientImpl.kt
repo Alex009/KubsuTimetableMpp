@@ -2,6 +2,7 @@ package com.kubsu.timetable.data.network.client.university
 
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.Either
+import com.kubsu.timetable.data.network.dto.timetable.data.UniversityInfoNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.select.FacultyNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.select.GroupNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.select.OccupationNetworkDto
@@ -43,6 +44,15 @@ class UniversityDataNetworkClientImpl(
             handle {
                 get<List<SubgroupNetworkDto>>(
                     "$baseUrl/api/$apiVersion/university/subgroups/?group_id=$groupId"
+                )
+            }.mapLeft(::toNetworkFail)
+        }
+
+    override suspend fun selectUniversityInfo(facultyId: Int): Either<DataFailure, UniversityInfoNetworkDto> =
+        with(networkSender) {
+            handle {
+                get<UniversityInfoNetworkDto>(
+                    "$baseUrl/api/$apiVersion/university/info/?faculty_id=$facultyId"
                 )
             }.mapLeft(::toNetworkFail)
         }

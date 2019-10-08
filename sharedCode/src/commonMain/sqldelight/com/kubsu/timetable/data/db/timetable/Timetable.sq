@@ -1,17 +1,21 @@
 CREATE TABLE timetableDb(
 id INTEGER as Int NOT NULL PRIMARY KEY,
 typeOfWeek INTEGER as Int NOT NULL,
+facultyId INTEGER as Int NOT NULL,
 subgroupId INTEGER as Int NOT NULL
 );
 
 update:
-INSERT OR REPLACE INTO timetableDb(id, typeOfWeek, subgroupId) VALUES ?;
+INSERT OR REPLACE INTO timetableDb(id, typeOfWeek, facultyId, subgroupId) VALUES ?;
 
 selectAll:
 SELECT * FROM timetableDb;
 
 selectById:
 SELECT * FROM timetableDb WHERE id = ?;
+
+selectByFacultyId:
+SELECT * FROM timetableDb WHERE facultyId = ?;
 
 selectBySubgroupId:
 SELECT * FROM timetableDb WHERE subgroupId = ?;

@@ -4,15 +4,10 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class TimetableNetworkDto(
-    val id: Int,
-
-    @SerialName("type_of_week")
-    val typeOfWeek: Int,
-
+class UniversityInfoNetworkDto(
     @SerialName("faculty_id")
     val facultyId: Int,
 
-    @SerialName("subgroup_id")
-    val subgroupId: Int
+    @SerialName("type_of_week")
+    val typeOfWeek: Int
 )

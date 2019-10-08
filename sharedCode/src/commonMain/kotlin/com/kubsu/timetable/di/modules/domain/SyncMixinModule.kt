@@ -20,6 +20,7 @@ internal val syncMixinModule = Kodein.Module("syncMixin") {
             subscriptionQueries = db.subscriptionQueries,
             timetableQueries = db.timetableQueries,
             dataDiffQueries = db.dataDiffQueries,
+            universityInfoQueries = db.universityInfoQueries,
             updatedEntityQueries = db.updatedEntityQueries,
             deletedEntityQueries = db.deletedEntityQueries,
             networkClient = instance()

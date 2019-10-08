@@ -1,0 +1,19 @@
+CREATE TABLE universityInfoDb(
+facultyId INTEGER as Int NOT NULL PRIMARY KEY,
+typeOfWeek INTEGER as Int NOT NULL
+);
+
+update:
+INSERT OR REPLACE INTO universityInfoDb(facultyId, typeOfWeek) VALUES ?;
+
+selectAll:
+SELECT * FROM universityInfoDb;
+
+selectById:
+SELECT * FROM universityInfoDb WHERE facultyId = ?;
+
+deleteById:
+DELETE FROM universityInfoDb WHERE facultyId = ?;
+
+deleteAll:
+DELETE FROM universityInfoDb;

@@ -6,5 +6,6 @@ import com.kubsu.timetable.domain.entity.timetable.data.SubscriptionEntity
 import com.kubsu.timetable.domain.entity.timetable.data.TimetableEntity
 
 interface TimetableInteractor {
+    suspend fun isRelevantForThisWeek(timetable: TimetableEntity): Either<DataFailure, Boolean>
     suspend fun getAllTimetables(subscription: SubscriptionEntity): Either<DataFailure, List<TimetableEntity>>
 }

@@ -1,34 +1,45 @@
 package com.kubsu.timetable.data.gateway
 
-import com.kubsu.timetable.DataFailure
-import com.kubsu.timetable.Either
-import com.kubsu.timetable.data.db.timetable.ClassQueries
-import com.kubsu.timetable.data.db.timetable.ClassTimeQueries
-import com.kubsu.timetable.data.db.timetable.LecturerQueries
-import com.kubsu.timetable.data.db.timetable.TimetableQueries
-import com.kubsu.timetable.data.mapper.timetable.data.ClassMapper
-import com.kubsu.timetable.data.mapper.timetable.data.ClassTimeMapper
-import com.kubsu.timetable.data.mapper.timetable.data.LecturerMapper
-import com.kubsu.timetable.data.mapper.timetable.data.TimetableMapper
+import com.kubsu.timetable.*
+import com.kubsu.timetable.data.db.timetable.*
+import com.kubsu.timetable.data.mapper.timetable.data.*
 import com.kubsu.timetable.data.network.client.timetable.TimetableNetworkClient
+import com.kubsu.timetable.data.network.client.university.UniversityDataNetworkClient
 import com.kubsu.timetable.data.network.dto.timetable.data.ClassNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.data.TimetableNetworkDto
-import com.kubsu.timetable.domain.entity.timetable.data.ClassEntity
-import com.kubsu.timetable.domain.entity.timetable.data.ClassTimeEntity
-import com.kubsu.timetable.domain.entity.timetable.data.LecturerEntity
-import com.kubsu.timetable.domain.entity.timetable.data.TimetableEntity
+import com.kubsu.timetable.domain.entity.timetable.data.*
 import com.kubsu.timetable.domain.interactor.timetable.TimetableGateway
-import com.kubsu.timetable.flatMap
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.map
 
 class TimetableGatewayImpl(
     private val timetableQueries: TimetableQueries,
     private val classQueries: ClassQueries,
     private val classTimeQueries: ClassTimeQueries,
     private val lecturerQueries: LecturerQueries,
-    private val networkClient: TimetableNetworkClient
+    private val universityInfoQueries: UniversityInfoQueries,
+    private val timetableNetworkClient: TimetableNetworkClient,
+    private val universityDataNetworkClient: UniversityDataNetworkClient
 ) : TimetableGateway {
+    override suspend fun getUniversityData(
+        facultyId: Int
+    ): Either<DataFailure, UniversityInfoEntity> {
+        val universityDbDto = universityInfoQueries
+            .selectById(facultyId)
+            .executeAsOneOrNull()
+
+        return if (universityDbDto != null)
+            Either.right(UniversityInfoMapper.toEntity(universityDbDto))
+        else
+            universityDataNetworkClient
+                .selectUniversityInfo(facultyId)
+                .map { networkDto ->
+                    universityInfoQueries.update(UniversityInfoMapper.toDbDto(networkDto))
+                    UniversityInfoMapper.toEntity(networkDto)
+                }
+    }
+
     override suspend fun getAll(
         subgroupId: Int
     ): Either<DataFailure, List<TimetableEntity>> {
@@ -41,7 +52,7 @@ class TimetableGatewayImpl(
                 .map(TimetableMapper::toNetworkDto)
                 .toTimetableEntityList()
         else
-            networkClient
+            timetableNetworkClient
                 .selectTimetableListForUser()
                 .flatMap { list ->
                     list
@@ -52,18 +63,12 @@ class TimetableGatewayImpl(
                 }
     }
 
-    private suspend fun List<TimetableNetworkDto>.toTimetableEntityList(): Either<DataFailure, List<TimetableEntity>> {
-        return Either.right(
-            map { timetable ->
-                val classList = selectClassList(timetable.id)
-                    .fold(
-                        ifLeft = { fail -> return Either.left(fail) },
-                        ifRight = { classList -> classList }
-                    )
-                TimetableMapper.toEntity(timetable, classList)
+    private suspend fun List<TimetableNetworkDto>.toTimetableEntityList(): Either<DataFailure, List<TimetableEntity>> =
+        flowOfIterable(this)
+            .map { timetable ->
+                selectClassList(timetable.id).map { TimetableMapper.toEntity(timetable, it) }
             }
-        )
-    }
+            .collectRightListOrFirstLeft()
 
     private suspend fun selectClassList(timetableId: Int): Either<DataFailure, List<ClassEntity>> {
         val classDbList = classQueries
@@ -75,11 +80,11 @@ class TimetableGatewayImpl(
                 .map(ClassMapper::toNetworkDto)
                 .toClassEntityList()
         else
-            networkClient
+            timetableNetworkClient
                 .selectClassesByTimetableId(timetableId)
                 .flatMap { list ->
                     list
-                        .map { ClassMapper.toDbDto(it) }
+                        .map(ClassMapper::toDbDto)
                         .forEach(classQueries::update)
 
                     list.toClassEntityList()
@@ -88,26 +93,23 @@ class TimetableGatewayImpl(
 
     private suspend fun List<ClassNetworkDto>.toClassEntityList(): Either<DataFailure, List<ClassEntity>> =
         coroutineScope {
-            Either.right(
-                map { clazz ->
+            flowOfIterable(this@toClassEntityList)
+                .map { clazz ->
                     val classTimeDef = async { selectClassTime(clazz.classTimeId) }
                     val lecturerDef = async { selectLecturer(clazz.lecturerId) }
 
-                    val classTime = classTimeDef
+                    classTimeDef
                         .await()
-                        .fold(
-                            ifLeft = { fail -> return@coroutineScope Either.left(fail) },
-                            ifRight = { classTimeEntity -> classTimeEntity }
-                        )
-                    val lecturer = lecturerDef
-                        .await()
-                        .fold(
-                            ifLeft = { fail -> return@coroutineScope Either.left(fail) },
-                            ifRight = { lecturerEntity -> lecturerEntity }
-                        )
-                    ClassMapper.toEntity(clazz, classTime, lecturer)
+                        .also { if (it is Either.Left) lecturerDef.cancel() }
+                        .flatMap { classTime ->
+                            lecturerDef
+                                .await()
+                                .map { lecturer ->
+                                    ClassMapper.toEntity(clazz, classTime, lecturer)
+                                }
+                        }
                 }
-            )
+                .collectRightListOrFirstLeft()
         }
 
     private suspend fun selectClassTime(id: Int): Either<DataFailure, ClassTimeEntity> {
@@ -118,7 +120,7 @@ class TimetableGatewayImpl(
         return if (classTime != null)
             Either.right(ClassTimeMapper.toEntity(classTime))
         else
-            networkClient
+            timetableNetworkClient
                 .selectClassTimeById(id)
                 .map {
                     classTimeQueries.update(ClassTimeMapper.toDbDto(it))
@@ -134,7 +136,7 @@ class TimetableGatewayImpl(
         return if (lecturer != null)
             Either.right(LecturerMapper.toEntity(lecturer))
         else
-            networkClient
+            timetableNetworkClient
                 .selectLecturerById(id)
                 .map {
                     lecturerQueries.update(LecturerMapper.toDbDto(it))

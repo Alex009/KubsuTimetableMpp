@@ -22,7 +22,7 @@ class NetworkSenderImpl(
     private val json: Json
 ) : NetworkSender {
     override val apiVersion = "v1"
-    override val baseUrl = "http://kubsu-timetable.info"
+    override val baseUrl = "https://kubsu-timetable.info"
 
     override suspend fun <R> handle(block: suspend HttpClient.() -> R): Either<ServerFailure, R> =
         try {

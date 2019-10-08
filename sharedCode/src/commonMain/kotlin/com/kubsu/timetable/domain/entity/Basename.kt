@@ -1,10 +1,11 @@
-package com.kubsu.timetable.domain.entity.diff
+package com.kubsu.timetable.domain.entity
 
 sealed class Basename {
     object Subscription : Basename()
     object Timetable : Basename()
     object Lecturer : Basename()
     object Class : Basename()
+    object UniversityInfo : Basename()
 
     companion object {
         val list: List<Basename>
@@ -12,7 +13,8 @@ sealed class Basename {
                 Subscription,
                 Timetable,
                 Lecturer,
-                Class
+                Class,
+                UniversityInfo
             )
     }
 }

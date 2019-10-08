@@ -1,12 +1,13 @@
 package com.kubsu.timetable.data.mapper.diff
 
-import com.kubsu.timetable.domain.entity.diff.Basename
+import com.kubsu.timetable.domain.entity.Basename
 
 object BasenameMapper {
-    private const val subscriptionValue = "subscription"
-    private const val timetableValue = "timetable"
-    private const val lecturerValue = "lecturer"
-    private const val classValue = "class"
+    private const val subscriptionValue = "subscriptions"
+    private const val timetableValue = "timetables"
+    private const val lecturerValue = "lecturers"
+    private const val classValue = "classes"
+    private const val universityInfoValue = "university_info"
 
     fun toEntity(value: String): Basename =
         when (value) {
@@ -14,6 +15,7 @@ object BasenameMapper {
             timetableValue -> Basename.Timetable
             lecturerValue -> Basename.Lecturer
             classValue -> Basename.Class
+            universityInfoValue -> Basename.UniversityInfo
             else -> throw IllegalArgumentException("Unknown value: $value")
         }
 
@@ -23,5 +25,6 @@ object BasenameMapper {
             Basename.Timetable -> timetableValue
             Basename.Lecturer -> lecturerValue
             Basename.Class -> classValue
+            Basename.UniversityInfo -> universityInfoValue
         }
 }

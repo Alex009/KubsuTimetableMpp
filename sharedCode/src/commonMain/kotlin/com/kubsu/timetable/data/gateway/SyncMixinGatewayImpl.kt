@@ -3,21 +3,15 @@ package com.kubsu.timetable.data.gateway
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.Either
 import com.kubsu.timetable.data.db.diff.*
-import com.kubsu.timetable.data.db.timetable.ClassQueries
-import com.kubsu.timetable.data.db.timetable.LecturerQueries
-import com.kubsu.timetable.data.db.timetable.SubscriptionQueries
-import com.kubsu.timetable.data.db.timetable.TimetableQueries
+import com.kubsu.timetable.data.db.timetable.*
 import com.kubsu.timetable.data.mapper.diff.BasenameMapper
 import com.kubsu.timetable.data.mapper.diff.DataDiffMapper
-import com.kubsu.timetable.data.mapper.timetable.data.ClassMapper
-import com.kubsu.timetable.data.mapper.timetable.data.LecturerMapper
-import com.kubsu.timetable.data.mapper.timetable.data.SubscriptionMapper
-import com.kubsu.timetable.data.mapper.timetable.data.TimetableMapper
+import com.kubsu.timetable.data.mapper.timetable.data.*
 import com.kubsu.timetable.data.network.client.update.UpdateDataNetworkClient
-import com.kubsu.timetable.data.network.dto.response.SyncResponse
+import com.kubsu.timetable.data.network.dto.timetable.data.*
+import com.kubsu.timetable.domain.entity.Basename
 import com.kubsu.timetable.domain.entity.Timestamp
 import com.kubsu.timetable.domain.entity.UserEntity
-import com.kubsu.timetable.domain.entity.diff.Basename
 import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
 import com.kubsu.timetable.domain.interactor.sync.SyncMixinGateway
 import com.kubsu.timetable.flatMap
@@ -28,6 +22,7 @@ class SyncMixinGatewayImpl(
     private val lecturerQueries: LecturerQueries,
     private val classQueries: ClassQueries,
     private val dataDiffQueries: DataDiffQueries,
+    private val universityInfoQueries: UniversityInfoQueries,
     private val updatedEntityQueries: UpdatedEntityQueries,
     private val deletedEntityQueries: DeletedEntityQueries,
     private val networkClient: UpdateDataNetworkClient
@@ -89,6 +84,7 @@ class SyncMixinGatewayImpl(
             Basename.Timetable -> deletedIds.forEach(timetableQueries::deleteById)
             Basename.Lecturer -> deletedIds.forEach(lecturerQueries::deleteById)
             Basename.Class -> deletedIds.forEach(classQueries::deleteById)
+            Basename.UniversityInfo -> deletedIds.forEach(universityInfoQueries::deleteById)
         }
 
     override suspend fun diff(timestamp: Timestamp): Either<DataFailure, Pair<Timestamp, List<Basename>>> =
@@ -106,54 +102,34 @@ class SyncMixinGatewayImpl(
         user: UserEntity
     ): Either<DataFailure, Unit> {
         val existsIds = availableDiff.updatedIds + availableDiff.deletedIds
-        return sync(basename, existsIds, user.timestamp.value)
+        return networkClient
+            .sync(BasenameMapper.value(basename), user.timestamp.value, existsIds)
             .flatMap { (updatedIds, deletedIds) ->
                 deleteData(basename, deletedIds)
                 meta(basename, user.id, updatedIds)
             }
     }
 
-    private suspend fun sync(
-        basename: Basename,
-        existsIds: List<Int>,
-        timestamp: Long
-    ): Either<DataFailure, SyncResponse> =
-        when (basename) {
-            Basename.Subscription ->
-                networkClient.syncSubscription(timestamp, existsIds)
-
-            Basename.Timetable ->
-                networkClient.syncTimetable(timestamp, existsIds)
-
-            Basename.Lecturer ->
-                networkClient.syncLecturer(timestamp, existsIds)
-
-            Basename.Class ->
-                networkClient.syncClass(timestamp, existsIds)
-        }
-
     override suspend fun meta(
         basename: Basename,
         userId: Int,
         updatedIds: List<Int>
-    ): Either<DataFailure, Unit> =
-        when (basename) {
+    ): Either<DataFailure, Unit> {
+        val strBasename = BasenameMapper.value(basename)
+        return when (basename) {
             Basename.Subscription ->
                 networkClient
-                    .metaSubscription(updatedIds)
+                    .meta<SubscriptionNetworkDto>(strBasename, updatedIds)
                     .map { list ->
                         for (networkDto in list)
                             subscriptionQueries.update(
-                                SubscriptionMapper.toDbDto(
-                                    networkDto,
-                                    userId
-                                )
+                                SubscriptionMapper.toDbDto(networkDto, userId)
                             )
                     }
 
             Basename.Timetable ->
                 networkClient
-                    .metaTimetable(updatedIds)
+                    .meta<TimetableNetworkDto>(strBasename, updatedIds)
                     .map { list ->
                         for (timetable in list)
                             timetableQueries.update(TimetableMapper.toDbDto(timetable))
@@ -161,7 +137,7 @@ class SyncMixinGatewayImpl(
 
             Basename.Lecturer ->
                 networkClient
-                    .metaLecturer(updatedIds)
+                    .meta<LecturerNetworkDto>(strBasename, updatedIds)
                     .map { list ->
                         for (lecturer in list)
                             lecturerQueries.update(LecturerMapper.toDbDto(lecturer))
@@ -169,10 +145,19 @@ class SyncMixinGatewayImpl(
 
             Basename.Class ->
                 networkClient
-                    .metaClass(updatedIds)
+                    .meta<ClassNetworkDto>(strBasename, updatedIds)
                     .map { list ->
                         for (`class` in list)
                             classQueries.update(ClassMapper.toDbDto(`class`))
                     }
+
+            Basename.UniversityInfo ->
+                networkClient
+                    .meta<UniversityInfoNetworkDto>(strBasename, updatedIds)
+                    .map { list ->
+                        for (info in list)
+                            universityInfoQueries.update(UniversityInfoMapper.toDbDto(info))
+                    }
         }
+    }
 }

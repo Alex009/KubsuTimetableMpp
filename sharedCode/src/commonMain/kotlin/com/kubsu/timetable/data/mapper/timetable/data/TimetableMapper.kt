@@ -13,6 +13,7 @@ object TimetableMapper {
         TimetableEntity(
             id = networkDto.id,
             typeOfWeek = TypeOfWeekMapper.toEntity(networkDto.typeOfWeek),
+            facultyId = networkDto.facultyId,
             subgroupId = networkDto.subgroupId,
             classList = classList
         )
@@ -24,6 +25,7 @@ object TimetableMapper {
         TimetableEntity(
             id = timetable.id,
             typeOfWeek = TypeOfWeekMapper.toEntity(timetable.typeOfWeek),
+            facultyId = timetable.facultyId,
             subgroupId = timetable.subgroupId,
             classList = classList
         )
@@ -32,6 +34,7 @@ object TimetableMapper {
         TimetableDb.Impl(
             id = entity.id,
             typeOfWeek = TypeOfWeekMapper.value(entity.typeOfWeek),
+            facultyId = entity.facultyId,
             subgroupId = entity.subgroupId
         )
 
@@ -39,6 +42,7 @@ object TimetableMapper {
         TimetableDb.Impl(
             id = networkDto.id,
             typeOfWeek = networkDto.typeOfWeek,
+            facultyId = networkDto.facultyId,
             subgroupId = networkDto.subgroupId
         )
 
@@ -46,6 +50,7 @@ object TimetableMapper {
         TimetableNetworkDto(
             id = entity.id,
             typeOfWeek = TypeOfWeekMapper.value(entity.typeOfWeek),
+            facultyId = entity.facultyId,
             subgroupId = entity.subgroupId
         )
 
@@ -53,6 +58,7 @@ object TimetableMapper {
         TimetableNetworkDto(
             id = dbDto.id,
             typeOfWeek = dbDto.typeOfWeek,
+            facultyId = dbDto.facultyId,
             subgroupId = dbDto.subgroupId
         )
 }

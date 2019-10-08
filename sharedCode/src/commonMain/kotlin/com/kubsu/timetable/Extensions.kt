@@ -1,16 +1,37 @@
 package com.kubsu.timetable
 
-import com.soywiz.klock.DateTime
-import com.soywiz.klock.weekOfYear1
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 
 suspend inline fun <T> def(noinline block: suspend CoroutineScope.() -> T): T =
     withContext(Dispatchers.Default, block = block)
 
-fun numberOfWeek(): Int =
-    DateTime.now().weekOfYear1
+fun <T> flowOfIterable(iterable: Iterable<T>): Flow<T> = flow {
+    for (element in iterable)
+        emit(element)
+}
 
-fun isNumerator(): Boolean =
-    numberOfWeek() and 1 == 0
+class StopException : Exception()
+
+suspend inline fun <L, R> Flow<Either<L, R>>.collectRightListOrFirstLeft(): Either<L, List<R>> {
+    val result = ArrayList<R>()
+    var fail: L? = null
+    try {
+        collect {
+            it.fold(
+                ifRight = result::add,
+                ifLeft = { left ->
+                    fail = left
+                    throw StopException()
+                }
+            )
+        }
+    } catch (e: StopException) {
+        // Do nothing
+    }
+    return fail?.let { Either.left(it) } ?: Either.right(result)
+}

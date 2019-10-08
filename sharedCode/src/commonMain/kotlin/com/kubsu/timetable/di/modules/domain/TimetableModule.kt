@@ -21,7 +21,9 @@ internal val timetableModule = Kodein.Module("timetable") {
             classQueries = db.classQueries,
             classTimeQueries = db.classTimeQueries,
             lecturerQueries = db.lecturerQueries,
-            networkClient = instance()
+            universityInfoQueries = db.universityInfoQueries,
+            timetableNetworkClient = instance(),
+            universityDataNetworkClient = instance()
         )
     }
 }

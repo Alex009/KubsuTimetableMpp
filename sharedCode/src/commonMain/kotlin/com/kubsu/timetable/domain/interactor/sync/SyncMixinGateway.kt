@@ -2,9 +2,9 @@ package com.kubsu.timetable.domain.interactor.sync
 
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.Either
+import com.kubsu.timetable.domain.entity.Basename
 import com.kubsu.timetable.domain.entity.Timestamp
 import com.kubsu.timetable.domain.entity.UserEntity
-import com.kubsu.timetable.domain.entity.diff.Basename
 import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
 
 interface SyncMixinGateway {
