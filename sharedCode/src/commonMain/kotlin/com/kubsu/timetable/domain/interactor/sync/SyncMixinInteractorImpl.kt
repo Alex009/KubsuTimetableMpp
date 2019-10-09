@@ -29,7 +29,7 @@ class SyncMixinInteractorImpl(
                     }
             }
         } else {
-            Either.left(DataFailure.NotAuthenticated)
+            Either.left(DataFailure.NotAuthenticated("SyncMixinInteractor#updateData"))
         }
     }
 

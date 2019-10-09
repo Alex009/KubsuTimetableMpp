@@ -6,11 +6,11 @@ import com.kubsu.timetable.domain.entity.timetable.select.FacultyEntity
 import com.kubsu.timetable.domain.entity.timetable.select.GroupEntity
 import com.kubsu.timetable.domain.entity.timetable.select.OccupationEntity
 import com.kubsu.timetable.domain.entity.timetable.select.SubgroupEntity
-import com.kubsu.timetable.domain.interactor.userInfo.UserInteractor
+import com.kubsu.timetable.domain.interactor.userInfo.UserInfoGateway
 
 class SubscriptionInteractorImpl(
     private val subscriptionGateway: SubscriptionGateway,
-    private val userInteractor: UserInteractor
+    private val userInfoGateway: UserInfoGateway
 ) : SubscriptionInteractor {
     override suspend fun selectFacultyList(): Either<DataFailure, List<FacultyEntity>> = def {
         subscriptionGateway.selectFacultyList()
@@ -39,30 +39,38 @@ class SubscriptionInteractorImpl(
         subscriptionName: String,
         isMain: Boolean
     ): Either<RequestFailure<List<SubscriptionFail>>, Unit> = def {
-        val user = userInteractor.getCurrentUserOrNull()
+        val user = userInfoGateway.getCurrentUserOrNull()
 
         if (user != null)
             subscriptionGateway.create(user.id, subgroupId, subscriptionName, isMain)
         else
-            Either.left(RequestFailure(DataFailure.NotAuthenticated))
+            Either.left(
+                RequestFailure(
+                    DataFailure.NotAuthenticated("SubscriptionInteractor#create")
+                )
+            )
     }
 
     override suspend fun getById(id: Int): Either<DataFailure, SubscriptionEntity> = def {
-        val user = userInteractor.getCurrentUserOrNull()
+        val user = userInfoGateway.getCurrentUserOrNull()
 
         if (user != null)
             subscriptionGateway.getById(id, user.id)
         else
-            Either.left(DataFailure.NotAuthenticated)
+            Either.left(
+                DataFailure.NotAuthenticated("SubscriptionInteractor#getById")
+            )
     }
 
     override suspend fun getAll(): Either<DataFailure, List<SubscriptionEntity>> = def {
-        val user = userInteractor.getCurrentUserOrNull()
+        val user = userInfoGateway.getCurrentUserOrNull()
 
         if (user != null)
             subscriptionGateway.getAll(user.id)
         else
-            Either.left(DataFailure.NotAuthenticated)
+            Either.left(
+                DataFailure.NotAuthenticated("SubscriptionInteractor#getAll")
+            )
     }
 
     override suspend fun update(

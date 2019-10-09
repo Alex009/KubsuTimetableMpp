@@ -9,9 +9,11 @@ import com.kubsu.timetable.data.network.sender.NetworkSender
 import com.kubsu.timetable.data.network.sender.failure.ServerFailure
 import com.kubsu.timetable.data.network.sender.failure.toNetworkFail
 import io.ktor.client.request.forms.FormDataContent
+import io.ktor.client.request.get
 import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.http.Parameters
+import io.ktor.http.Url
 import kotlinx.serialization.json.Json
 
 class UserInfoNetworkClientImpl(
@@ -69,8 +71,8 @@ class UserInfoNetworkClientImpl(
         }.plus(
             passwordFailList.map {
                 when (it) {
-                    "password_to_short" -> UserInfoFail.ShortPassword
-                    "password_to_common" -> UserInfoFail.CommonPassword
+                    "password_too_short" -> UserInfoFail.ShortPassword
+                    "password_too_common" -> UserInfoFail.CommonPassword
                     "password_entirely_numeric" -> UserInfoFail.EntirelyNumericPassword
                     else -> DataFailure.UnknownResponse(
                         responseCode,
@@ -149,7 +151,8 @@ class UserInfoNetworkClientImpl(
     ): Either<RequestFailure<List<UserUpdateFail>>, Unit> =
         with(networkSender) {
             handle {
-                patch<Unit>("$baseUrl/api/$apiVersion/users/info/") {
+                val url = Url("$baseUrl/api/$apiVersion/users/info/")
+                patch<Unit>(url) {
                     body = FormDataContent(
                         Parameters.build {
                             append("first_name", user.firstName)
@@ -160,7 +163,7 @@ class UserInfoNetworkClientImpl(
             }.mapLeft {
                 if (it is ServerFailure.Response && (it.code == 400 || it.code == 403))
                     if (it.code == 403)
-                        RequestFailure(DataFailure.NotAuthenticated)
+                        RequestFailure(DataFailure.NotAuthenticated(it.body))
                     else
                         parseUpdateFail(it)
                 else
@@ -220,4 +223,11 @@ class UserInfoNetworkClientImpl(
             }
         )
     }
+
+    override suspend fun logout(): Either<DataFailure, Unit> =
+        with(networkSender) {
+            handle {
+                get<Unit>("$baseUrl/api/$apiVersion/users/logout/")
+            }.mapLeft(::toNetworkFail)
+        }
 }

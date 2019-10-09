@@ -5,16 +5,16 @@ package com.kubsu.timetable
  */
 sealed class Failure
 
-sealed class DataFailure : Failure() {
+sealed class DataFailure(val debugMessage: String?) : Failure() {
     class UnknownResponse(
         val code: Int,
         val body: String,
-        val debugMessage: String? = null
-    ) : DataFailure()
+        debugMessage: String? = null
+    ) : DataFailure(debugMessage)
 
-    object NotAuthenticated : DataFailure()
+    class NotAuthenticated(debugMessage: String?) : DataFailure(debugMessage)
 
-    class ConnectionToRepository(val debugMessage: String?) : DataFailure()
+    class ConnectionToRepository(debugMessage: String?) : DataFailure(debugMessage)
 }
 
 /**

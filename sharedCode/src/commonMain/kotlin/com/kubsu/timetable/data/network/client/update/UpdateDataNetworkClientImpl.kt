@@ -7,9 +7,11 @@ import com.kubsu.timetable.data.network.dto.response.SyncResponse
 import com.kubsu.timetable.data.network.sender.NetworkSender
 import com.kubsu.timetable.data.network.sender.failure.ServerFailure
 import com.kubsu.timetable.data.network.sender.failure.toNetworkFail
+import io.ktor.client.features.cookies.cookies
 import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.post
 import io.ktor.http.Parameters
+import io.ktor.http.Url
 
 class UpdateDataNetworkClientImpl(
     private val networkSender: NetworkSender
@@ -26,7 +28,7 @@ class UpdateDataNetworkClientImpl(
                 }
             }.mapLeft {
                 if (it is ServerFailure.Response && it.code == 401)
-                    DataFailure.NotAuthenticated
+                    DataFailure.NotAuthenticated(it.body)
                 else
                     toNetworkFail(it)
             }
@@ -51,7 +53,7 @@ class UpdateDataNetworkClientImpl(
                 }
             }.mapLeft {
                 if (it is ServerFailure.Response && it.code == 401)
-                    DataFailure.NotAuthenticated
+                    DataFailure.NotAuthenticated(it.body)
                 else
                     toNetworkFail(it)
             }
@@ -63,7 +65,9 @@ class UpdateDataNetworkClientImpl(
     ): Either<DataFailure, List<T>> =
         with(networkSender) {
             handle {
-                post<List<T>>("$baseUrl/api/$apiVersion/$basename/meta/") {
+                val url = Url("$baseUrl/api/$apiVersion/$basename/meta/")
+                this.cookies(url)
+                post<List<T>>(url) {
                     body = FormDataContent(
                         Parameters.build {
                             append("ids", updatedIds.toString())
@@ -72,7 +76,7 @@ class UpdateDataNetworkClientImpl(
                 }
             }.mapLeft {
                 if (it is ServerFailure.Response && it.code == 401)
-                    DataFailure.NotAuthenticated
+                    DataFailure.NotAuthenticated(it.body)
                 else
                     toNetworkFail(it)
             }

@@ -8,6 +8,7 @@ import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.HttpClientEngineConfig
 import io.ktor.client.features.HttpCallValidator
 import io.ktor.client.features.ResponseException
+import io.ktor.client.features.cookies.HttpCookies
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.serializer.KotlinxSerializer
 import io.ktor.client.features.logging.LogLevel
@@ -46,14 +47,16 @@ class NetworkSenderImpl(
 
     private fun createConfig() =
         HttpClientConfig<HttpClientEngineConfig>().apply {
-            install(Logging) {
-                logger = Logger.SIMPLE
-                level = LogLevel.NONE
-            }
+            install(HttpCookies) // Very important!
+
             install(HttpCallValidator) {
                 validateResponse { response ->
                     if (response.status.value >= 300) throw ResponseException(response)
                 }
+            }
+            install(Logging) {
+                logger = Logger.SIMPLE
+                level = LogLevel.NONE
             }
             install(JsonFeature) {
                 serializer = KotlinxSerializer(json)

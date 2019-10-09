@@ -19,16 +19,17 @@ class AppActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val email = "indrih17@gmail.com"
-        val password = "1020321"
+        //val email = "indrih32141@gmail.com"
+        //val password = "Margalo_pidor_69"
         GlobalScope.launch {
-            userInteractor
-                .registrationUser(email, password)
+            /*interactor
+                .signIn(email, password)
                 .fold(
                     ifLeft = { requestFail ->
                         requestFail.handle(
-                            ifDomain = {
-                                Log.e(tag, "Domain failure: $it")
+                            ifDomain = { list ->
+                                for (elem in list)
+                                    Log.e(tag, "Domain failure: $elem")
                             },
                             ifData = { list ->
                                 list.forEach(::handleNetworkFail)
@@ -36,25 +37,88 @@ class AppActivity : AppCompatActivity() {
                         )
                     },
                     ifRight = {
-                        Log.i(tag, "Done")
+                        Log.i(tag, "Done: $it")
+                    }
+                )*/
+
+            /*subscriptionInteractor
+                .create(
+                    subgroupId = 3,
+                    subscriptionName = "Name",
+                    isMain = true
+                )
+                .mapLeft { requestFail ->
+                    requestFail.handle(
+                        ifDomain = { list ->
+                            for (elem in list)
+                                Log.e(tag, "Domain failure: $elem")
+                        },
+                        ifData = { list ->
+                            list.forEach(::handleNetworkFail)
+                        }
+                    )
+                }
+
+            subscriptionInteractor
+                .getAll()
+                .fold(
+                    ifLeft = ::handleNetworkFail,
+                    ifRight = {
+                        println(it)
+                        val subscription = it.firstOrNull()
+                        if (subscription != null) {
+                            subscriptionInteractor
+                                .deleteById(subscription.id)
+                                .mapLeft(::handleNetworkFail)
+                        }
+                    }
+                )*/
+
+            /*userInteractor
+                .update(
+                    userInteractor
+                        .getCurrentUserOrThrow()
+                        .copy(firstName = "sdf", lastName = "012")
+                )
+                .fold(
+                    ifLeft = { requestFail ->
+                        requestFail.handle(
+                            ifDomain = { list ->
+                                for (elem in list)
+                                    Log.e(tag, "Domain failure: $elem")
+                            },
+                            ifData = { list ->
+                                list.forEach(::handleNetworkFail)
+                            }
+                        )
+                    },
+                    ifRight = {
+                        println("Done update")
                     }
                 )
+
+            interactor
+                .logout()
+                .fold(
+                    ifLeft = ::handleNetworkFail,
+                    ifRight = { println("Done logout") }
+                )*/
         }
     }
 
     private fun handleNetworkFail(fail: DataFailure) {
-        val res = when (fail) {
+        when (fail) {
             is DataFailure.UnknownResponse ->
                 Log.e(
                     tag,
-                    "Unknown fail: code = ${fail.code}, body = ${fail.body}, message = ${fail.debugMessage}"
+                    "Data unknown fail: code = ${fail.code}, body = ${fail.body}, message = ${fail.debugMessage}"
                 )
 
             is DataFailure.NotAuthenticated ->
-                Log.e(tag, "NotAuthenticated")
+                Log.e(tag, "Data NotAuthenticated fail: ${fail.debugMessage}")
 
             is DataFailure.ConnectionToRepository ->
-                Log.e(tag, "Connection fail: message = ${fail.debugMessage}")
+                Log.e(tag, "Data connection fail: message = ${fail.debugMessage}")
         }
     }
 }

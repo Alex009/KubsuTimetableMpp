@@ -15,6 +15,14 @@ class AuthInteractorImpl(
         authGateway.signIn(email, password)
     }
 
+    override suspend fun registrationUser(
+        email: String,
+        password: String
+    ): Either<RequestFailure<List<UserInfoFail>>, Unit> = def {
+        authGateway.registrationUser(email, password)
+    }
+
+
     override suspend fun isUserAuthenticated(): Boolean = def {
         userInfoGateway.getCurrentUserOrNull() != null
     }

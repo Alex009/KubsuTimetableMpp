@@ -1,9 +1,6 @@
 package com.kubsu.timetable.data.gateway
 
-import com.kubsu.timetable.DataFailure
-import com.kubsu.timetable.Either
-import com.kubsu.timetable.RequestFailure
-import com.kubsu.timetable.SignInFail
+import com.kubsu.timetable.*
 import com.kubsu.timetable.data.db.diff.DataDiffQueries
 import com.kubsu.timetable.data.db.diff.DeletedEntityQueries
 import com.kubsu.timetable.data.db.diff.UpdatedEntityQueries
@@ -39,12 +36,16 @@ class AuthGatewayImpl(
                 UserMapper.toEntity(it, timestamp)
             }
 
+    override suspend fun registrationUser(
+        email: String,
+        password: String
+    ): Either<RequestFailure<List<UserInfoFail>>, Unit> =
+        networkClient.registration(email, password)
+
     override suspend fun logout(): Either<DataFailure, Unit> {
-        if (userStorage.get() != null) {
-            userStorage.set(null)
-            clearDatabase()
-        }
-        return Either.right(Unit)
+        userStorage.set(null)
+        clearDatabase()
+        return networkClient.logout()
     }
 
     private fun clearDatabase() {

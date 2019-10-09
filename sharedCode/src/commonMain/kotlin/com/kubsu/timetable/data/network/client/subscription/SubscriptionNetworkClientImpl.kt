@@ -40,7 +40,7 @@ class SubscriptionNetworkClientImpl(
             }.mapLeft {
                 if (it is ServerFailure.Response && (it.code == 400 || it.code == 401))
                     if (it.code == 401)
-                        RequestFailure(DataFailure.NotAuthenticated)
+                        RequestFailure(DataFailure.NotAuthenticated(it.body))
                     else
                         parseCreateFail(it)
                 else
@@ -101,7 +101,7 @@ class SubscriptionNetworkClientImpl(
                 get<List<SubscriptionNetworkDto>>("$baseUrl/api/$apiVersion/subscriptions/")
             }.mapLeft {
                 if (it is ServerFailure.Response && it.code == 401)
-                    DataFailure.NotAuthenticated
+                    DataFailure.NotAuthenticated(it.body)
                 else
                     toNetworkFail(it)
             }
@@ -113,7 +113,7 @@ class SubscriptionNetworkClientImpl(
                 get<SubscriptionNetworkDto>("$baseUrl/api/$apiVersion/subscriptions/$id/")
             }.mapLeft {
                 if (it is ServerFailure.Response && it.code == 401)
-                    DataFailure.NotAuthenticated
+                    DataFailure.NotAuthenticated(it.body)
                 else
                     toNetworkFail(it)
             }
@@ -136,7 +136,7 @@ class SubscriptionNetworkClientImpl(
             }.mapLeft {
                 if (it is ServerFailure.Response && (it.code == 400 || it.code == 401))
                     if (it.code == 401)
-                        RequestFailure(DataFailure.NotAuthenticated)
+                        RequestFailure(DataFailure.NotAuthenticated(it.body))
                     else
                         parseCreateFail(it)
                 else
@@ -150,7 +150,7 @@ class SubscriptionNetworkClientImpl(
                 delete<Unit>("$baseUrl/api/$apiVersion/subscriptions/$id/")
             }.mapLeft {
                 if (it is ServerFailure.Response && it.code == 401)
-                    DataFailure.NotAuthenticated
+                    DataFailure.NotAuthenticated(it.body)
                 else
                     toNetworkFail(it)
             }

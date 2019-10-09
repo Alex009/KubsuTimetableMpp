@@ -20,7 +20,7 @@ class TimetableNetworkClientImpl(
                 get<List<TimetableNetworkDto>>("$baseUrl/api/$apiVersion/timetables/")
             }.mapLeft {
                 if (it is ServerFailure.Response && it.code == 401)
-                    DataFailure.NotAuthenticated
+                    DataFailure.NotAuthenticated(it.body)
                 else
                     toNetworkFail(it)
             }
