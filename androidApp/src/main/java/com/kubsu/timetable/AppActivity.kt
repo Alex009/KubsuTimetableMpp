@@ -5,120 +5,111 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.kubsu.timetable.domain.interactor.auth.AuthInteractor
 import com.kubsu.timetable.domain.interactor.subscription.SubscriptionInteractor
-import com.kubsu.timetable.domain.interactor.userInfo.UserInteractor
+import com.kubsu.timetable.domain.interactor.sync.SyncMixinInteractor
+import com.kubsu.timetable.domain.interactor.timetable.TimetableInteractor
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class AppActivity : AppCompatActivity() {
-    lateinit var interactor: AuthInteractor
-    lateinit var userInteractor: UserInteractor
-    lateinit var subscriptionInteractor: SubscriptionInteractor
     private val tag = "AppActivity"
+    lateinit var syncMixinInteractor: SyncMixinInteractor
+    lateinit var timetableInteractor: TimetableInteractor
+    lateinit var authInteractor: AuthInteractor
+    lateinit var subscriptionsInteractor: SubscriptionInteractor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //val email = "indrih32141@gmail.com"
-        //val password = "Margalo_pidor_69"
+        val email = "indrih32141@gmail.com"
+        val password = "Margalo_pidor_69"
         GlobalScope.launch {
-            /*interactor
-                .signIn(email, password)
-                .fold(
-                    ifLeft = { requestFail ->
-                        requestFail.handle(
-                            ifDomain = { list ->
-                                for (elem in list)
-                                    Log.e(tag, "Domain failure: $elem")
-                            },
-                            ifData = { list ->
-                                list.forEach(::handleNetworkFail)
-                            }
-                        )
-                    },
-                    ifRight = {
-                        Log.i(tag, "Done: $it")
-                    }
-                )*/
-
-            /*subscriptionInteractor
-                .create(
-                    subgroupId = 3,
-                    subscriptionName = "Name",
-                    isMain = true
-                )
-                .mapLeft { requestFail ->
-                    requestFail.handle(
-                        ifDomain = { list ->
-                            for (elem in list)
-                                Log.e(tag, "Domain failure: $elem")
-                        },
-                        ifData = { list ->
-                            list.forEach(::handleNetworkFail)
+            /*if (!authInteractor.isUserAuthenticated())
+                authInteractor
+                    .signIn(email, password)
+                    .fold(
+                        ifLeft = ::handleRequestFailure,
+                        ifRight = {
+                            Log.i(tag, "User: $it")
                         }
                     )
-                }
-
-            subscriptionInteractor
+            subscriptionsInteractor
                 .getAll()
                 .fold(
-                    ifLeft = ::handleNetworkFail,
-                    ifRight = {
-                        println(it)
-                        val subscription = it.firstOrNull()
+                    ifLeft = ::handleDataFailure,
+                    ifRight = { list ->
+                        Log.i(tag, "Subscriptions: $list")
+
+                        val subscription = list.firstOrNull()
                         if (subscription != null) {
-                            subscriptionInteractor
-                                .deleteById(subscription.id)
-                                .mapLeft(::handleNetworkFail)
+                            subscriptionsInteractor
+                                .getById(subscription.id)
+                                .fold(
+                                    ifLeft = ::handleDataFailure,
+                                    ifRight = {
+                                        assert(subscription == it)
+                                        Log.i(tag, "select subscriptions done")
+
+                                        *//*subscriptionsInteractor
+                                            .update(it.copy(title = "Subscription name"))
+                                            .fold(
+                                                ifLeft = ::handleRequestFailure,
+                                                ifRight = {
+                                                    Log.i(tag, "update subscription done")
+                                                }
+                                            )*//*
+
+                                        *//*subscriptionsInteractor
+                                            .deleteById(it.id)
+                                            .fold(
+                                                ifLeft = ::handleDataFailure,
+                                                ifRight = {
+                                                    Log.i(tag, "delete subscription done")
+                                                }
+                                            )*//*
+
+                                        *//*timetableInteractor
+                                            .getAllTimetables(it)
+                                            .fold(
+                                                ifLeft = ::handleDataFailure,
+                                                ifRight = { list ->
+                                                    Log.i(tag, "Timetables: $list")
+                                                }
+                                            )*//*
+                                    }
+                                )
                         }
                     }
                 )*/
 
-            /*userInteractor
-                .update(
-                    userInteractor
-                        .getCurrentUserOrThrow()
-                        .copy(firstName = "sdf", lastName = "012")
-                )
+            syncMixinInteractor
+                .updateData()
                 .fold(
-                    ifLeft = { requestFail ->
-                        requestFail.handle(
-                            ifDomain = { list ->
-                                for (elem in list)
-                                    Log.e(tag, "Domain failure: $elem")
-                            },
-                            ifData = { list ->
-                                list.forEach(::handleNetworkFail)
-                            }
-                        )
-                    },
+                    ifLeft = ::handleDataFailure,
                     ifRight = {
-                        println("Done update")
+                        Log.i(tag, "Success update")
                     }
                 )
-
-            interactor
-                .logout()
-                .fold(
-                    ifLeft = ::handleNetworkFail,
-                    ifRight = { println("Done logout") }
-                )*/
         }
     }
 
-    private fun handleNetworkFail(fail: DataFailure) {
-        when (fail) {
-            is DataFailure.UnknownResponse ->
-                Log.e(
-                    tag,
-                    "Data unknown fail: code = ${fail.code}, body = ${fail.body}, message = ${fail.debugMessage}"
-                )
+    private fun <D> handleRequestFailure(requestFailure: RequestFailure<D>) {
+        requestFailure.handle(
+            ifData = { it.forEach(::handleDataFailure) },
+            ifDomain = { Log.e(tag, "Domain fail: $it") }
+        )
+    }
 
+    private fun handleDataFailure(dataFailure: DataFailure) {
+        when (dataFailure) {
             is DataFailure.NotAuthenticated ->
-                Log.e(tag, "Data NotAuthenticated fail: ${fail.debugMessage}")
+                Log.e(tag, "Not authenticated: ${dataFailure.debugMessage}")
 
             is DataFailure.ConnectionToRepository ->
-                Log.e(tag, "Data connection fail: message = ${fail.debugMessage}")
+                Log.e(tag, "Connection to repository: ${dataFailure.debugMessage}")
+
+            is DataFailure.UnknownResponse ->
+                Log.e(tag, "Unknown response: body = ${dataFailure.body}, code = ${dataFailure.code}, message = ${dataFailure.debugMessage}")
         }
     }
 }

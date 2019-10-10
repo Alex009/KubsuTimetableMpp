@@ -12,7 +12,8 @@ object UserMapper {
             firstName = storageDto.firstName,
             lastName = storageDto.lastName,
             email = storageDto.email,
-            timestamp = Timestamp(storageDto.timestamp)
+            timestamp = Timestamp(storageDto.timestamp),
+            sessionKey = storageDto.sessionKey
         )
 
     fun toEntity(networkDto: UserNetworkDto, timestamp: Timestamp): UserEntity =
@@ -21,7 +22,8 @@ object UserMapper {
             firstName = networkDto.firstName,
             lastName = networkDto.lastName,
             email = networkDto.email,
-            timestamp = timestamp
+            timestamp = timestamp,
+            sessionKey = networkDto.sessionKey
         )
 
     fun toStorageDto(entity: UserEntity): UserStorageDto =
@@ -30,7 +32,8 @@ object UserMapper {
             firstName = entity.firstName,
             lastName = entity.lastName,
             email = entity.email,
-            timestamp = entity.timestamp.value
+            timestamp = entity.timestamp.value,
+            sessionKey = entity.sessionKey
         )
 
     fun toStorageDto(entity: UserNetworkDto, timestamp: Timestamp): UserStorageDto =
@@ -39,7 +42,8 @@ object UserMapper {
             firstName = entity.firstName,
             lastName = entity.lastName,
             email = entity.email,
-            timestamp = timestamp.value
+            timestamp = timestamp.value,
+            sessionKey = entity.sessionKey
         )
 
     fun toNetworkDto(entity: UserEntity): UserNetworkDto =
@@ -47,7 +51,8 @@ object UserMapper {
             id = entity.id,
             email = entity.email,
             firstName = entity.firstName,
-            lastName = entity.lastName
+            lastName = entity.lastName,
+            sessionKey = entity.sessionKey
         )
 
     fun toNetworkDto(storageDto: UserStorageDto): UserNetworkDto =
@@ -55,6 +60,7 @@ object UserMapper {
             id = storageDto.id,
             email = storageDto.email,
             firstName = storageDto.firstName,
-            lastName = storageDto.lastName
+            lastName = storageDto.lastName,
+            sessionKey = storageDto.sessionKey
         )
 }

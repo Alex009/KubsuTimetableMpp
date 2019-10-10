@@ -6,11 +6,15 @@ import kotlinx.serialization.Serializable
 @Serializable
 class UserNetworkDto(
     val id: Int,
+
     val email: String,
 
     @SerialName("first_name")
     val firstName: String,
 
     @SerialName("last_name")
-    val lastName: String
+    val lastName: String,
+
+    @SerialName("sessionid")
+    val sessionKey: String
 )

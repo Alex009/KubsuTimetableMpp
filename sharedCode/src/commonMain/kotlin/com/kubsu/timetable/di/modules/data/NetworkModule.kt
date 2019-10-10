@@ -14,6 +14,7 @@ import com.kubsu.timetable.data.network.sender.NetworkSender
 import com.kubsu.timetable.data.network.sender.NetworkSenderImpl
 import kotlinx.serialization.UnstableDefault
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import org.kodein.di.Kodein
 import org.kodein.di.erased.bind
 import org.kodein.di.erased.instance
@@ -21,9 +22,11 @@ import org.kodein.di.erased.singleton
 
 internal val networkModule = Kodein.Module("network") {
     @UseExperimental(UnstableDefault::class)
-    bind() from singleton { Json.nonstrict }
+    bind() from singleton { Json(JsonConfiguration.Default.copy(strictMode = false)) }
 
-    bind<NetworkSender>() with singleton { NetworkSenderImpl(instance(), instance()) }
+    bind<NetworkSender>() with singleton {
+        NetworkSenderImpl(instance(), instance())
+    }
 
     // subscription
     bind<SubscriptionNetworkClient>() with singleton {

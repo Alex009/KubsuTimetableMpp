@@ -13,7 +13,6 @@ import io.ktor.client.request.get
 import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.http.Parameters
-import io.ktor.http.Url
 import kotlinx.serialization.json.Json
 
 class UserInfoNetworkClientImpl(
@@ -62,11 +61,7 @@ class UserInfoNetworkClientImpl(
             when (it) {
                 "invalid" -> UserInfoFail.InvalidEmail
                 "unique" -> UserInfoFail.NotUniqueEmail
-                else -> DataFailure.UnknownResponse(
-                    responseCode,
-                    responseBody,
-                    "Unknown param: $it"
-                )
+                else -> DataFailure.UnknownResponse(responseCode, responseBody, "Unknown param: $it")
             }
         }.plus(
             passwordFailList.map {
@@ -74,11 +69,7 @@ class UserInfoNetworkClientImpl(
                     "password_too_short" -> UserInfoFail.ShortPassword
                     "password_too_common" -> UserInfoFail.CommonPassword
                     "password_entirely_numeric" -> UserInfoFail.EntirelyNumericPassword
-                    else -> DataFailure.UnknownResponse(
-                        responseCode,
-                        responseBody,
-                        "Unknown param: $it"
-                    )
+                    else -> DataFailure.UnknownResponse(responseCode, responseBody, "Unknown param: $it")
                 }
             }
         )
@@ -151,8 +142,8 @@ class UserInfoNetworkClientImpl(
     ): Either<RequestFailure<List<UserUpdateFail>>, Unit> =
         with(networkSender) {
             handle {
-                val url = Url("$baseUrl/api/$apiVersion/users/info/")
-                patch<Unit>(url) {
+                patch<Unit>("$baseUrl/api/$apiVersion/users/info/") {
+                    addSessionKey(user)
                     body = FormDataContent(
                         Parameters.build {
                             append("first_name", user.firstName)
@@ -217,17 +208,17 @@ class UserInfoNetworkClientImpl(
         return userInfoRequestFail.plus(
             maxLengthRequestFail,
             domainPlus = { first, second ->
-                first
-                    ?.plus(second ?: emptyList())
-                    ?.toList()
+                first?.plus(second ?: emptyList())?.toList()
             }
         )
     }
 
-    override suspend fun logout(): Either<DataFailure, Unit> =
+    override suspend fun logout(user: UserNetworkDto): Either<DataFailure, Unit> =
         with(networkSender) {
             handle {
-                get<Unit>("$baseUrl/api/$apiVersion/users/logout/")
+                get<Unit>("$baseUrl/api/$apiVersion/users/logout/") {
+                    addSessionKey(user)
+                }
             }.mapLeft(::toNetworkFail)
         }
 }

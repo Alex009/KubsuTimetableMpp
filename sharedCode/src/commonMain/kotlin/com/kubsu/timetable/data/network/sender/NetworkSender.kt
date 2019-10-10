@@ -8,5 +8,5 @@ interface NetworkSender {
     val apiVersion: String
     val baseUrl: String
 
-    suspend fun <R> handle(block: suspend HttpClient.() -> R): Either<ServerFailure, R>
+    suspend fun <R> handle(createRequest: suspend HttpClient.() -> R): Either<ServerFailure, R>
 }

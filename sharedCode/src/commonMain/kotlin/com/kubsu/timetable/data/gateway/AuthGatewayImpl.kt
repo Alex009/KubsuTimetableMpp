@@ -42,11 +42,13 @@ class AuthGatewayImpl(
     ): Either<RequestFailure<List<UserInfoFail>>, Unit> =
         networkClient.registration(email, password)
 
-    override suspend fun logout(): Either<DataFailure, Unit> {
-        userStorage.set(null)
-        clearDatabase()
-        return networkClient.logout()
-    }
+    override suspend fun logout(user: UserEntity): Either<DataFailure, Unit> =
+        networkClient
+            .logout(UserMapper.toNetworkDto(user))
+            .map {
+                userStorage.set(null)
+                clearDatabase()
+            }
 
     private fun clearDatabase() {
         classQueries.deleteAll()

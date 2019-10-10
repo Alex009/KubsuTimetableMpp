@@ -16,12 +16,12 @@ fun appKodein(app: App) = Kodein {
         object : Application.ActivityLifecycleCallbacks {
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
                 (activity as? AppActivity)?.let {
-                    it.interactor = instance()
-                    it.userInteractor = instance()
-                    it.subscriptionInteractor = instance()
+                    it.syncMixinInteractor = instance()
+                    it.timetableInteractor = instance()
+                    it.authInteractor = instance()
+                    it.subscriptionsInteractor = instance()
                 }
             }
-
             override fun onActivityStarted(activity: Activity) = Unit
             override fun onActivityResumed(activity: Activity) = Unit
             override fun onActivityPaused(activity: Activity) = Unit

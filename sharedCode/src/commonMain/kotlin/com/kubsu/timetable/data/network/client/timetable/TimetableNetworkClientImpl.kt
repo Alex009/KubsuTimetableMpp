@@ -2,6 +2,8 @@ package com.kubsu.timetable.data.network.client.timetable
 
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.Either
+import com.kubsu.timetable.addSessionKey
+import com.kubsu.timetable.data.network.dto.UserNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.data.ClassNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.data.ClassTimeNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.data.LecturerNetworkDto
@@ -14,10 +16,14 @@ import io.ktor.client.request.get
 class TimetableNetworkClientImpl(
     private val networkSender: NetworkSender
 ) : TimetableNetworkClient {
-    override suspend fun selectTimetableListForUser(): Either<DataFailure, List<TimetableNetworkDto>> =
+    override suspend fun selectTimetableListForUser(
+        user: UserNetworkDto
+    ): Either<DataFailure, List<TimetableNetworkDto>> =
         with(networkSender) {
             handle {
-                get<List<TimetableNetworkDto>>("$baseUrl/api/$apiVersion/timetables/")
+                get<List<TimetableNetworkDto>>("$baseUrl/api/$apiVersion/timetables/") {
+                    addSessionKey(user)
+                }
             }.mapLeft {
                 if (it is ServerFailure.Response && it.code == 401)
                     DataFailure.NotAuthenticated(it.body)

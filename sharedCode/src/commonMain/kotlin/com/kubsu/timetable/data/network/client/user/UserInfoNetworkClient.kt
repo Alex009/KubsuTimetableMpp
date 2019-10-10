@@ -16,5 +16,5 @@ interface UserInfoNetworkClient {
 
     suspend fun update(user: UserNetworkDto): Either<RequestFailure<List<UserUpdateFail>>, Unit>
 
-    suspend fun logout(): Either<DataFailure, Unit>
+    suspend fun logout(user: UserNetworkDto): Either<DataFailure, Unit>
 }

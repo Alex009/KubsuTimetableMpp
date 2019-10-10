@@ -42,7 +42,7 @@ class SubscriptionInteractorImpl(
         val user = userInfoGateway.getCurrentUserOrNull()
 
         if (user != null)
-            subscriptionGateway.create(user.id, subgroupId, subscriptionName, isMain)
+            subscriptionGateway.create(user, subgroupId, subscriptionName, isMain)
         else
             Either.left(
                 RequestFailure(
@@ -66,7 +66,7 @@ class SubscriptionInteractorImpl(
         val user = userInfoGateway.getCurrentUserOrNull()
 
         if (user != null)
-            subscriptionGateway.getAll(user.id)
+            subscriptionGateway.getAll(user)
         else
             Either.left(
                 DataFailure.NotAuthenticated("SubscriptionInteractor#getAll")

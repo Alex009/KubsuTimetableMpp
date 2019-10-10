@@ -5,9 +5,11 @@ import com.kubsu.timetable.Either
 import com.kubsu.timetable.def
 import com.kubsu.timetable.domain.entity.timetable.data.SubscriptionEntity
 import com.kubsu.timetable.domain.entity.timetable.data.TimetableEntity
+import com.kubsu.timetable.domain.interactor.userInfo.UserInfoGateway
 
 class TimetableInteractorImpl(
-    private val timetableGateway: TimetableGateway
+    private val timetableGateway: TimetableGateway,
+    private val userInfoGateway: UserInfoGateway
 ) : TimetableInteractor {
     override suspend fun isRelevantForThisWeek(
         timetable: TimetableEntity
@@ -20,6 +22,12 @@ class TimetableInteractorImpl(
     override suspend fun getAllTimetables(
         subscription: SubscriptionEntity
     ): Either<DataFailure, List<TimetableEntity>> = def {
-        timetableGateway.getAll(subscription.id)
+        val currentUser = userInfoGateway.getCurrentUserOrNull()
+        if (currentUser != null)
+            timetableGateway.getAll(currentUser, subscription.id)
+        else
+            Either.left(
+                DataFailure.NotAuthenticated("TimetableInteractor#getAllTimetables")
+            )
     }
 }

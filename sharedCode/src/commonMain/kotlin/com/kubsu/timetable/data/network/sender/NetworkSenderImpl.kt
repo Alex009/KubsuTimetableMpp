@@ -8,7 +8,6 @@ import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.HttpClientEngineConfig
 import io.ktor.client.features.HttpCallValidator
 import io.ktor.client.features.ResponseException
-import io.ktor.client.features.cookies.HttpCookies
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.serializer.KotlinxSerializer
 import io.ktor.client.features.logging.LogLevel
@@ -25,9 +24,9 @@ class NetworkSenderImpl(
     override val apiVersion = "v1"
     override val baseUrl = "https://kubsu-timetable.info"
 
-    override suspend fun <R> handle(block: suspend HttpClient.() -> R): Either<ServerFailure, R> =
+    override suspend fun <R> handle(createRequest: suspend HttpClient.() -> R): Either<ServerFailure, R> =
         try {
-            Either.right(httpClient.block())
+            Either.right(httpClient.createRequest())
         } catch (e: ResponseException) {
             // bad status code
             Either.left(
@@ -47,8 +46,6 @@ class NetworkSenderImpl(
 
     private fun createConfig() =
         HttpClientConfig<HttpClientEngineConfig>().apply {
-            install(HttpCookies) // Very important!
-
             install(HttpCallValidator) {
                 validateResponse { response ->
                     if (response.status.value >= 300) throw ResponseException(response)
@@ -56,7 +53,7 @@ class NetworkSenderImpl(
             }
             install(Logging) {
                 logger = Logger.SIMPLE
-                level = LogLevel.NONE
+                level = LogLevel.ALL
             }
             install(JsonFeature) {
                 serializer = KotlinxSerializer(json)

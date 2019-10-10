@@ -14,5 +14,5 @@ interface AuthGateway {
         password: String
     ): Either<RequestFailure<List<UserInfoFail>>, Unit>
 
-    suspend fun logout(): Either<DataFailure, Unit>
+    suspend fun logout(user: UserEntity): Either<DataFailure, Unit>
 }

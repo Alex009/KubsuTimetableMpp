@@ -10,6 +10,7 @@ import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
 import com.kubsu.timetable.domain.interactor.userInfo.UserInfoGateway
 import com.kubsu.timetable.flatMap
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 
 class SyncMixinInteractorImpl(
@@ -21,9 +22,9 @@ class SyncMixinInteractorImpl(
 
         return@def if (user != null) {
             val diffList = mixinGateway.getAvailableDiffList(user.id)
-            handleAvailableDiffList(diffList, user.id).flatMap {
+            handleAvailableDiffList(diffList, user).flatMap {
                 mixinGateway
-                    .diff(user.timestamp)
+                    .diff(user)
                     .flatMap { (newTimestamp, basenameList) ->
                         handleBasenameList(basenameList, newTimestamp, diffList, user)
                     }
@@ -35,11 +36,11 @@ class SyncMixinInteractorImpl(
 
     private suspend fun handleAvailableDiffList(
         diffList: List<DataDiffEntity>,
-        userId: Int
+        user: UserEntity
     ): Either<DataFailure, Unit> = coroutineScope {
         diffList
-            .map { async { mixinGateway.meta(it.basename, userId, it.updatedIds) } }
-            .map { it.await() }
+            .map { async { mixinGateway.meta(it.basename, user, it.updatedIds) } }
+            .awaitAll()
             .firstOrNull { it is Either.Left }
             ?: Either.right(mixinGateway.delete(diffList))
     }
@@ -60,7 +61,7 @@ class SyncMixinInteractorImpl(
                     )
                 }
             }
-            .map { it.await() }
+            .awaitAll()
             .firstOrNull { it is Either.Left }
             ?: Either.right(userInfoGateway.updateTimestamp(user, timestamp))
     }

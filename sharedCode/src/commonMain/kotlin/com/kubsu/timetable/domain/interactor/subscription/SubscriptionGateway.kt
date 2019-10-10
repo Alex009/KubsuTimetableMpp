@@ -4,6 +4,7 @@ import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.Either
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SubscriptionFail
+import com.kubsu.timetable.domain.entity.UserEntity
 import com.kubsu.timetable.domain.entity.timetable.data.SubscriptionEntity
 import com.kubsu.timetable.domain.entity.timetable.select.FacultyEntity
 import com.kubsu.timetable.domain.entity.timetable.select.GroupEntity
@@ -17,7 +18,7 @@ interface SubscriptionGateway {
     suspend fun selectSubgroupList(groupId: Int): Either<DataFailure, List<SubgroupEntity>>
 
     suspend fun create(
-        userId: Int,
+        user: UserEntity,
         subgroupId: Int,
         subscriptionName: String,
         isMain: Boolean
@@ -25,7 +26,7 @@ interface SubscriptionGateway {
 
     suspend fun getById(id: Int, userId: Int): Either<DataFailure, SubscriptionEntity>
 
-    suspend fun getAll(userId: Int): Either<DataFailure, List<SubscriptionEntity>>
+    suspend fun getAll(user: UserEntity): Either<DataFailure, List<SubscriptionEntity>>
 
     suspend fun update(
         subscription: SubscriptionEntity

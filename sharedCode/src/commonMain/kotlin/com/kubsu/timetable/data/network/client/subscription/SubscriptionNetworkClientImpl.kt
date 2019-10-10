@@ -1,10 +1,8 @@
 package com.kubsu.timetable.data.network.client.subscription
 
-import com.kubsu.timetable.DataFailure
-import com.kubsu.timetable.Either
-import com.kubsu.timetable.RequestFailure
-import com.kubsu.timetable.SubscriptionFail
+import com.kubsu.timetable.*
 import com.kubsu.timetable.data.network.client.subscription.incorrectdata.SubscriptionIncorrectData
+import com.kubsu.timetable.data.network.dto.UserNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.data.SubscriptionNetworkDto
 import com.kubsu.timetable.data.network.sender.NetworkSender
 import com.kubsu.timetable.data.network.sender.failure.ServerFailure
@@ -14,14 +12,19 @@ import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.get
 import io.ktor.client.request.patch
 import io.ktor.client.request.post
+import io.ktor.http.ContentType
 import io.ktor.http.Parameters
+import io.ktor.http.content.TextContent
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 
 class SubscriptionNetworkClientImpl(
     private val networkSender: NetworkSender,
     private val json: Json
 ) : SubscriptionNetworkClient {
     override suspend fun createSubscription(
+        user: UserNetworkDto,
         subgroupId: Int,
         subscriptionName: String,
         isMain: Boolean
@@ -29,12 +32,13 @@ class SubscriptionNetworkClientImpl(
         with(networkSender) {
             handle {
                 post<SubscriptionNetworkDto>("$baseUrl/api/$apiVersion/subscriptions/") {
-                    body = FormDataContent(
-                        Parameters.build {
-                            append("subgroup", subgroupId.toString())
-                            append("title", subscriptionName)
-                            append("is_main", isMain.toString())
-                        }
+                    addSessionKey(user)
+                    body = jsonContent(
+                        mapOf(
+                            "subgroup" to JsonPrimitive(subgroupId),
+                            "title" to JsonPrimitive(subscriptionName),
+                            "is_main" to JsonPrimitive(isMain)
+                        )
                     )
                 }
             }.mapLeft {
@@ -95,10 +99,14 @@ class SubscriptionNetworkClientImpl(
         )
     }
 
-    override suspend fun selectSubscriptionsForUser(): Either<DataFailure, List<SubscriptionNetworkDto>> =
+    override suspend fun selectSubscriptionsForUser(
+        user: UserNetworkDto
+    ): Either<DataFailure, List<SubscriptionNetworkDto>> =
         with(networkSender) {
             handle {
-                get<List<SubscriptionNetworkDto>>("$baseUrl/api/$apiVersion/subscriptions/")
+                get<List<SubscriptionNetworkDto>>("$baseUrl/api/$apiVersion/subscriptions/") {
+                    addSessionKey(user)
+                }
             }.mapLeft {
                 if (it is ServerFailure.Response && it.code == 401)
                     DataFailure.NotAuthenticated(it.body)

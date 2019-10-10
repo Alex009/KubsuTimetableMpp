@@ -5,6 +5,7 @@ import com.kubsu.timetable.Either
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SubscriptionFail
 import com.kubsu.timetable.data.db.timetable.SubscriptionQueries
+import com.kubsu.timetable.data.mapper.UserMapper
 import com.kubsu.timetable.data.mapper.timetable.data.SubscriptionMapper
 import com.kubsu.timetable.data.mapper.timetable.select.FacultyMapper
 import com.kubsu.timetable.data.mapper.timetable.select.GroupMapper
@@ -12,6 +13,7 @@ import com.kubsu.timetable.data.mapper.timetable.select.OccupationMapper
 import com.kubsu.timetable.data.mapper.timetable.select.SubgroupMapper
 import com.kubsu.timetable.data.network.client.subscription.SubscriptionNetworkClient
 import com.kubsu.timetable.data.network.client.university.UniversityDataNetworkClient
+import com.kubsu.timetable.domain.entity.UserEntity
 import com.kubsu.timetable.domain.entity.timetable.data.SubscriptionEntity
 import com.kubsu.timetable.domain.entity.timetable.select.FacultyEntity
 import com.kubsu.timetable.domain.entity.timetable.select.GroupEntity
@@ -45,15 +47,20 @@ class SubscriptionGatewayImpl(
             .map { list -> list.map { SubgroupMapper.toEntity(it, groupId) } }
 
     override suspend fun create(
-        userId: Int,
+        user: UserEntity,
         subgroupId: Int,
         subscriptionName: String,
         isMain: Boolean
     ): Either<RequestFailure<List<SubscriptionFail>>, Unit> =
         subscriptionNetworkClient
-            .createSubscription(subgroupId, subscriptionName, isMain)
+            .createSubscription(
+                user = UserMapper.toNetworkDto(user),
+                subgroupId = subgroupId,
+                subscriptionName = subscriptionName,
+                isMain = isMain
+            )
             .map { subscription ->
-                subscriptionQueries.update(SubscriptionMapper.toDbDto(subscription, userId))
+                subscriptionQueries.update(SubscriptionMapper.toDbDto(subscription, user.id))
             }
 
     override suspend fun getById(id: Int, userId: Int): Either<DataFailure, SubscriptionEntity> {
@@ -70,18 +77,18 @@ class SubscriptionGatewayImpl(
                 }
     }
 
-    override suspend fun getAll(userId: Int): Either<DataFailure, List<SubscriptionEntity>> {
-        val subscriptionList = subscriptionQueries.selectByUserId(userId).executeAsList()
+    override suspend fun getAll(user: UserEntity): Either<DataFailure, List<SubscriptionEntity>> {
+        val subscriptionList = subscriptionQueries.selectByUserId(user.id).executeAsList()
 
         return if (subscriptionList.isNotEmpty())
             Either.right(subscriptionList.map(SubscriptionMapper::toEntity))
         else
             subscriptionNetworkClient
-                .selectSubscriptionsForUser()
+                .selectSubscriptionsForUser(UserMapper.toNetworkDto(user))
                 .map { list ->
                     list.map {
-                        subscriptionQueries.update(SubscriptionMapper.toDbDto(it, userId))
-                        SubscriptionMapper.toEntity(it, userId)
+                        subscriptionQueries.update(SubscriptionMapper.toDbDto(it, user.id))
+                        SubscriptionMapper.toEntity(it, user.id)
                     }
                 }
     }

@@ -28,6 +28,10 @@ class AuthInteractorImpl(
     }
 
     override suspend fun logout(): Either<DataFailure, Unit> = def {
-        authGateway.logout()
+        val user = userInfoGateway.getCurrentUserOrNull()
+        if (user != null)
+            authGateway.logout(user)
+        else
+            Either.left(DataFailure.NotAuthenticated("AuthInteractor#logout"))
     }
 }

@@ -2,11 +2,13 @@ package com.kubsu.timetable.data.gateway
 
 import com.kubsu.timetable.*
 import com.kubsu.timetable.data.db.timetable.*
+import com.kubsu.timetable.data.mapper.UserMapper
 import com.kubsu.timetable.data.mapper.timetable.data.*
 import com.kubsu.timetable.data.network.client.timetable.TimetableNetworkClient
 import com.kubsu.timetable.data.network.client.university.UniversityDataNetworkClient
 import com.kubsu.timetable.data.network.dto.timetable.data.ClassNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.data.TimetableNetworkDto
+import com.kubsu.timetable.domain.entity.UserEntity
 import com.kubsu.timetable.domain.entity.timetable.data.*
 import com.kubsu.timetable.domain.interactor.timetable.TimetableGateway
 import kotlinx.coroutines.async
@@ -41,6 +43,7 @@ class TimetableGatewayImpl(
     }
 
     override suspend fun getAll(
+        user: UserEntity,
         subgroupId: Int
     ): Either<DataFailure, List<TimetableEntity>> {
         val timetableDbList = timetableQueries
@@ -53,7 +56,7 @@ class TimetableGatewayImpl(
                 .toTimetableEntityList()
         else
             timetableNetworkClient
-                .selectTimetableListForUser()
+                .selectTimetableListForUser(UserMapper.toNetworkDto(user))
                 .flatMap { list ->
                     list
                         .map(TimetableMapper::toDbDto)

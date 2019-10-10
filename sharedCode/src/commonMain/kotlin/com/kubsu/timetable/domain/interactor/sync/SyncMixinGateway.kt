@@ -11,7 +11,7 @@ interface SyncMixinGateway {
     fun registerDataDiff(entity: DataDiffEntity)
     suspend fun getAvailableDiffList(userId: Int): List<DataDiffEntity>
     suspend fun delete(list: List<DataDiffEntity>)
-    suspend fun diff(timestamp: Timestamp): Either<DataFailure, Pair<Timestamp, List<Basename>>>
+    suspend fun diff(user: UserEntity): Either<DataFailure, Pair<Timestamp, List<Basename>>>
 
     suspend fun updateData(
         basename: Basename,
@@ -21,7 +21,7 @@ interface SyncMixinGateway {
 
     suspend fun meta(
         basename: Basename,
-        userId: Int,
+        user: UserEntity,
         updatedIds: List<Int>
     ): Either<DataFailure, Unit>
 }
