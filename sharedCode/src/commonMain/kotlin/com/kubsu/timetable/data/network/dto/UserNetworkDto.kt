@@ -1,5 +1,6 @@
 package com.kubsu.timetable.data.network.dto
 
+import com.kubsu.timetable.sessionId
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -15,6 +16,6 @@ class UserNetworkDto(
     @SerialName("last_name")
     val lastName: String,
 
-    @SerialName("sessionid")
+    @SerialName(sessionId)
     val sessionKey: String
 )

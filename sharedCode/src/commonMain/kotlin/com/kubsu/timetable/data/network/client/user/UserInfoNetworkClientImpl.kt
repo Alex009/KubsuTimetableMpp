@@ -8,11 +8,9 @@ import com.kubsu.timetable.data.network.dto.UserNetworkDto
 import com.kubsu.timetable.data.network.sender.NetworkSender
 import com.kubsu.timetable.data.network.sender.failure.ServerFailure
 import com.kubsu.timetable.data.network.sender.failure.toNetworkFail
-import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.get
 import io.ktor.client.request.patch
 import io.ktor.client.request.post
-import io.ktor.http.Parameters
 import kotlinx.serialization.json.Json
 
 class UserInfoNetworkClientImpl(
@@ -26,12 +24,7 @@ class UserInfoNetworkClientImpl(
         with(networkSender) {
             handle {
                 post<Unit>("$baseUrl/api/$apiVersion/users/registration/") {
-                    body = FormDataContent(
-                        Parameters.build {
-                            append("email", email)
-                            append("password", password)
-                        }
-                    )
+                    body = jsonContent("email" to email.toJson(), "password" to password.toJson())
                 }
             }.mapLeft {
                 if (it is ServerFailure.Response && it.code == 400)
@@ -86,12 +79,7 @@ class UserInfoNetworkClientImpl(
         with(networkSender) {
             handle {
                 post<UserNetworkDto>("$baseUrl/api/$apiVersion/users/login/") {
-                    body = FormDataContent(
-                        Parameters.build {
-                            append("email", email)
-                            append("password", password)
-                        }
-                    )
+                    body = jsonContent("email" to email.toJson(), "password" to password.toJson())
                 }
             }.mapLeft {
                 if (it is ServerFailure.Response && it.code == 400)
@@ -144,11 +132,9 @@ class UserInfoNetworkClientImpl(
             handle {
                 patch<Unit>("$baseUrl/api/$apiVersion/users/info/") {
                     addSessionKey(user)
-                    body = FormDataContent(
-                        Parameters.build {
-                            append("first_name", user.firstName)
-                            append("last_name", user.lastName)
-                        }
+                    body = jsonContent(
+                        "first_name" to user.firstName.toJson(),
+                        "last_name" to user.lastName.toJson()
                     )
                 }
             }.mapLeft {
@@ -200,13 +186,11 @@ class UserInfoNetworkClientImpl(
             }
         )
 
-        val maxLengthRequestFail = RequestFailure(
-            domain = failList.filterIsInstance<UserUpdateFail>(),
-            data = failList.filterIsInstance<DataFailure>()
-        )
-
         return userInfoRequestFail.plus(
-            maxLengthRequestFail,
+            requestFailure = RequestFailure(
+                domain = failList.filterIsInstance<UserUpdateFail>(),
+                data = failList.filterIsInstance<DataFailure>()
+            ),
             domainPlus = { first, second ->
                 first?.plus(second ?: emptyList())?.toList()
             }

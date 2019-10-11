@@ -22,8 +22,12 @@ interface SubscriptionNetworkClient {
     suspend fun selectSubscriptionById(id: Int): Either<DataFailure, SubscriptionNetworkDto>
 
     suspend fun update(
+        user: UserNetworkDto,
         subscription: SubscriptionNetworkDto
     ): Either<RequestFailure<List<SubscriptionFail>>, Unit>
 
-    suspend fun deleteSubscription(id: Int): Either<DataFailure, Unit>
+    suspend fun deleteSubscription(
+        user: UserNetworkDto,
+        id: Int
+    ): Either<DataFailure, Unit>
 }

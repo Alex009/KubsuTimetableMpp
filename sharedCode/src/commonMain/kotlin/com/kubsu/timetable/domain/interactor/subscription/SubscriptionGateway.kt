@@ -29,8 +29,9 @@ interface SubscriptionGateway {
     suspend fun getAll(user: UserEntity): Either<DataFailure, List<SubscriptionEntity>>
 
     suspend fun update(
+        user: UserEntity,
         subscription: SubscriptionEntity
     ): Either<RequestFailure<List<SubscriptionFail>>, Unit>
 
-    suspend fun deleteById(id: Int): Either<DataFailure, Unit>
+    suspend fun deleteById(user: UserEntity, id: Int): Either<DataFailure, Unit>
 }

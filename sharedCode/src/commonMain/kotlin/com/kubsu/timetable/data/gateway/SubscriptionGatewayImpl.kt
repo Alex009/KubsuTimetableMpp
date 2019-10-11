@@ -94,17 +94,24 @@ class SubscriptionGatewayImpl(
     }
 
     override suspend fun update(
+        user: UserEntity,
         subscription: SubscriptionEntity
     ): Either<RequestFailure<List<SubscriptionFail>>, Unit> =
         subscriptionNetworkClient
-            .update(SubscriptionMapper.toNetworkDto(subscription))
+            .update(
+                UserMapper.toNetworkDto(user),
+                SubscriptionMapper.toNetworkDto(subscription)
+            )
             .map {
                 subscriptionQueries.update(SubscriptionMapper.toDbDto(subscription))
             }
 
-    override suspend fun deleteById(id: Int): Either<DataFailure, Unit> =
+    override suspend fun deleteById(
+        user: UserEntity,
+        id: Int
+    ): Either<DataFailure, Unit> =
         subscriptionNetworkClient
-            .deleteSubscription(id)
+            .deleteSubscription(UserMapper.toNetworkDto(user), id)
             .map {
                 subscriptionQueries.deleteById(id)
             }

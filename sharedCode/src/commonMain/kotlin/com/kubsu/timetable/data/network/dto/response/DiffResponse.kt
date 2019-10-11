@@ -7,6 +7,6 @@ import kotlinx.serialization.Serializable
 class DiffResponse(
     val timestamp: Long,
 
-    @SerialName("basename_list")
+    @SerialName("base_names")
     val basenameList: List<String>
 )

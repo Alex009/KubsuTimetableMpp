@@ -21,19 +21,45 @@ class AppActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val email = "indrih32141@gmail.com"
+        val email = "indrih32311@gmail.com"
         val password = "Margalo_pidor_69"
         GlobalScope.launch {
-            /*if (!authInteractor.isUserAuthenticated())
-                authInteractor
-                    .signIn(email, password)
-                    .fold(
-                        ifLeft = ::handleRequestFailure,
-                        ifRight = {
-                            Log.i(tag, "User: $it")
-                        }
-                    )
-            subscriptionsInteractor
+            authInteractor
+                .logout()
+                .fold(
+                    ifLeft = ::handleDataFailure,
+                    ifRight = {
+                        Log.i(tag, "Success logout")
+                    }
+                )
+            authInteractor
+                .signIn(email, password)
+                .fold(
+                    ifLeft = ::handleRequestFailure,
+                    ifRight = {
+                        Log.i(tag, "User: $it")
+                    }
+                )
+
+            /*subscriptionsInteractor
+                .selectFacultyList()
+                .fold(
+                    ifLeft = ::handleDataFailure,
+                    ifRight = { list ->
+                        Log.i(tag, "Faculty list: $list")
+                        val faculty = list.first()
+
+                        timetableGateway
+                            .getUniversityData(faculty.id)
+                            .fold(
+                                ifLeft = ::handleDataFailure,
+                                ifRight = {
+                                    Log.i(tag, "University info: $it")
+                                }
+                            )
+                    }
+                )*/
+            /*subscriptionsInteractor
                 .getAll()
                 .fold(
                     ifLeft = ::handleDataFailure,
@@ -50,46 +76,37 @@ class AppActivity : AppCompatActivity() {
                                         assert(subscription == it)
                                         Log.i(tag, "select subscriptions done")
 
-                                        *//*subscriptionsInteractor
+                                        subscriptionsInteractor
                                             .update(it.copy(title = "Subscription name"))
                                             .fold(
                                                 ifLeft = ::handleRequestFailure,
                                                 ifRight = {
                                                     Log.i(tag, "update subscription done")
                                                 }
-                                            )*//*
+                                            )
 
-                                        *//*subscriptionsInteractor
+                                        subscriptionsInteractor
                                             .deleteById(it.id)
                                             .fold(
                                                 ifLeft = ::handleDataFailure,
                                                 ifRight = {
                                                     Log.i(tag, "delete subscription done")
                                                 }
-                                            )*//*
+                                            )
 
-                                        *//*timetableInteractor
+                                        timetableInteractor
                                             .getAllTimetables(it)
                                             .fold(
                                                 ifLeft = ::handleDataFailure,
                                                 ifRight = { list ->
                                                     Log.i(tag, "Timetables: $list")
                                                 }
-                                            )*//*
+                                            )
                                     }
                                 )
                         }
                     }
                 )*/
-
-            syncMixinInteractor
-                .updateData()
-                .fold(
-                    ifLeft = ::handleDataFailure,
-                    ifRight = {
-                        Log.i(tag, "Success update")
-                    }
-                )
         }
     }
 

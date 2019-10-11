@@ -52,7 +52,7 @@ class UniversityDataNetworkClientImpl(
         with(networkSender) {
             handle {
                 get<UniversityInfoNetworkDto>(
-                    "$baseUrl/api/$apiVersion/university/info/?faculty_id=$facultyId"
+                    "$baseUrl/api/$apiVersion/university-info/$facultyId"
                 )
             }.mapLeft(::toNetworkFail)
         }

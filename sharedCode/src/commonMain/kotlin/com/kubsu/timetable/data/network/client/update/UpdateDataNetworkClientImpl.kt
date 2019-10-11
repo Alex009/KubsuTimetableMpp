@@ -1,17 +1,13 @@
 package com.kubsu.timetable.data.network.client.update
 
-import com.kubsu.timetable.DataFailure
-import com.kubsu.timetable.Either
-import com.kubsu.timetable.addSessionKey
+import com.kubsu.timetable.*
 import com.kubsu.timetable.data.network.dto.UserNetworkDto
 import com.kubsu.timetable.data.network.dto.response.DiffResponse
 import com.kubsu.timetable.data.network.dto.response.SyncResponse
 import com.kubsu.timetable.data.network.sender.NetworkSender
 import com.kubsu.timetable.data.network.sender.failure.ServerFailure
 import com.kubsu.timetable.data.network.sender.failure.toNetworkFail
-import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.post
-import io.ktor.http.Parameters
 
 class UpdateDataNetworkClientImpl(
     private val networkSender: NetworkSender
@@ -24,11 +20,7 @@ class UpdateDataNetworkClientImpl(
             handle {
                 post<DiffResponse>("$baseUrl/api/$apiVersion/university/diff/") {
                     addSessionKey(user)
-                    body = FormDataContent(
-                        Parameters.build {
-                            append("timestamp", timestamp.toString())
-                        }
-                    )
+                    body = jsonContent("timestamp" to timestamp.toJson())
                 }
             }.mapLeft {
                 if (it is ServerFailure.Response && it.code == 401)
@@ -48,11 +40,9 @@ class UpdateDataNetworkClientImpl(
             handle {
                 post<SyncResponse>("$baseUrl/api/$apiVersion/$basename/sync/") {
                     addSessionKey(user)
-                    body = FormDataContent(
-                        Parameters.build {
-                            append("timestamp", timestamp.toString())
-                            append("existing_ids", existsIds.toString())
-                        }
+                    body = jsonContent(
+                        "timestamp" to timestamp.toJson(),
+                        "existing_ids" to existsIds.toJson()
                     )
                 }
             }.mapLeft {
@@ -72,11 +62,7 @@ class UpdateDataNetworkClientImpl(
             handle {
                 post<List<T>>("$baseUrl/api/$apiVersion/$basename/meta/") {
                     addSessionKey(user)
-                    body = FormDataContent(
-                        Parameters.build {
-                            append("ids", updatedIds.toString())
-                        }
-                    )
+                    body = jsonContent("ids" to updatedIds.toJson())
                 }
             }.mapLeft {
                 if (it is ServerFailure.Response && it.code == 401)

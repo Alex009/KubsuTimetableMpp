@@ -8,16 +8,10 @@ import com.kubsu.timetable.data.network.sender.NetworkSender
 import com.kubsu.timetable.data.network.sender.failure.ServerFailure
 import com.kubsu.timetable.data.network.sender.failure.toNetworkFail
 import io.ktor.client.request.delete
-import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.get
 import io.ktor.client.request.patch
 import io.ktor.client.request.post
-import io.ktor.http.ContentType
-import io.ktor.http.Parameters
-import io.ktor.http.content.TextContent
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
 
 class SubscriptionNetworkClientImpl(
     private val networkSender: NetworkSender,
@@ -34,11 +28,9 @@ class SubscriptionNetworkClientImpl(
                 post<SubscriptionNetworkDto>("$baseUrl/api/$apiVersion/subscriptions/") {
                     addSessionKey(user)
                     body = jsonContent(
-                        mapOf(
-                            "subgroup" to JsonPrimitive(subgroupId),
-                            "title" to JsonPrimitive(subscriptionName),
-                            "is_main" to JsonPrimitive(isMain)
-                        )
+                        "subgroup" to subgroupId.toJson(),
+                        "title" to subscriptionName.toJson(),
+                        "is_main" to isMain.toJson()
                     )
                 }
             }.mapLeft {
@@ -128,17 +120,17 @@ class SubscriptionNetworkClientImpl(
         }
 
     override suspend fun update(
+        user: UserNetworkDto,
         subscription: SubscriptionNetworkDto
     ): Either<RequestFailure<List<SubscriptionFail>>, Unit> =
         with(networkSender) {
             handle {
                 patch<Unit>("$baseUrl/api/$apiVersion/subscriptions/${subscription.id}/") {
-                    body = FormDataContent(
-                        Parameters.build {
-                            append("subgroup", subscription.subgroup.toString())
-                            append("name", subscription.title)
-                            append("is_main", subscription.isMain.toString())
-                        }
+                    addSessionKey(user)
+                    body = jsonContent(
+                        "subgroup" to subscription.subgroup.toJson(),
+                        "name" to subscription.title.toJson(),
+                        "is_main" to subscription.isMain.toJson()
                     )
                 }
             }.mapLeft {
@@ -152,10 +144,15 @@ class SubscriptionNetworkClientImpl(
             }
         }
 
-    override suspend fun deleteSubscription(id: Int): Either<DataFailure, Unit> =
+    override suspend fun deleteSubscription(
+        user: UserNetworkDto,
+        id: Int
+    ): Either<DataFailure, Unit> =
         with(networkSender) {
             handle {
-                delete<Unit>("$baseUrl/api/$apiVersion/subscriptions/$id/")
+                delete<Unit>("$baseUrl/api/$apiVersion/subscriptions/$id/") {
+                    addSessionKey(user)
+                }
             }.mapLeft {
                 if (it is ServerFailure.Response && it.code == 401)
                     DataFailure.NotAuthenticated(it.body)

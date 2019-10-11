@@ -76,10 +76,26 @@ class SubscriptionInteractorImpl(
     override suspend fun update(
         subscription: SubscriptionEntity
     ): Either<RequestFailure<List<SubscriptionFail>>, Unit> = def {
-        subscriptionGateway.update(subscription)
+        val user = userInfoGateway.getCurrentUserOrNull()
+
+        if (user != null)
+            subscriptionGateway.update(user, subscription)
+        else
+            Either.left(
+                RequestFailure(
+                    DataFailure.NotAuthenticated("SubscriptionInteractor#update")
+                )
+            )
     }
 
     override suspend fun deleteById(id: Int): Either<DataFailure, Unit> = def {
-        subscriptionGateway.deleteById(id)
+        val user = userInfoGateway.getCurrentUserOrNull()
+
+        if (user != null)
+            subscriptionGateway.deleteById(user, id)
+        else
+            Either.left(
+                DataFailure.NotAuthenticated("SubscriptionInteractor#deleteById")
+            )
     }
 }
