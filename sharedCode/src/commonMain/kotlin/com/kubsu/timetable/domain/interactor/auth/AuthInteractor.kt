@@ -1,13 +1,12 @@
 package com.kubsu.timetable.domain.interactor.auth
 
 import com.kubsu.timetable.*
-import com.kubsu.timetable.domain.entity.UserEntity
 
 interface AuthInteractor {
     suspend fun signIn(
         email: String,
         password: String
-    ): Either<RequestFailure<List<SignInFail>>, UserEntity>
+    ): Either<RequestFailure<List<SignInFail>>, Unit>
 
     suspend fun registrationUser(
         email: String,

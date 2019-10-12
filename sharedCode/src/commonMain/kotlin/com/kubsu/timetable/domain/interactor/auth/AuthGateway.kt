@@ -7,7 +7,7 @@ interface AuthGateway {
     suspend fun signIn(
         email: String,
         password: String
-    ): Either<RequestFailure<List<SignInFail>>, UserEntity>
+    ): Either<RequestFailure<List<SignInFail>>, Unit>
 
     suspend fun registrationUser(
         email: String,

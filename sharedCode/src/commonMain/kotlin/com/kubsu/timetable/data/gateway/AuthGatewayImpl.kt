@@ -27,13 +27,12 @@ class AuthGatewayImpl(
     override suspend fun signIn(
         email: String,
         password: String
-    ): Either<RequestFailure<List<SignInFail>>, UserEntity> =
+    ): Either<RequestFailure<List<SignInFail>>, Unit> =
         networkClient
             .signIn(email, password)
             .map {
                 val timestamp = Timestamp.create()
                 userStorage.set(UserMapper.toStorageDto(it, timestamp))
-                UserMapper.toEntity(it, timestamp)
             }
 
     override suspend fun registrationUser(

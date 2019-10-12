@@ -13,6 +13,7 @@ repositories {
     jcenter()
     mavenCentral()
     maven(url = "https://dl.bintray.com/florent37/maven")
+    maven(url = "https://dl.bintray.com/indrih17/teaco")
 }
 
 sqldelight {
@@ -37,6 +38,7 @@ kotlin {
         val kodeinVersion = "6.4.0"
         val serializationVersion = "0.13.0"
         val ktorVersion = "1.3.0-beta-1"
+        val teacoVersion = "0.1.0"
 
         val commonMain by getting {
             dependencies {
@@ -58,6 +60,9 @@ kotlin {
 
                 // Db
                 implementation("com.squareup.sqldelight:runtime:$sqldelightVersion")
+
+                // Presentation logic
+                implementation("com.egroden.teaco:teaco:$teacoVersion")
 
                 // Di
                 implementation("org.kodein.di:kodein-di-core:$kodeinVersion")
@@ -96,6 +101,9 @@ kotlin {
 
                 // Db
                 implementation("com.squareup.sqldelight:android-driver:$sqldelightVersion")
+
+                // Presentation logic
+                implementation("com.egroden.teaco:teaco-android:$teacoVersion")
 
                 // Di
                 implementation("org.kodein.di:kodein-di-framework-android-x:$kodeinVersion")

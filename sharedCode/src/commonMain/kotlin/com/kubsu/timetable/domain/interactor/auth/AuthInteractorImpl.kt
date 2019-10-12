@@ -1,7 +1,6 @@
 package com.kubsu.timetable.domain.interactor.auth
 
 import com.kubsu.timetable.*
-import com.kubsu.timetable.domain.entity.UserEntity
 import com.kubsu.timetable.domain.interactor.userInfo.UserInfoGateway
 
 class AuthInteractorImpl(
@@ -11,7 +10,7 @@ class AuthInteractorImpl(
     override suspend fun signIn(
         email: String,
         password: String
-    ): Either<RequestFailure<List<SignInFail>>, UserEntity> = def {
+    ): Either<RequestFailure<List<SignInFail>>, Unit> = def {
         authGateway.signIn(email, password)
     }
 
