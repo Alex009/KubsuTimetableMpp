@@ -39,29 +39,26 @@ android {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "12"
     }
 }
 
 dependencies {
     implementation(project(":sharedCode"))
-
-    val kotlinVersion = rootProject.ext["kotlinVersion"] as String
-    val coroutineVersion = "1.3.2"
-    val kodeinVersion = "6.4.0"
     implementation(fileTree("include" to "*.jar", "dir" to "libs"))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
-    implementation("androidx.appcompat:appcompat:1.1.0")
-    implementation("com.android.support.constraint:constraint-layout:1.1.3")
 
-    implementation("org.kodein.di:kodein-di-core:$kodeinVersion")
-    implementation("org.kodein.di:kodein-di-erased:$kodeinVersion")
-    implementation("org.kodein.di:kodein-di-framework-android-x:$kodeinVersion")
+    implementation(Libs.kotlin_stdlib)
+    implementation(Libs.appcompat)
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutineVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion")
+    // DI
+    implementation(Libs.kodein_di_core)
+    implementation(Libs.kodein_di_erased)
+    implementation(Libs.kodein_di_framework_android_x)
 
-    testImplementation("junit:junit:4.12")
-    androidTestImplementation("com.android.support.test:runner:1.0.2")
-    androidTestImplementation("com.android.support.test.espresso:espresso-core:3.0.2")
+    implementation(Libs.kotlinx_coroutines_core)
+    implementation(Libs.kotlinx_coroutines_android)
+
+    testImplementation(Libs.junit)
+    androidTestImplementation(Libs.com_android_support_test_runner)
+    androidTestImplementation(Libs.espresso_core)
 }

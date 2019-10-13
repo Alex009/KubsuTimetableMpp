@@ -33,46 +33,37 @@ kotlin {
     }
 
     sourceSets {
-        val coroutineVersion = "1.3.2"
-        val sqldelightVersion = "1.2.0"
-        val kodeinVersion = "6.4.0"
-        val serializationVersion = "0.13.0"
-        val ktorVersion = "1.3.0-beta-1"
-        val teacoVersion = "0.1.0"
-
         val commonMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-common"))
 
                 // Coroutine
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:$coroutineVersion")
+                implementation(Libs.kotlinx_coroutines_core_common)
 
                 // Network
-                implementation("io.ktor:ktor-client-core:$ktorVersion")
-                implementation("io.ktor:ktor-client-serialization:$ktorVersion")
-                implementation("io.ktor:ktor-client-logging:$ktorVersion")
-                implementation("io.ktor:ktor-client-features:$ktorVersion")
-                implementation("io.ktor:ktor-client-auth:$ktorVersion")
-                implementation("io.ktor:ktor-client-auth-basic:$ktorVersion")
+                implementation(Libs.ktor_client_core)
+                implementation(Libs.ktor_client_serialization)
+                implementation(Libs.ktor_client_logging)
+                implementation(Libs.ktor_client_features)
 
                 // Serialization
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:$serializationVersion")
+                implementation(Libs.kotlinx_serialization_runtime_common)
 
                 // Db
-                implementation("com.squareup.sqldelight:runtime:$sqldelightVersion")
+                implementation(Libs.com_squareup_sqldelight_runtime)
 
                 // Presentation logic
-                implementation("com.egroden.teaco:teaco:$teacoVersion")
+                implementation(Libs.teaco)
 
                 // Di
-                implementation("org.kodein.di:kodein-di-core:$kodeinVersion")
-                implementation("org.kodein.di:kodein-di-erased:$kodeinVersion")
+                implementation(Libs.kodein_di_core)
+                implementation(Libs.kodein_di_erased)
 
                 // Preferences
-                implementation("com.russhwolf:multiplatform-settings:0.3.3")
+                implementation(Libs.multiplatform_settings)
 
                 // Time
-                implementation("com.soywiz.korlibs.klock:klock:1.7.3")
+                implementation(Libs.klock)
             }
         }
         val commonTest by getting {
@@ -81,7 +72,7 @@ kotlin {
                 implementation(kotlin("test-annotations-common"))
 
                 // Mock
-                implementation("io.mockk:mockk-common:1.9.3")
+                implementation(Libs.mockk_common)
             }
         }
         val androidMain by getting {
@@ -89,27 +80,27 @@ kotlin {
                 implementation(kotlin("stdlib"))
 
                 // Coroutine
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion")
+                implementation(Libs.kotlinx_coroutines_android)
 
                 // Network
-                implementation("io.ktor:ktor-client-android:$ktorVersion")
-                implementation("io.ktor:ktor-client-serialization-jvm:$ktorVersion")
-                implementation("io.ktor:ktor-client-logging-jvm:$ktorVersion")
+                implementation(Libs.ktor_client_android)
+                implementation(Libs.ktor_client_serialization_jvm)
+                implementation(Libs.ktor_client_logging_jvm)
 
                 // Serialization
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serializationVersion")
+                implementation(Libs.kotlinx_serialization_runtime_common)
 
                 // Db
-                implementation("com.squareup.sqldelight:android-driver:$sqldelightVersion")
+                implementation(Libs.android_driver)
 
                 // Presentation logic
-                implementation("com.egroden.teaco:teaco-android:$teacoVersion")
+                implementation(Libs.teaco_android)
 
                 // Di
-                implementation("org.kodein.di:kodein-di-framework-android-x:$kodeinVersion")
+                implementation(Libs.kodein_di_framework_android_x)
 
                 // Sugar
-                implementation("androidx.core:core-ktx:1.1.0")
+                implementation(Libs.core_ktx)
             }
         }
         val androidTest by getting {
@@ -121,18 +112,18 @@ kotlin {
         val iosMain by getting {
             dependencies {
                 // Coroutine
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-native:$coroutineVersion")
+                implementation(Libs.kotlinx_coroutines_core_native)
 
                 // Network
-                implementation("io.ktor:ktor-client-ios:$ktorVersion")
-                implementation("io.ktor:ktor-client-serialization-native:$ktorVersion")
-                implementation("io.ktor:ktor-client-logging-native:$ktorVersion")
+                implementation(Libs.ktor_client_ios)
+                implementation(Libs.ktor_client_serialization_native)
+                implementation(Libs.ktor_client_logging_native)
 
                 // Serialization
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-native:$serializationVersion")
+                implementation(Libs.kotlinx_serialization_runtime_native)
 
                 // Db
-                implementation("com.squareup.sqldelight:ios-driver:$sqldelightVersion")
+                implementation(Libs.ios_driver)
             }
         }
         val iosTest by getting {
@@ -150,7 +141,7 @@ kotlin {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "12"
     }
 }
 
@@ -192,8 +183,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_12
+        targetCompatibility = JavaVersion.VERSION_12
     }
 
     testOptions.unitTests.isIncludeAndroidResources = true
