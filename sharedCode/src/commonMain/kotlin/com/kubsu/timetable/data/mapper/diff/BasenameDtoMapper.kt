@@ -2,7 +2,7 @@ package com.kubsu.timetable.data.mapper.diff
 
 import com.kubsu.timetable.domain.entity.Basename
 
-object BasenameMapper {
+object BasenameDtoMapper {
     private const val subscriptionValue = "subscriptions"
     private const val timetableValue = "timetables"
     private const val lecturerValue = "lecturers"

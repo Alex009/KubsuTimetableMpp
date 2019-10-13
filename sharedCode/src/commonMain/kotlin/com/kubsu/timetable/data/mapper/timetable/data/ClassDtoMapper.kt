@@ -1,13 +1,13 @@
 package com.kubsu.timetable.data.mapper.timetable.data
 
 import com.kubsu.timetable.data.db.timetable.ClassDb
-import com.kubsu.timetable.data.mapper.DayMapper
+import com.kubsu.timetable.data.mapper.DayDtoMapper
 import com.kubsu.timetable.data.network.dto.timetable.data.ClassNetworkDto
 import com.kubsu.timetable.domain.entity.timetable.data.ClassEntity
 import com.kubsu.timetable.domain.entity.timetable.data.ClassTimeEntity
 import com.kubsu.timetable.domain.entity.timetable.data.LecturerEntity
 
-object ClassMapper {
+object ClassDtoMapper {
     fun toEntity(
         networkDto: ClassNetworkDto,
         classTime: ClassTimeEntity,
@@ -16,10 +16,10 @@ object ClassMapper {
         ClassEntity(
             id = networkDto.id,
             title = networkDto.title,
-            typeOfClass = TypeOfClassMapper.toEntity(networkDto.typeOfClass),
+            typeOfClass = TypeOfClassDtoMapper.toEntity(networkDto.typeOfClass),
             classroom = networkDto.classroom,
             classTime = classTime,
-            day = DayMapper.toEntity(networkDto.weekday),
+            day = DayDtoMapper.toEntity(networkDto.weekday),
             lecturer = lecturer,
             timetableId = networkDto.timetableId
         )
@@ -32,10 +32,10 @@ object ClassMapper {
         ClassEntity(
             id = dbDto.id,
             title = dbDto.title,
-            typeOfClass = TypeOfClassMapper.toEntity(dbDto.typeOfClass),
+            typeOfClass = TypeOfClassDtoMapper.toEntity(dbDto.typeOfClass),
             classroom = dbDto.classroom,
             classTime = classTime,
-            day = DayMapper.toEntity(dbDto.day),
+            day = DayDtoMapper.toEntity(dbDto.day),
             lecturer = lecturer,
             timetableId = dbDto.timetableId
         )
@@ -46,10 +46,10 @@ object ClassMapper {
         ClassDb.Impl(
             id = entity.id,
             title = entity.title,
-            typeOfClass = TypeOfClassMapper.value(entity.typeOfClass),
+            typeOfClass = TypeOfClassDtoMapper.value(entity.typeOfClass),
             classroom = entity.classroom,
             classTimeId = entity.classTime.id,
-            day = DayMapper.value(entity.day),
+            day = DayDtoMapper.value(entity.day),
             lecturerId = entity.lecturer.id,
             timetableId = entity.timetableId
         )
@@ -74,10 +74,10 @@ object ClassMapper {
         ClassNetworkDto(
             id = entity.id,
             title = entity.title,
-            typeOfClass = TypeOfClassMapper.value(entity.typeOfClass),
+            typeOfClass = TypeOfClassDtoMapper.value(entity.typeOfClass),
             classroom = entity.classroom,
             classTimeId = entity.classTime.id,
-            weekday = DayMapper.value(entity.day),
+            weekday = DayDtoMapper.value(entity.day),
             lecturerId = entity.lecturer.id,
             timetableId = entity.timetableId
         )

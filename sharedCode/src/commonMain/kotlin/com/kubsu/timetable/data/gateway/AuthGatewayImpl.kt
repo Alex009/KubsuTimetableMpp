@@ -5,7 +5,7 @@ import com.kubsu.timetable.data.db.diff.DataDiffQueries
 import com.kubsu.timetable.data.db.diff.DeletedEntityQueries
 import com.kubsu.timetable.data.db.diff.UpdatedEntityQueries
 import com.kubsu.timetable.data.db.timetable.*
-import com.kubsu.timetable.data.mapper.UserMapper
+import com.kubsu.timetable.data.mapper.UserDtoMapper
 import com.kubsu.timetable.data.network.client.user.UserInfoNetworkClient
 import com.kubsu.timetable.data.storage.user.UserStorage
 import com.kubsu.timetable.domain.entity.Timestamp
@@ -32,7 +32,7 @@ class AuthGatewayImpl(
             .signIn(email, password)
             .map {
                 val timestamp = Timestamp.create()
-                userStorage.set(UserMapper.toStorageDto(it, timestamp))
+                userStorage.set(UserDtoMapper.toStorageDto(it, timestamp))
             }
 
     override suspend fun registrationUser(
@@ -43,7 +43,7 @@ class AuthGatewayImpl(
 
     override suspend fun logout(user: UserEntity): Either<DataFailure, Unit> =
         networkClient
-            .logout(UserMapper.toNetworkDto(user))
+            .logout(UserDtoMapper.toNetworkDto(user))
             .map {
                 userStorage.set(null)
                 clearDatabase()

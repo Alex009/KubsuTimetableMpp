@@ -4,7 +4,7 @@ import com.kubsu.timetable.data.db.timetable.ClassTimeDb
 import com.kubsu.timetable.data.network.dto.timetable.data.ClassTimeNetworkDto
 import com.kubsu.timetable.domain.entity.timetable.data.ClassTimeEntity
 
-object ClassTimeMapper {
+object ClassTimeDtoMapper {
     fun toEntity(networkDto: ClassTimeNetworkDto): ClassTimeEntity =
         ClassTimeEntity(
             id = networkDto.id,

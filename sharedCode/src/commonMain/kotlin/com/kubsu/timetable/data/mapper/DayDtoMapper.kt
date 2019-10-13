@@ -4,7 +4,7 @@ import com.kubsu.timetable.domain.entity.RussianKlockLocale
 import com.soywiz.klock.DayOfWeek
 import com.soywiz.klock.KlockLocale
 
-object DayMapper {
+object DayDtoMapper {
     fun toEntity(
         value: Int,
         klockLocale: KlockLocale = RussianKlockLocale

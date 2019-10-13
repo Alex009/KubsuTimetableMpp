@@ -4,23 +4,23 @@ import com.kubsu.timetable.data.db.timetable.UniversityInfoDb
 import com.kubsu.timetable.data.network.dto.timetable.data.UniversityInfoNetworkDto
 import com.kubsu.timetable.domain.entity.timetable.data.UniversityInfoEntity
 
-object UniversityInfoMapper {
+object UniversityInfoDtoMapper {
     fun toEntity(networkDto: UniversityInfoNetworkDto): UniversityInfoEntity =
         UniversityInfoEntity(
             facultyId = networkDto.facultyId,
-            typeOfWeek = TypeOfWeekMapper.toEntity(networkDto.typeOfWeek)
+            typeOfWeek = TypeOfWeekDtoMapper.toEntity(networkDto.typeOfWeek)
         )
 
     fun toEntity(dbDto: UniversityInfoDb): UniversityInfoEntity =
         UniversityInfoEntity(
             facultyId = dbDto.facultyId,
-            typeOfWeek = TypeOfWeekMapper.toEntity(dbDto.typeOfWeek)
+            typeOfWeek = TypeOfWeekDtoMapper.toEntity(dbDto.typeOfWeek)
         )
 
     fun toNetworkDto(entity: UniversityInfoEntity): UniversityInfoNetworkDto =
         UniversityInfoNetworkDto(
             facultyId = entity.facultyId,
-            typeOfWeek = TypeOfWeekMapper.value(entity.typeOfWeek)
+            typeOfWeek = TypeOfWeekDtoMapper.value(entity.typeOfWeek)
         )
 
     fun toNetworkDto(dbDto: UniversityInfoDb): UniversityInfoNetworkDto =
@@ -38,6 +38,6 @@ object UniversityInfoMapper {
     fun toDbDto(entity: UniversityInfoEntity): UniversityInfoDb =
         UniversityInfoDb.Impl(
             facultyId = entity.facultyId,
-            typeOfWeek = TypeOfWeekMapper.value(entity.typeOfWeek)
+            typeOfWeek = TypeOfWeekDtoMapper.value(entity.typeOfWeek)
         )
 }

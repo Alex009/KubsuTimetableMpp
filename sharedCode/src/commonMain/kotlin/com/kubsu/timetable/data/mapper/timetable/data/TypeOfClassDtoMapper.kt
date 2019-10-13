@@ -2,7 +2,7 @@ package com.kubsu.timetable.data.mapper.timetable.data
 
 import com.kubsu.timetable.domain.entity.timetable.data.TypeOfClass
 
-object TypeOfClassMapper {
+object TypeOfClassDtoMapper {
     private const val lectureValue = 0
     private const val practiceValue = 1
 

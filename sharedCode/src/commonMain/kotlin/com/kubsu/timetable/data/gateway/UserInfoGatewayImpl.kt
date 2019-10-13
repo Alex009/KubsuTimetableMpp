@@ -3,7 +3,7 @@ package com.kubsu.timetable.data.gateway
 import com.kubsu.timetable.Either
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.UserUpdateFail
-import com.kubsu.timetable.data.mapper.UserMapper
+import com.kubsu.timetable.data.mapper.UserDtoMapper
 import com.kubsu.timetable.data.network.client.user.UserInfoNetworkClient
 import com.kubsu.timetable.data.storage.user.UserStorage
 import com.kubsu.timetable.domain.entity.Timestamp
@@ -17,20 +17,20 @@ class UserInfoGatewayImpl(
     override suspend fun getCurrentUserOrNull(): UserEntity? =
         userStorage
             .get()
-            ?.let(UserMapper::toEntity)
+            ?.let(UserDtoMapper::toEntity)
 
     override suspend fun updateUserInfo(
         user: UserEntity
     ): Either<RequestFailure<List<UserUpdateFail>>, Unit> =
         networkClient
-            .update(UserMapper.toNetworkDto(user))
+            .update(UserDtoMapper.toNetworkDto(user))
             .map {
-                userStorage.set(UserMapper.toStorageDto(user))
+                userStorage.set(UserDtoMapper.toStorageDto(user))
             }
 
     override suspend fun updateTimestamp(user: UserEntity, timestamp: Timestamp) =
         userStorage.set(
-            UserMapper
+            UserDtoMapper
                 .toStorageDto(user)
                 .copy(timestamp = timestamp.value)
         )

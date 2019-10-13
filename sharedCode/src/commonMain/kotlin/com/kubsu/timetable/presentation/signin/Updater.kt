@@ -7,7 +7,7 @@ val signInUpdater: Updater<State, Action, Subscription, SideEffect> = { state, a
     when (action) {
         is Action.SignIn ->
             UpdateResponse(
-                state = state.copy(inProgress = true),
+                state = state.copy(progress = true),
                 sideEffects = setOf(SideEffect.Authenticate(action.email, action.password))
             )
 
@@ -19,13 +19,13 @@ val signInUpdater: Updater<State, Action, Subscription, SideEffect> = { state, a
 
         Action.ShowResult ->
             UpdateResponse(
-                state = state.copy(inProgress = false),
+                state = state.copy(progress = false),
                 subscription = Subscription.Navigate(Screen.Timetable)
             )
 
-        is Action.ShowError ->
+        is Action.ShowFailure ->
             UpdateResponse(
-                state = state.copy(inProgress = false),
+                state = state.copy(progress = false),
                 subscription = Subscription.ShowFailure(action.failure)
             )
     }

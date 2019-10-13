@@ -9,12 +9,12 @@ sealed class Action {
     object Registration : Action()
 
     internal object ShowResult : Action()
-    internal class ShowError(val failure: RequestFailure<List<SignInFail>>) : Action()
+    internal class ShowFailure(val failure: RequestFailure<List<SignInFail>>) : Action()
 }
 
 @Serializable
 data class State(
-    val inProgress: Boolean = false
+    val progress: Boolean = false
 )
 
 sealed class SideEffect {

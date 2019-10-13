@@ -53,7 +53,7 @@ class SubscriptionNetworkClientImpl(
             responseBody = response.body,
             titleFailList = incorrectData.title,
             subgroupFailList = incorrectData.subgroup,
-            nonFieldFailList = incorrectData.nonFieldErrors
+            nonFieldFailList = incorrectData.nonFieldFailures
         )
     }
 

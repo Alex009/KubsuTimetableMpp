@@ -1,4 +1,4 @@
-package com.kubsu.timetable.presentation.subscription
+package com.kubsu.timetable.presentation.subscription.create
 
 import com.egroden.teaco.EffectHandler
 import com.kubsu.timetable.domain.interactor.subscription.SubscriptionInteractor
@@ -9,7 +9,7 @@ import com.kubsu.timetable.presentation.subscription.mapper.SubgroupModelMapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class SubscriptionEffectHandler(
+class CreateSubscriptionEffectHandler(
     private val interactor: SubscriptionInteractor
 ) : EffectHandler<SideEffect, Action> {
     override fun invoke(sideEffect: SideEffect): Flow<Action> = flow {
@@ -18,7 +18,7 @@ class SubscriptionEffectHandler(
                 interactor
                     .selectFacultyList()
                     .fold(
-                        ifLeft = { emit(Action.ShowDataError(it)) },
+                        ifLeft = { emit(Action.ShowDataFailure(it)) },
                         ifRight = {
                             emit(
                                 Action.FacultyListUploaded(
@@ -34,7 +34,7 @@ class SubscriptionEffectHandler(
                         FacultyModelMapper.toEntity(sideEffect.faculty)
                     )
                     .fold(
-                        ifLeft = { emit(Action.ShowDataError(it)) },
+                        ifLeft = { emit(Action.ShowDataFailure(it)) },
                         ifRight = {
                             emit(
                                 Action.OccupationListUploaded(
@@ -50,7 +50,7 @@ class SubscriptionEffectHandler(
                         OccupationModelMapper.toEntity(sideEffect.occupation)
                     )
                     .fold(
-                        ifLeft = { emit(Action.ShowDataError(it)) },
+                        ifLeft = { emit(Action.ShowDataFailure(it)) },
                         ifRight = {
                             emit(
                                 Action.GroupListUploaded(
@@ -66,7 +66,7 @@ class SubscriptionEffectHandler(
                         GroupModelMapper.toEntity(sideEffect.group)
                     )
                     .fold(
-                        ifLeft = { emit(Action.ShowDataError(it)) },
+                        ifLeft = { emit(Action.ShowDataFailure(it)) },
                         ifRight = {
                             emit(
                                 Action.SubgroupListUploaded(
@@ -84,7 +84,7 @@ class SubscriptionEffectHandler(
                         isMain = sideEffect.isMain
                     )
                     .fold(
-                        ifLeft = { emit(Action.ShowRequestError(it)) },
+                        ifLeft = { emit(Action.ShowRequestFailure(it)) },
                         ifRight = {}
                     )
         }

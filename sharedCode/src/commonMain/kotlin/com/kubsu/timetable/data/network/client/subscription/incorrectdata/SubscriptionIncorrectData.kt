@@ -9,5 +9,5 @@ data class SubscriptionIncorrectData(
     val subgroup: List<String> = listOf(),
 
     @SerialName("non_field_errors")
-    val nonFieldErrors: List<String> = listOf()
+    val nonFieldFailures: List<String> = listOf()
 )

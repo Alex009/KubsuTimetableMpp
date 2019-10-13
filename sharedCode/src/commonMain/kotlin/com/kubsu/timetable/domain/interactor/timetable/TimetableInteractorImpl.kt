@@ -5,12 +5,19 @@ import com.kubsu.timetable.Either
 import com.kubsu.timetable.def
 import com.kubsu.timetable.domain.entity.timetable.data.SubscriptionEntity
 import com.kubsu.timetable.domain.entity.timetable.data.TimetableEntity
+import com.kubsu.timetable.domain.entity.timetable.data.UniversityInfoEntity
 import com.kubsu.timetable.domain.interactor.userInfo.UserInfoGateway
 
 class TimetableInteractorImpl(
     private val timetableGateway: TimetableGateway,
     private val userInfoGateway: UserInfoGateway
 ) : TimetableInteractor {
+    override suspend fun getUniversityData(
+        timetable: TimetableEntity
+    ): Either<DataFailure, UniversityInfoEntity> = def {
+        timetableGateway.getUniversityData(timetable.facultyId)
+    }
+
     override suspend fun isRelevantForThisWeek(
         timetable: TimetableEntity
     ): Either<DataFailure, Boolean> = def {

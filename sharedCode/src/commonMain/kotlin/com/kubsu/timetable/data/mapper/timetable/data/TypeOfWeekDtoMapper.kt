@@ -2,7 +2,7 @@ package com.kubsu.timetable.data.mapper.timetable.data
 
 import com.kubsu.timetable.domain.entity.timetable.data.TypeOfWeek
 
-object TypeOfWeekMapper {
+object TypeOfWeekDtoMapper {
     private const val numeratorValue = 0
     private const val denominatorValue = 1
 

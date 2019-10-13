@@ -2,7 +2,7 @@ package com.kubsu.timetable.data.gateway
 
 import com.kubsu.timetable.*
 import com.kubsu.timetable.data.db.timetable.*
-import com.kubsu.timetable.data.mapper.UserMapper
+import com.kubsu.timetable.data.mapper.UserDtoMapper
 import com.kubsu.timetable.data.mapper.timetable.data.*
 import com.kubsu.timetable.data.network.client.timetable.TimetableNetworkClient
 import com.kubsu.timetable.data.network.client.university.UniversityDataNetworkClient
@@ -32,13 +32,13 @@ class TimetableGatewayImpl(
             .executeAsOneOrNull()
 
         return if (universityDbDto != null)
-            Either.right(UniversityInfoMapper.toEntity(universityDbDto))
+            Either.right(UniversityInfoDtoMapper.toEntity(universityDbDto))
         else
             universityDataNetworkClient
                 .selectUniversityInfo(facultyId)
                 .map { networkDto ->
-                    universityInfoQueries.update(UniversityInfoMapper.toDbDto(networkDto))
-                    UniversityInfoMapper.toEntity(networkDto)
+                    universityInfoQueries.update(UniversityInfoDtoMapper.toDbDto(networkDto))
+                    UniversityInfoDtoMapper.toEntity(networkDto)
                 }
     }
 
@@ -52,14 +52,14 @@ class TimetableGatewayImpl(
 
         return if (timetableDbList.isNotEmpty())
             timetableDbList
-                .map(TimetableMapper::toNetworkDto)
+                .map(TimetableDtoMapper::toNetworkDto)
                 .toTimetableEntityList()
         else
             timetableNetworkClient
-                .selectTimetableListForUser(UserMapper.toNetworkDto(user))
+                .selectTimetableListForUser(UserDtoMapper.toNetworkDto(user))
                 .flatMap { list ->
                     list
-                        .map(TimetableMapper::toDbDto)
+                        .map(TimetableDtoMapper::toDbDto)
                         .forEach(timetableQueries::update)
 
                     list.toTimetableEntityList()
@@ -69,7 +69,7 @@ class TimetableGatewayImpl(
     private suspend fun List<TimetableNetworkDto>.toTimetableEntityList(): Either<DataFailure, List<TimetableEntity>> =
         flowOfIterable(this)
             .map { timetable ->
-                selectClassList(timetable.id).map { TimetableMapper.toEntity(timetable, it) }
+                selectClassList(timetable.id).map { TimetableDtoMapper.toEntity(timetable, it) }
             }
             .collectRightListOrFirstLeft()
 
@@ -80,14 +80,14 @@ class TimetableGatewayImpl(
 
         return if (classDbList.isNotEmpty())
             classDbList
-                .map(ClassMapper::toNetworkDto)
+                .map(ClassDtoMapper::toNetworkDto)
                 .toClassEntityList()
         else
             timetableNetworkClient
                 .selectClassesByTimetableId(timetableId)
                 .flatMap { list ->
                     list
-                        .map(ClassMapper::toDbDto)
+                        .map(ClassDtoMapper::toDbDto)
                         .forEach(classQueries::update)
 
                     list.toClassEntityList()
@@ -108,7 +108,7 @@ class TimetableGatewayImpl(
                             lecturerDef
                                 .await()
                                 .map { lecturer ->
-                                    ClassMapper.toEntity(clazz, classTime, lecturer)
+                                    ClassDtoMapper.toEntity(clazz, classTime, lecturer)
                                 }
                         }
                 }
@@ -121,13 +121,13 @@ class TimetableGatewayImpl(
             .executeAsOneOrNull()
 
         return if (classTime != null)
-            Either.right(ClassTimeMapper.toEntity(classTime))
+            Either.right(ClassTimeDtoMapper.toEntity(classTime))
         else
             timetableNetworkClient
                 .selectClassTimeById(id)
                 .map {
-                    classTimeQueries.update(ClassTimeMapper.toDbDto(it))
-                    ClassTimeMapper.toEntity(it)
+                    classTimeQueries.update(ClassTimeDtoMapper.toDbDto(it))
+                    ClassTimeDtoMapper.toEntity(it)
                 }
     }
 
@@ -137,13 +137,13 @@ class TimetableGatewayImpl(
             .executeAsOneOrNull()
 
         return if (lecturer != null)
-            Either.right(LecturerMapper.toEntity(lecturer))
+            Either.right(LecturerDtoMapper.toEntity(lecturer))
         else
             timetableNetworkClient
                 .selectLecturerById(id)
                 .map {
-                    lecturerQueries.update(LecturerMapper.toDbDto(it))
-                    LecturerMapper.toEntity(it)
+                    lecturerQueries.update(LecturerDtoMapper.toDbDto(it))
+                    LecturerDtoMapper.toEntity(it)
                 }
     }
 }

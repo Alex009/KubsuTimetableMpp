@@ -1,4 +1,4 @@
-package com.kubsu.timetable.presentation.subscription
+package com.kubsu.timetable.presentation.subscription.create
 
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.RequestFailure
@@ -21,8 +21,8 @@ sealed class Action {
     ) : Action()
 
     internal object SubscriptionWasCreated : Action()
-    internal class ShowDataError(val failure: DataFailure) : Action()
-    internal class ShowRequestError(
+    internal class ShowDataFailure(val failure: DataFailure) : Action()
+    internal class ShowRequestFailure(
         val failure: RequestFailure<List<SubscriptionFail>>
     ) : Action()
 
@@ -71,8 +71,8 @@ sealed class SideEffect {
 sealed class Subscription {
     class Navigate(val screen: Screen) : Subscription()
 
-    class ShowError(val failure: DataFailure) : Subscription()
-    class ShowRequestError(
+    class ShowFailure(val failure: DataFailure) : Subscription()
+    class ShowRequestFailure(
         val failure: RequestFailure<List<SubscriptionFail>>
     ) : Subscription()
 

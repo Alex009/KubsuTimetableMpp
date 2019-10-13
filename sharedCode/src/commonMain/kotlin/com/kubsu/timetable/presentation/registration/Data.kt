@@ -8,14 +8,14 @@ sealed class Action {
     class Registration(val email: String, val password: String) : Action()
 
     internal object ShowResult : Action()
-    internal class ShowError(
+    internal class ShowFailure(
         val failure: RequestFailure<List<UserInfoFail>>
     ) : Action()
 }
 
 @Serializable
 data class State(
-    val inProgress: Boolean = false
+    val progress: Boolean = false
 )
 
 sealed class SideEffect {

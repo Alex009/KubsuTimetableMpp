@@ -5,7 +5,7 @@ import com.kubsu.timetable.data.storage.user.UserStorageDto
 import com.kubsu.timetable.domain.entity.Timestamp
 import com.kubsu.timetable.domain.entity.UserEntity
 
-object UserMapper {
+object UserDtoMapper {
     fun toEntity(storageDto: UserStorageDto): UserEntity =
         UserEntity(
             id = storageDto.id,

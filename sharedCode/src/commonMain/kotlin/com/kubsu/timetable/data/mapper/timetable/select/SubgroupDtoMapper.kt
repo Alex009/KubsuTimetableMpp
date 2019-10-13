@@ -3,7 +3,7 @@ package com.kubsu.timetable.data.mapper.timetable.select
 import com.kubsu.timetable.data.network.dto.timetable.select.SubgroupNetworkDto
 import com.kubsu.timetable.domain.entity.timetable.select.SubgroupEntity
 
-object SubgroupMapper {
+object SubgroupDtoMapper {
     fun toEntity(
         networkDto: SubgroupNetworkDto,
         groupId: Int

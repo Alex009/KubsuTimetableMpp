@@ -5,7 +5,7 @@ import com.kubsu.timetable.data.db.diff.UpdatedEntityDb
 import com.kubsu.timetable.domain.entity.Basename
 import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
 
-object DataDiffMapper {
+object DataDiffDtoMapper {
     fun toEntity(
         userId: Int,
         basename: Basename,

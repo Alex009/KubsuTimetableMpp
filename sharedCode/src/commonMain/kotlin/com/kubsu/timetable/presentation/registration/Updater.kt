@@ -7,19 +7,19 @@ val registrationUpdater: Updater<State, Action, Subscription, SideEffect> = { st
     when (action) {
         is Action.Registration ->
             UpdateResponse(
-                state = state.copy(inProgress = true),
+                state = state.copy(progress = true),
                 sideEffects = setOf(SideEffect.Registration(action.email, action.password))
             )
 
         Action.ShowResult ->
             UpdateResponse(
-                state = state.copy(inProgress = false),
+                state = state.copy(progress = false),
                 subscription = Subscription.Navigate(Screen.SignIn)
             )
 
-        is Action.ShowError ->
+        is Action.ShowFailure ->
             UpdateResponse(
-                state = state.copy(inProgress = false),
+                state = state.copy(progress = false),
                 subscription = Subscription.ShowFailure(action.failure)
             )
     }

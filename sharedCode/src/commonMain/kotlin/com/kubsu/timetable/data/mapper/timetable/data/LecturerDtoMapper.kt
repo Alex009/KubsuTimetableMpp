@@ -4,7 +4,7 @@ import com.kubsu.timetable.data.db.timetable.LecturerDb
 import com.kubsu.timetable.data.network.dto.timetable.data.LecturerNetworkDto
 import com.kubsu.timetable.domain.entity.timetable.data.LecturerEntity
 
-object LecturerMapper {
+object LecturerDtoMapper {
     fun toEntity(networkDto: LecturerNetworkDto): LecturerEntity =
         LecturerEntity(
             id = networkDto.id,

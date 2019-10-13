@@ -4,9 +4,9 @@ import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.Either
 import com.kubsu.timetable.data.db.diff.*
 import com.kubsu.timetable.data.db.timetable.*
-import com.kubsu.timetable.data.mapper.UserMapper
-import com.kubsu.timetable.data.mapper.diff.BasenameMapper
-import com.kubsu.timetable.data.mapper.diff.DataDiffMapper
+import com.kubsu.timetable.data.mapper.UserDtoMapper
+import com.kubsu.timetable.data.mapper.diff.BasenameDtoMapper
+import com.kubsu.timetable.data.mapper.diff.DataDiffDtoMapper
 import com.kubsu.timetable.data.mapper.timetable.data.*
 import com.kubsu.timetable.data.network.client.update.UpdateDataNetworkClient
 import com.kubsu.timetable.data.network.dto.timetable.data.*
@@ -30,7 +30,7 @@ class SyncMixinGatewayImpl(
 ) : SyncMixinGateway {
     override fun registerDataDiff(entity: DataDiffEntity) {
         dataDiffQueries.update(
-            basename = BasenameMapper.value(entity.basename),
+            basename = BasenameDtoMapper.value(entity.basename),
             userId = entity.userId
         )
         val id = dataDiffQueries.lastInsertRowId().executeAsOne().toInt()
@@ -47,7 +47,7 @@ class SyncMixinGatewayImpl(
         return Basename
             .list
             .flatMap { basename ->
-                val basenameStr = BasenameMapper.value(basename)
+                val basenameStr = BasenameDtoMapper.value(basename)
                 val dataDiffIdList = dataDiffList
                     .filter { it.basename == basenameStr }
                     .map { it.id }
@@ -61,7 +61,7 @@ class SyncMixinGatewayImpl(
                         .selectByDataDiffId(id)
                         .executeAsList()
 
-                    DataDiffMapper.toEntity(userId, basename, updated, deleted)
+                    DataDiffDtoMapper.toEntity(userId, basename, updated, deleted)
                 }
             }
     }
@@ -71,7 +71,7 @@ class SyncMixinGatewayImpl(
             deleteData(diff.basename, diff.deletedIds)
 
             val diffId = dataDiffQueries
-                .select(BasenameMapper.value(diff.basename), diff.userId)
+                .select(BasenameDtoMapper.value(diff.basename), diff.userId)
                 .executeAsOne()
                 .id
             deletedEntityQueries.deleteByDataDiffId(diffId)
@@ -90,10 +90,10 @@ class SyncMixinGatewayImpl(
 
     override suspend fun diff(user: UserEntity): Either<DataFailure, Pair<Timestamp, List<Basename>>> =
         networkClient
-            .diff(UserMapper.toNetworkDto(user), user.timestamp.value)
+            .diff(UserDtoMapper.toNetworkDto(user), user.timestamp.value)
             .map {
                 val newTimestamp = Timestamp(it.timestamp)
-                val list = it.basenameList.map { basename -> BasenameMapper.toEntity(basename) }
+                val list = it.basenameList.map { basename -> BasenameDtoMapper.toEntity(basename) }
                 newTimestamp to list
             }
 
@@ -105,8 +105,8 @@ class SyncMixinGatewayImpl(
         val existsIds = availableDiff.updatedIds + availableDiff.deletedIds
         return networkClient
             .sync(
-                user = UserMapper.toNetworkDto(user),
-                basename = BasenameMapper.value(basename),
+                user = UserDtoMapper.toNetworkDto(user),
+                basename = BasenameDtoMapper.value(basename),
                 timestamp = user.timestamp.value,
                 existsIds = existsIds
             ).flatMap { (updatedIds, deletedIds) ->
@@ -120,8 +120,8 @@ class SyncMixinGatewayImpl(
         user: UserEntity,
         updatedIds: List<Int>
     ): Either<DataFailure, Unit> {
-        val strBasename = BasenameMapper.value(basename)
-        val userNetworkDto = UserMapper.toNetworkDto(user)
+        val strBasename = BasenameDtoMapper.value(basename)
+        val userNetworkDto = UserDtoMapper.toNetworkDto(user)
         return when (basename) {
             Basename.Subscription ->
                 networkClient
@@ -129,7 +129,7 @@ class SyncMixinGatewayImpl(
                     .map { list ->
                         for (networkDto in list)
                             subscriptionQueries.update(
-                                SubscriptionMapper.toDbDto(networkDto, user.id)
+                                SubscriptionDtoMapper.toDbDto(networkDto, user.id)
                             )
                     }
 
@@ -138,7 +138,7 @@ class SyncMixinGatewayImpl(
                     .meta<TimetableNetworkDto>(userNetworkDto, strBasename, updatedIds)
                     .map { list ->
                         for (timetable in list)
-                            timetableQueries.update(TimetableMapper.toDbDto(timetable))
+                            timetableQueries.update(TimetableDtoMapper.toDbDto(timetable))
                     }
 
             Basename.Lecturer ->
@@ -146,7 +146,7 @@ class SyncMixinGatewayImpl(
                     .meta<LecturerNetworkDto>(userNetworkDto, strBasename, updatedIds)
                     .map { list ->
                         for (lecturer in list)
-                            lecturerQueries.update(LecturerMapper.toDbDto(lecturer))
+                            lecturerQueries.update(LecturerDtoMapper.toDbDto(lecturer))
                     }
 
             Basename.Class ->
@@ -154,7 +154,7 @@ class SyncMixinGatewayImpl(
                     .meta<ClassNetworkDto>(userNetworkDto, strBasename, updatedIds)
                     .map { list ->
                         for (`class` in list)
-                            classQueries.update(ClassMapper.toDbDto(`class`))
+                            classQueries.update(ClassDtoMapper.toDbDto(`class`))
                     }
 
             Basename.UniversityInfo ->
@@ -162,7 +162,7 @@ class SyncMixinGatewayImpl(
                     .meta<UniversityInfoNetworkDto>(userNetworkDto, strBasename, updatedIds)
                     .map { list ->
                         for (info in list)
-                            universityInfoQueries.update(UniversityInfoMapper.toDbDto(info))
+                            universityInfoQueries.update(UniversityInfoDtoMapper.toDbDto(info))
                     }
         }
     }

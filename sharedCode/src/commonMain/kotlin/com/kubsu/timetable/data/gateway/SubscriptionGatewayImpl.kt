@@ -5,12 +5,12 @@ import com.kubsu.timetable.Either
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SubscriptionFail
 import com.kubsu.timetable.data.db.timetable.SubscriptionQueries
-import com.kubsu.timetable.data.mapper.UserMapper
-import com.kubsu.timetable.data.mapper.timetable.data.SubscriptionMapper
-import com.kubsu.timetable.data.mapper.timetable.select.FacultyMapper
-import com.kubsu.timetable.data.mapper.timetable.select.GroupMapper
-import com.kubsu.timetable.data.mapper.timetable.select.OccupationMapper
-import com.kubsu.timetable.data.mapper.timetable.select.SubgroupMapper
+import com.kubsu.timetable.data.mapper.UserDtoMapper
+import com.kubsu.timetable.data.mapper.timetable.data.SubscriptionDtoMapper
+import com.kubsu.timetable.data.mapper.timetable.select.FacultyDtoMapper
+import com.kubsu.timetable.data.mapper.timetable.select.GroupDtoMapper
+import com.kubsu.timetable.data.mapper.timetable.select.OccupationDtoMapper
+import com.kubsu.timetable.data.mapper.timetable.select.SubgroupDtoMapper
 import com.kubsu.timetable.data.network.client.subscription.SubscriptionNetworkClient
 import com.kubsu.timetable.data.network.client.university.UniversityDataNetworkClient
 import com.kubsu.timetable.domain.entity.UserEntity
@@ -29,22 +29,22 @@ class SubscriptionGatewayImpl(
     override suspend fun selectFacultyList(): Either<DataFailure, List<FacultyEntity>> =
         universityDataNetworkClient
             .selectFacultyList()
-            .map { list -> list.map(FacultyMapper::toEntity) }
+            .map { list -> list.map(FacultyDtoMapper::toEntity) }
 
     override suspend fun selectOccupationList(facultyId: Int): Either<DataFailure, List<OccupationEntity>> =
         universityDataNetworkClient
             .selectOccupationList(facultyId)
-            .map { list -> list.map { OccupationMapper.toEntity(it, facultyId) } }
+            .map { list -> list.map { OccupationDtoMapper.toEntity(it, facultyId) } }
 
     override suspend fun selectGroupList(occupationId: Int): Either<DataFailure, List<GroupEntity>> =
         universityDataNetworkClient
             .selectGroupList(occupationId)
-            .map { list -> list.map { GroupMapper.toEntity(it, occupationId) } }
+            .map { list -> list.map { GroupDtoMapper.toEntity(it, occupationId) } }
 
     override suspend fun selectSubgroupList(groupId: Int): Either<DataFailure, List<SubgroupEntity>> =
         universityDataNetworkClient
             .selectSubgroupList(groupId)
-            .map { list -> list.map { SubgroupMapper.toEntity(it, groupId) } }
+            .map { list -> list.map { SubgroupDtoMapper.toEntity(it, groupId) } }
 
     override suspend fun create(
         user: UserEntity,
@@ -54,26 +54,26 @@ class SubscriptionGatewayImpl(
     ): Either<RequestFailure<List<SubscriptionFail>>, Unit> =
         subscriptionNetworkClient
             .createSubscription(
-                user = UserMapper.toNetworkDto(user),
+                user = UserDtoMapper.toNetworkDto(user),
                 subgroupId = subgroupId,
                 subscriptionName = subscriptionName,
                 isMain = isMain
             )
             .map { subscription ->
-                subscriptionQueries.update(SubscriptionMapper.toDbDto(subscription, user.id))
+                subscriptionQueries.update(SubscriptionDtoMapper.toDbDto(subscription, user.id))
             }
 
     override suspend fun getById(id: Int, userId: Int): Either<DataFailure, SubscriptionEntity> {
         val subscription = subscriptionQueries.selectById(id).executeAsOneOrNull()
 
         return if (subscription != null)
-            Either.right(SubscriptionMapper.toEntity(subscription))
+            Either.right(SubscriptionDtoMapper.toEntity(subscription))
         else
             subscriptionNetworkClient
                 .selectSubscriptionById(id)
                 .map {
-                    subscriptionQueries.update(SubscriptionMapper.toDbDto(it, userId))
-                    SubscriptionMapper.toEntity(it, userId)
+                    subscriptionQueries.update(SubscriptionDtoMapper.toDbDto(it, userId))
+                    SubscriptionDtoMapper.toEntity(it, userId)
                 }
     }
 
@@ -81,14 +81,14 @@ class SubscriptionGatewayImpl(
         val subscriptionList = subscriptionQueries.selectByUserId(user.id).executeAsList()
 
         return if (subscriptionList.isNotEmpty())
-            Either.right(subscriptionList.map(SubscriptionMapper::toEntity))
+            Either.right(subscriptionList.map(SubscriptionDtoMapper::toEntity))
         else
             subscriptionNetworkClient
-                .selectSubscriptionsForUser(UserMapper.toNetworkDto(user))
+                .selectSubscriptionsForUser(UserDtoMapper.toNetworkDto(user))
                 .map { list ->
                     list.map {
-                        subscriptionQueries.update(SubscriptionMapper.toDbDto(it, user.id))
-                        SubscriptionMapper.toEntity(it, user.id)
+                        subscriptionQueries.update(SubscriptionDtoMapper.toDbDto(it, user.id))
+                        SubscriptionDtoMapper.toEntity(it, user.id)
                     }
                 }
     }
@@ -99,11 +99,11 @@ class SubscriptionGatewayImpl(
     ): Either<RequestFailure<List<SubscriptionFail>>, Unit> =
         subscriptionNetworkClient
             .update(
-                UserMapper.toNetworkDto(user),
-                SubscriptionMapper.toNetworkDto(subscription)
+                UserDtoMapper.toNetworkDto(user),
+                SubscriptionDtoMapper.toNetworkDto(subscription)
             )
             .map {
-                subscriptionQueries.update(SubscriptionMapper.toDbDto(subscription))
+                subscriptionQueries.update(SubscriptionDtoMapper.toDbDto(subscription))
             }
 
     override suspend fun deleteById(
@@ -111,7 +111,7 @@ class SubscriptionGatewayImpl(
         id: Int
     ): Either<DataFailure, Unit> =
         subscriptionNetworkClient
-            .deleteSubscription(UserMapper.toNetworkDto(user), id)
+            .deleteSubscription(UserDtoMapper.toNetworkDto(user), id)
             .map {
                 subscriptionQueries.deleteById(id)
             }

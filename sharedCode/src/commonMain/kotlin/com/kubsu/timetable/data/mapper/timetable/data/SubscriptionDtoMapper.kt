@@ -4,7 +4,7 @@ import com.kubsu.timetable.data.db.timetable.SubscriptionDb
 import com.kubsu.timetable.data.network.dto.timetable.data.SubscriptionNetworkDto
 import com.kubsu.timetable.domain.entity.timetable.data.SubscriptionEntity
 
-object SubscriptionMapper {
+object SubscriptionDtoMapper {
     fun toEntity(
         networkDto: SubscriptionNetworkDto,
         userId: Int

@@ -14,7 +14,7 @@ class RegistrationEffectHandler(
                 authInteractor
                     .registrationUser(sideEffect.email, sideEffect.password)
                     .fold(
-                        ifLeft = { emit(Action.ShowError(it)) },
+                        ifLeft = { emit(Action.ShowFailure(it)) },
                         ifRight = { emit(Action.ShowResult) }
                     )
         }

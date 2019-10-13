@@ -3,7 +3,7 @@ package com.kubsu.timetable.data.mapper.timetable.select
 import com.kubsu.timetable.data.network.dto.timetable.select.FacultyNetworkDto
 import com.kubsu.timetable.domain.entity.timetable.select.FacultyEntity
 
-object FacultyMapper {
+object FacultyDtoMapper {
     fun toEntity(networkDto: FacultyNetworkDto): FacultyEntity =
         FacultyEntity(
             id = networkDto.id,

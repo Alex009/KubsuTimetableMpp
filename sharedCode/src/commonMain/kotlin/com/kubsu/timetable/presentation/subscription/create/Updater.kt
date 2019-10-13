@@ -1,4 +1,4 @@
-package com.kubsu.timetable.presentation.subscription
+package com.kubsu.timetable.presentation.subscription.create
 
 import com.egroden.teaco.UpdateResponse
 import com.egroden.teaco.Updater
@@ -103,16 +103,16 @@ val subscriptionUpdater: Updater<State, Action, Subscription, SideEffect> = { st
                 subscription = Subscription.Navigate(Screen.TimetableScreen)
             )
 
-        is Action.ShowDataError ->
+        is Action.ShowDataFailure ->
             UpdateResponse(
                 state = state.copy(progress = false),
-                subscription = Subscription.ShowError(action.failure)
+                subscription = Subscription.ShowFailure(action.failure)
             )
 
-        is Action.ShowRequestError ->
+        is Action.ShowRequestFailure ->
             UpdateResponse(
                 state = state.copy(progress = false),
-                subscription = Subscription.ShowRequestError(action.failure)
+                subscription = Subscription.ShowRequestFailure(action.failure)
             )
 
         is Action.FacultyListUploaded ->
