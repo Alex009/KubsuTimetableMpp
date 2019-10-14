@@ -3,7 +3,7 @@ package com.kubsu.timetable.presentation.subscription.create
 import com.egroden.teaco.UpdateResponse
 import com.egroden.teaco.Updater
 
-val subscriptionUpdater: Updater<State, Action, Subscription, SideEffect> = { state, action ->
+val createSubscriptionUpdater: Updater<State, Action, Subscription, SideEffect> = { state, action ->
     when (action) {
         Action.LoadFacultyList ->
             UpdateResponse(

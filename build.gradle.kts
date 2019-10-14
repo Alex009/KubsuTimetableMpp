@@ -4,6 +4,9 @@ allprojects {
         jcenter()
         mavenCentral()
         maven(url = "https://dl.bintray.com/florent37/maven")
+        maven(url = "https://jitpack.io")
+        maven(url = "https://plugins.gradle.org/m2/")
+        maven(url = "https://dl.bintray.com/indrih17/teaco")
     }
 
     // workaround for https://youtrack.jetbrains.com/issue/KT-27170
@@ -18,5 +21,6 @@ plugins {
     kotlin("serialization") apply false
     id("com.android.library") apply false
     id("com.android.application") apply false
+    id("androidx.navigation.safeargs.kotlin") apply false
     id("com.squareup.sqldelight") apply false
 }

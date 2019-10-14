@@ -10,7 +10,7 @@ import org.kodein.di.erased.bind
 import org.kodein.di.erased.instance
 import org.kodein.di.erased.singleton
 
-internal val syncMixinModule = Kodein.Module("syncMixin") {
+internal val syncMixinDomainModule = Kodein.Module("sync_mixin_domain") {
     bind<SyncMixinInteractor>() with singleton { SyncMixinInteractorImpl(instance(), instance()) }
     bind<SyncMixinGateway>() with singleton {
         val db = instance<MyDatabase>()

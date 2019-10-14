@@ -23,7 +23,7 @@ sealed class Action {
 @Serializable
 data class State(
     val progress: Boolean,
-    val currentSubscription: SubscriptionModel,
+    val currentSubscription: SubscriptionModel?,
     val universityInfoModel: UniversityInfoModel?,
     val numeratorTimetable: TimetableModel?,
     val denominatorTimetable: TimetableModel?

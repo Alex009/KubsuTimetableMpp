@@ -50,10 +50,10 @@ data class State(
     val occupationList: List<OccupationModel>,
     val groupList: List<GroupModel>,
     val subgroupList: List<SubgroupModel>,
-    val selectedFaculty: FacultyModel? = null,
-    val selectedOccupation: OccupationModel? = null,
-    val selectedGroup: GroupModel? = null,
-    val selectedSubgroup: SubgroupModel? = null
+    val selectedFaculty: FacultyModel?,
+    val selectedOccupation: OccupationModel?,
+    val selectedGroup: GroupModel?,
+    val selectedSubgroup: SubgroupModel?
 )
 
 sealed class SideEffect {

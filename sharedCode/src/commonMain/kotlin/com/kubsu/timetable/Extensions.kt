@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.*
+import kotlin.jvm.JvmName
 
 suspend inline fun <T> def(noinline block: suspend CoroutineScope.() -> T): T =
     withContext(Dispatchers.Default, block = block)
@@ -36,12 +37,15 @@ fun String.toJson(): JsonPrimitive =
 fun Boolean.toJson(): JsonPrimitive =
     JsonLiteral(this)
 
+@JvmName("toJsonNumberList")
 fun List<Number>.toJson(): JsonArray =
     JsonArray(map(::JsonLiteral))
 
+@JvmName("toJsonStringList")
 fun List<String>.toJson(): JsonArray =
     JsonArray(map(::JsonLiteral))
 
+@JvmName("toJsonBooleanList")
 fun List<Boolean>.toJson(): JsonArray =
     JsonArray(map(::JsonLiteral))
 

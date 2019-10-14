@@ -8,14 +8,6 @@ plugins {
     id("com.squareup.sqldelight")
 }
 
-repositories {
-    google()
-    jcenter()
-    mavenCentral()
-    maven(url = "https://dl.bintray.com/florent37/maven")
-    maven(url = "https://dl.bintray.com/indrih17/teaco")
-}
-
 sqldelight {
     database("MyDatabase") {
         packageName = "com.kubsu.timetable.data.db"
@@ -141,7 +133,7 @@ kotlin {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        jvmTarget = "12"
+        jvmTarget = "1.8"
     }
 }
 
@@ -183,8 +175,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_12
-        targetCompatibility = JavaVersion.VERSION_12
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     testOptions.unitTests.isIncludeAndroidResources = true

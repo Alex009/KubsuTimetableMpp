@@ -10,7 +10,7 @@ import org.kodein.di.erased.bind
 import org.kodein.di.erased.instance
 import org.kodein.di.erased.singleton
 
-internal val subscriptionModule = Kodein.Module("subscription") {
+internal val subscriptionDomainModule = Kodein.Module("subscription_domain") {
     bind<SubscriptionInteractor>() with singleton {
         SubscriptionInteractorImpl(instance(), instance())
     }

@@ -10,7 +10,7 @@ import org.kodein.di.erased.bind
 import org.kodein.di.erased.instance
 import org.kodein.di.erased.singleton
 
-internal val timetableModule = Kodein.Module("timetable") {
+internal val timetableDomainModule = Kodein.Module("timetable_domain") {
     bind<TimetableInteractor>() with singleton {
         TimetableInteractorImpl(instance(), instance())
     }

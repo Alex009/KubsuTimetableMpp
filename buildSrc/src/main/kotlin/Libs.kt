@@ -135,10 +135,32 @@ object Libs {
     const val kotlin_test_junit: String = "org.jetbrains.kotlin:kotlin-test-junit:" +
             Versions.org_jetbrains_kotlin
 
+    /**
+     * https://developer.android.com/topic/libraries/architecture/index.html
+     */
+    const val navigation_fragment_ktx: String = "androidx.navigation:navigation-fragment-ktx:" +
+            Versions.androidx_navigation
+
+    /**
+     * https://developer.android.com/topic/libraries/architecture/index.html
+     */
+    const val navigation_ui_ktx: String = "androidx.navigation:navigation-ui-ktx:" +
+            Versions.androidx_navigation
+
     const val teaco: String = "com.egroden.teaco:teaco:" + Versions.com_egroden_teaco
 
     const val teaco_android: String = "com.egroden.teaco:teaco-android:" +
             Versions.com_egroden_teaco
+
+    /**
+     * https://developer.android.com/testing
+     */
+    const val androidx_test_core: String = "androidx.test:core:" + Versions.androidx_test
+
+    /**
+     * https://developer.android.com/testing
+     */
+    const val androidx_test_runner: String = "androidx.test:runner:" + Versions.androidx_test
 
     const val kodein_di_framework_android_x: String =
         "org.kodein.di:kodein-di-framework-android-x:" + Versions.org_kodein_di
@@ -197,12 +219,6 @@ object Libs {
         "io.ktor:ktor-client-serialization-native:" + Versions.io_ktor
 
     /**
-     * https://developer.android.com/testing
-     */
-    const val com_android_support_test_runner: String = "com.android.support.test:runner:" +
-            Versions.com_android_support_test_runner
-
-    /**
      * https://developer.android.com/studio
      */
     const val com_android_tools_build_gradle: String = "com.android.tools.build:gradle:" +
@@ -216,15 +232,43 @@ object Libs {
             Versions.multiplatform_settings
 
     /**
+     * http://developer.android.com/tools/extras/support-library.html
+     */
+    const val swiperefreshlayout: String = "androidx.swiperefreshlayout:swiperefreshlayout:" +
+            Versions.swiperefreshlayout
+
+    /**
+     * https://junit.org/junit5/
+     */
+    const val junit_jupiter_api: String = "org.junit.jupiter:junit-jupiter-api:" +
+            Versions.junit_jupiter_api
+
+    /**
      * https://developer.android.com/testing
      */
-    const val espresso_core: String = "com.android.support.test.espresso:espresso-core:" +
+    const val espresso_core: String = "androidx.test.espresso:espresso-core:" +
             Versions.espresso_core
+
+    /**
+     * http://developer.android.com/tools/extras/support-library.html
+     */
+    const val exifinterface: String = "androidx.exifinterface:exifinterface:" +
+            Versions.exifinterface
+
+    /**
+     * https://developer.android.com/jetpack/androidx
+     */
+    const val fragment_ktx: String = "androidx.fragment:fragment-ktx:" + Versions.fragment_ktx
 
     /**
      * http://mockk.io
      */
     const val mockk_common: String = "io.mockk:mockk-common:" + Versions.mockk_common
+
+    /**
+     * http://developer.android.com/tools/extras/support-library.html
+     */
+    const val recyclerview: String = "androidx.recyclerview:recyclerview:" + Versions.recyclerview
 
     /**
      * https://developer.android.com/studio
@@ -237,9 +281,24 @@ object Libs {
     const val appcompat: String = "androidx.appcompat:appcompat:" + Versions.appcompat
 
     /**
+     * https://github.com/whalemare/sheetmenu
+     */
+    const val sheetmenu: String = "com.github.whalemare:sheetmenu:" + Versions.sheetmenu
+
+    /**
+     * http://developer.android.com/tools/extras/support-library.html
+     */
+    const val cardview: String = "androidx.cardview:cardview:" + Versions.cardview
+
+    /**
      * http://developer.android.com/tools/extras/support-library.html
      */
     const val core_ktx: String = "androidx.core:core-ktx:" + Versions.core_ktx
+
+    /**
+     * http://developer.android.com/tools/extras/support-library.html
+     */
+    const val material: String = "com.google.android.material:material:" + Versions.material
 
     /**
      * https://developer.android.com/studio
@@ -247,9 +306,9 @@ object Libs {
     const val aapt2: String = "com.android.tools.build:aapt2:" + Versions.aapt2
 
     /**
-     * http://junit.org
+     * https://developer.android.com/testing
      */
-    const val junit: String = "junit:junit:" + Versions.junit
+    const val junit: String = "androidx.test.ext:junit:" + Versions.junit
 
     const val klock: String = "com.soywiz.korlibs.klock:klock:" + Versions.klock
 }

@@ -5,3 +5,7 @@ repositories {
     mavenCentral()
     jcenter()
 }
+
+kotlinDslPluginOptions {
+    experimentalWarning.set(false)
+}

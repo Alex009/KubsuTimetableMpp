@@ -9,7 +9,7 @@ import org.kodein.di.erased.bind
 import org.kodein.di.erased.instance
 import org.kodein.di.erased.singleton
 
-internal val userModule = Kodein.Module("main") {
+internal val userDomainModule = Kodein.Module("user_domain") {
     bind<UserInteractor>() with singleton { UserInteractorImpl(instance()) }
     bind<UserInfoGateway>() with singleton { UserInfoGatewayImpl(instance(), instance()) }
 }

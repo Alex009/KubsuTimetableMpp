@@ -10,7 +10,7 @@ import org.kodein.di.erased.bind
 import org.kodein.di.erased.instance
 import org.kodein.di.erased.singleton
 
-internal val authModule = Kodein.Module("auth") {
+internal val authDomainModule = Kodein.Module("auth_domain") {
     bind<AuthInteractor>() with singleton { AuthInteractorImpl(instance(), instance()) }
     bind<AuthGateway>() with singleton {
         val db = instance<MyDatabase>()

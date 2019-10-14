@@ -4,18 +4,33 @@ import com.kubsu.timetable.di.modules.data.dbModule
 import com.kubsu.timetable.di.modules.data.networkModule
 import com.kubsu.timetable.di.modules.data.storageModule
 import com.kubsu.timetable.di.modules.domain.*
+import com.kubsu.timetable.di.modules.presentation.*
 import org.kodein.di.Kodein
 
-internal val commonKodein = Kodein.Module("common") {
+internal val commonKodein = Kodein.Module("common_module") {
+    // presentation
+    importAll(
+        splashPresentationModule,
+        signInPresentationModule,
+        registrationPresentationModule,
+        createSubscriptionPresentationModule,
+        subscriptionListPresentationModule,
+        timetablePresentationModule
+    )
+
     // domain
-    import(userModule)
-    import(timetableModule)
-    import(subscriptionModule)
-    import(authModule)
-    import(syncMixinModule)
+    importAll(
+        userDomainModule,
+        timetableDomainModule,
+        subscriptionDomainModule,
+        authDomainModule,
+        syncMixinDomainModule
+    )
 
     // data
-    import(networkModule)
-    import(storageModule)
-    import(dbModule)
+    importAll(
+        networkModule,
+        storageModule,
+        dbModule
+    )
 }

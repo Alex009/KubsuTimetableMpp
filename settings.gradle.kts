@@ -10,6 +10,9 @@ pluginManagement {
                 "org.jetbrains.kotlin.serialization" ->
                     useModule("org.jetbrains.kotlin:kotlin-serialization:${Versions.org_jetbrains_kotlin}")
 
+                "androidx.navigation.safeargs.kotlin" ->
+                    useModule("androidx.navigation:navigation-safe-args-gradle-plugin:${Versions.androidx_navigation}")
+
                 "com.android.library", "com.android.application" ->
                     useModule("com.android.tools.build:gradle:${Versions.com_android_tools_build_gradle}")
 

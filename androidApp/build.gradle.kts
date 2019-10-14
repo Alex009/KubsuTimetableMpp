@@ -4,6 +4,7 @@ plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("android.extensions")
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -35,30 +36,57 @@ android {
     packagingOptions {
         exclude("META-INF/*.kotlin_module")
     }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
 }
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        jvmTarget = "12"
+        jvmTarget = "1.8"
     }
 }
 
 dependencies {
     implementation(project(":sharedCode"))
     implementation(fileTree("include" to "*.jar", "dir" to "libs"))
-
     implementation(Libs.kotlin_stdlib)
+
+    // Android
     implementation(Libs.appcompat)
+    implementation(Libs.recyclerview)
+    implementation(Libs.cardview)
+    implementation(Libs.exifinterface)
+    implementation(Libs.core_ktx)
+    implementation(Libs.swiperefreshlayout)
+    implementation(Libs.material)
+    implementation(Libs.fragment_ktx)
+
+    // Bottom sheet
+    implementation(Libs.sheetmenu)
+
+    // Navigation
+    implementation(Libs.navigation_fragment_ktx)
+    implementation(Libs.navigation_ui_ktx)
+
+    // Teaco
+    implementation(Libs.android_driver)
 
     // DI
     implementation(Libs.kodein_di_core)
     implementation(Libs.kodein_di_erased)
     implementation(Libs.kodein_di_framework_android_x)
 
+    // Coroutines
     implementation(Libs.kotlinx_coroutines_core)
     implementation(Libs.kotlinx_coroutines_android)
 
-    testImplementation(Libs.junit)
-    androidTestImplementation(Libs.com_android_support_test_runner)
+    // Test
+    testImplementation(Libs.junit_jupiter_api)
+    androidTestImplementation(Libs.androidx_test_core)
+    androidTestImplementation(Libs.junit)
+    androidTestImplementation(Libs.androidx_test_runner)
     androidTestImplementation(Libs.espresso_core)
 }
