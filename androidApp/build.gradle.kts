@@ -5,6 +5,8 @@ plugins {
     kotlin("android")
     kotlin("android.extensions")
     id("androidx.navigation.safeargs.kotlin")
+    id("com.google.gms.google-services")
+    id("io.fabric")
 }
 
 android {
@@ -17,6 +19,7 @@ android {
 
         minSdkVersion(16)
         targetSdkVersion(29)
+        multiDexEnabled = true //TODO remove this
 
         versionName = "1.0.0"
         versionCode = 1
@@ -26,8 +29,15 @@ android {
     }
 
     buildTypes {
-        getByName("release") {
+        getByName("debug") {
             isMinifyEnabled = false
+            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+            //signingConfig = signingConfigs.getByName("release")
+        }
+
+        getByName("release") {
+            isMinifyEnabled = true
+
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
             //signingConfig = signingConfigs.getByName("release")
         }
@@ -64,8 +74,19 @@ dependencies {
     implementation(Libs.material)
     implementation(Libs.fragment_ktx)
 
+    // Firebase
+    implementation(Libs.firebase_core)
+    implementation(Libs.firebase_messaging)
+    implementation(Libs.firebase_analytics)
+    implementation(Libs.crashlytics)
+
+    // App Killer
+    implementation(Libs.app_killer_manager)
+
     // Bottom sheet
     implementation(Libs.sheetmenu)
+
+    // Clean Android
 
     // Navigation
     implementation(Libs.navigation_fragment_ktx)

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "647351689727",
+    "firebase_url": "https://kubsutimetable.firebaseio.com",
+    "project_id": "kubsutimetable",
+    "storage_bucket": "kubsutimetable.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:647351689727:android:ff5494c8ff0e72dc3a87ca",
+        "android_client_info": {
+          "package_name": "com.kubsu.timetable"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "647351689727-r0ao4f1j4t6jn3asu0c3liqisjgcc9j5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kubsu.timetable",
+            "certificate_hash": "cfcdef7ab5554392d24a370f5e7abc8b9f79e348"
+          }
+        },
+        {
+          "client_id": "647351689727-unl7e2m8u6jjiog0ltvtpvheegeugiuu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0Cy-WcQD7JIKUBbKZSxxqIDCbqoeyvTY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "647351689727-unl7e2m8u6jjiog0ltvtpvheegeugiuu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,3 +1,4 @@
-<manifest package="com.kubsu.timetable.shared">
+<?xml version="1.0" encoding="utf-8"?>
+<manifest package="timetable.shared">
 
 </manifest>

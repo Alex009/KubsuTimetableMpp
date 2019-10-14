@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Расписание КубГУ</string>
+    <string name="error">Ошибка</string>
+    <string name="error_connecting">Ошибка подключения</string>
+    <string name="email">Email</string>
+    <string name="password">Пароль</string>
+    <string name="sign_in">Войти</string>
+    <string name="save">Сохранить</string>
+    <string name="empty">Пусто</string>
+    <string name="open_nav_drawer">Открыть навигационную панель</string>
+    <string name="close_nav_drawer">Закрыть навигационную панель</string>
+    <string name="registration">Регистрация</string>
+    <string name="faculty">Факультет</string>
+    <string name="occupation">Направление</string>
+    <string name="group">Группа</string>
+    <string name="subgroup">Подгруппа</string>
+    <string name="create_subscription">Создать подписку</string>
+    <string name="enter_email">Введите email</string>
+    <string name="enter_password">Введите пароль</string>
+    <string name="incorrect_email">Неправильный email</string>
+    <string name="incorrect_password">Неправильный пароль</string>
+    <string name="monday">Понедельник</string>
+    <string name="choose_faculty">Выберите факультет</string>
+    <string name="choose_occupation">Выберите направление</string>
+    <string name="choose_group">Выберите группу</string>
+    <string name="choose_subgroup">Выберите подгруппу</string>
+    <string name="do_you_want_to_create_a_subscription">Хотите создать подписку?</string>
+    <string name="go_to_numerator">Перейти к числителю</string>
+    <string name="go_to_denominator">Перейти к знаменателю</string>
+    <string name="main">Основные</string>
+    <string name="secondary">Вторичные</string>
+    <string name="now_the_numerator">Сейчас числитель</string>
+    <string name="now_the_denominator">Сейчас знаменатель</string>
+    <string name="classroom_with_parameter">Кабинет: %1$s</string>
+    <string name="lecture">Лекция</string>
+    <string name="seminar">Практика</string>
+    <string name="class_number_with_parameter">%1$d пара</string>
+    <string name="ok">Ок</string>
+    <string name="cancel">Отмена</string>
+    <string name="create_main_subscription">Создать основную подписку</string>
+    <string name="create_secondary_subscription">Создать вторичную подписку</string>
+    <string name="not_authenticated">Вы не аутентифицированы</string>
+    <string name="unknown_failure">Неизвестная ошибка</string>
+
+    <string name="auto_start_message">Необходимо добавить приложение в автозапуск для того, чтобы Вам вовремя приходили уведомления. Продолжить?</string>
+    <string name="battery_optimization_message">Для корректной работы приложения необходимо отключить режим энергосбережения.</string>
+    <string name="notification_message">Для корректной работы приложения необходимо провести настройки уведомлений.</string>
+    <string name="default_notification_channel_id">kubsu_timetable_channel_id</string>
+    <string name="default_notification_channel_name">kubsu_timetable_channel_name</string>
+</resources>

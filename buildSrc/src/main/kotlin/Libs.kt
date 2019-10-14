@@ -144,8 +144,19 @@ object Libs {
     /**
      * https://developer.android.com/topic/libraries/architecture/index.html
      */
+    const val navigation_safe_args_gradle_plugin: String =
+        "androidx.navigation:navigation-safe-args-gradle-plugin:" + Versions.androidx_navigation
+
+    /**
+     * https://developer.android.com/topic/libraries/architecture/index.html
+     */
     const val navigation_ui_ktx: String = "androidx.navigation:navigation-ui-ktx:" +
             Versions.androidx_navigation
+
+    const val multidex_instrumentation: String = "androidx.multidex:multidex-instrumentation:" +
+            Versions.androidx_multidex
+
+    const val multidex: String = "androidx.multidex:multidex:" + Versions.androidx_multidex
 
     const val teaco: String = "com.egroden.teaco:teaco:" + Versions.com_egroden_teaco
 
@@ -224,12 +235,24 @@ object Libs {
     const val com_android_tools_build_gradle: String = "com.android.tools.build:gradle:" +
             Versions.com_android_tools_build_gradle
 
+    const val io_fabric_tools_gradle: String = "io.fabric.tools:gradle:" +
+            Versions.io_fabric_tools_gradle
+
     const val de_fayard_refreshversions_gradle_plugin: String =
         "de.fayard.refreshVersions:de.fayard.refreshVersions.gradle.plugin:" +
                 Versions.de_fayard_refreshversions_gradle_plugin
 
     const val multiplatform_settings: String = "com.russhwolf:multiplatform-settings:" +
             Versions.multiplatform_settings
+
+    const val app_killer_manager: String = "indrih17.app-killer-manager:app-killer-manager:" +
+            Versions.app_killer_manager
+
+    const val firebase_analytics: String = "com.google.firebase:firebase-analytics:" +
+            Versions.firebase_analytics
+
+    const val firebase_messaging: String = "com.google.firebase:firebase-messaging:" +
+            Versions.firebase_messaging
 
     /**
      * http://developer.android.com/tools/extras/support-library.html
@@ -243,6 +266,8 @@ object Libs {
     const val junit_jupiter_api: String = "org.junit.jupiter:junit-jupiter-api:" +
             Versions.junit_jupiter_api
 
+    const val google_services: String = "com.google.gms:google-services:" + Versions.google_services
+
     /**
      * https://developer.android.com/testing
      */
@@ -254,6 +279,8 @@ object Libs {
      */
     const val exifinterface: String = "androidx.exifinterface:exifinterface:" +
             Versions.exifinterface
+
+    const val firebase_core: String = "com.google.firebase:firebase-core:" + Versions.firebase_core
 
     /**
      * https://developer.android.com/jetpack/androidx
@@ -269,6 +296,9 @@ object Libs {
      * http://developer.android.com/tools/extras/support-library.html
      */
     const val recyclerview: String = "androidx.recyclerview:recyclerview:" + Versions.recyclerview
+
+    const val crashlytics: String = "com.crashlytics.sdk.android:crashlytics:" +
+            Versions.crashlytics
 
     /**
      * https://developer.android.com/studio

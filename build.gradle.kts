@@ -7,6 +7,7 @@ allprojects {
         maven(url = "https://jitpack.io")
         maven(url = "https://plugins.gradle.org/m2/")
         maven(url = "https://dl.bintray.com/indrih17/teaco")
+        maven(url = "https://maven.fabric.io/public")
     }
 
     // workaround for https://youtrack.jetbrains.com/issue/KT-27170
@@ -14,7 +15,7 @@ allprojects {
 }
 
 plugins {
-    id("de.fayard.refreshVersions") version "0.7.0"
+    id("de.fayard.refreshVersions") version Versions.de_fayard_refreshversions_gradle_plugin
 
     kotlin("multiplatform") apply false
     kotlin("android") apply false
@@ -23,4 +24,6 @@ plugins {
     id("com.android.application") apply false
     id("androidx.navigation.safeargs.kotlin") apply false
     id("com.squareup.sqldelight") apply false
+    id("google-services") apply false
+    id("io.fabric") apply false
 }

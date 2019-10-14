@@ -1,6 +1,9 @@
-package com.kubsu.timetable
+package com.kubsu.timetable.base
 
 import android.app.Application
+import com.crashlytics.android.Crashlytics
+import com.kubsu.timetable.di.appKodein
+import io.fabric.sdk.android.Fabric
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.erased.instance
@@ -12,5 +15,7 @@ class App : Application(), KodeinAware {
         super.onCreate()
         val lifecycleCallbacks by kodein.instance<ActivityLifecycleCallbacks>()
         registerActivityLifecycleCallbacks(lifecycleCallbacks)
+
+        Fabric.with(this, Crashlytics())
     }
 }

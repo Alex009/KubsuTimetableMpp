@@ -1,12 +1,12 @@
-package com.kubsu.timetable
+package com.kubsu.timetable.di
 
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
+import com.kubsu.timetable.base.App
 import di.androidModule
 import org.kodein.di.Kodein
 import org.kodein.di.erased.bind
-import org.kodein.di.erased.instance
 import org.kodein.di.erased.singleton
 
 fun appKodein(app: App) = Kodein {
@@ -15,12 +15,6 @@ fun appKodein(app: App) = Kodein {
     bind<Application.ActivityLifecycleCallbacks>() with singleton {
         object : Application.ActivityLifecycleCallbacks {
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-                (activity as? AppActivity)?.let {
-                    it.syncMixinInteractor = instance()
-                    it.timetableInteractor = instance()
-                    it.authInteractor = instance()
-                    it.subscriptionsInteractor = instance()
-                }
             }
             override fun onActivityStarted(activity: Activity) = Unit
             override fun onActivityResumed(activity: Activity) = Unit

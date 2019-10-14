@@ -1,3 +1,52 @@
 <resources>
-    <string name="app_name">KubsuTimetable</string>
+    <string name="app_name">Kubsu Timetable</string>
+    <string name="error">Error</string>
+    <string name="error_connecting">Failed connect</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="sign_in">Sign in</string>
+    <string name="save">Save</string>
+    <string name="empty">Empty</string>
+    <string name="open_nav_drawer">Open navigation drawer</string>
+    <string name="close_nav_drawer">Close navigation drawer</string>
+    <string name="registration">Registration</string>
+    <string name="faculty">Faculty</string>
+    <string name="occupation">Occupation</string>
+    <string name="group">Group</string>
+    <string name="subgroup">Subgroup</string>
+    <string name="create_subscription">Create subscription</string>
+    <string name="enter_email">Enter email</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="incorrect_email">Incorrect email</string>
+    <string name="incorrect_password">Incorrect password</string>
+    <string name="monday">Monday</string>
+    <string name="choose_faculty">Choose faculty</string>
+    <string name="choose_occupation">Choose occupation</string>
+    <string name="choose_group">Choose gpoup</string>
+    <string name="choose_subgroup">Choose subgroup</string>
+    <string name="do_you_want_to_create_a_subscription">Do you want to create a subscription?</string>
+    <string name="go_to_numerator">Go to numerator</string>
+    <string name="go_to_denominator">Go to denominator</string>
+    <string name="main">Main</string>
+    <string name="secondary">Secondary</string>
+    <string name="now_the_numerator">Now the numerator</string>
+    <string name="now_the_denominator">Now the denominator</string>
+    <string name="classroom_with_parameter">Classroom: %1$s</string>
+    <string name="lecture">Lecture</string>
+    <string name="seminar">Seminar</string>
+    <string name="class_number_with_parameter">%1$d class</string>
+    <string name="class_time_with_parameters" translatable="false">%1$s - %2$s</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="lecturer_info_with_parameters" translatable="false">%1$s. %2$s. %3$s</string>
+    <string name="create_main_subscription">Create main subscription</string>
+    <string name="create_secondary_subscription">Create secondary subscription</string>
+    <string name="not_authenticated">You are not authenticated</string>
+    <string name="unknown_failure">Unknown failure</string>
+
+    <string name="auto_start_message">You must add the application to autorun in order for you to receive notifications on time. Continue?</string>
+    <string name="battery_optimization_message">For the application to work correctly, you must turn off the power saving mode.</string>
+    <string name="notification_message">For the application to work correctly, you need to configure notification settings.</string>
+    <string name="default_notification_channel_id">kubsu_timetable_channel_id</string>
+    <string name="default_notification_channel_name">kubsu_timetable_channel_name</string>
 </resources>
