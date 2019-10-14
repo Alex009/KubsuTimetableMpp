@@ -66,6 +66,7 @@ dependencies {
 
     // Android
     implementation(Libs.appcompat)
+    implementation(Libs.constraintlayout)
     implementation(Libs.recyclerview)
     implementation(Libs.cardview)
     implementation(Libs.exifinterface)
@@ -80,20 +81,21 @@ dependencies {
     implementation(Libs.firebase_analytics)
     implementation(Libs.crashlytics)
 
+    // Serialization
+    implementation(Libs.kotlinx_serialization_runtime)
+
     // App Killer
     implementation(Libs.app_killer_manager)
 
     // Bottom sheet
     implementation(Libs.sheetmenu)
 
-    // Clean Android
-
     // Navigation
     implementation(Libs.navigation_fragment_ktx)
     implementation(Libs.navigation_ui_ktx)
 
     // Teaco
-    implementation(Libs.android_driver)
+    implementation(Libs.teaco_android)
 
     // DI
     implementation(Libs.kodein_di_core)

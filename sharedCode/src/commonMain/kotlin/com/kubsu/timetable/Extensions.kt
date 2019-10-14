@@ -12,13 +12,14 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.*
+import org.kodein.di.DKodeinAware
 import org.kodein.di.Kodein
 import org.kodein.di.erased
 import kotlin.jvm.JvmName
 import kotlin.reflect.typeOf
 
 @UseExperimental(ExperimentalStdlibApi::class)
-inline fun <reified T : Any> name(): String =
+inline fun <reified T : Any> nameWithGenerics(): String =
     typeOf<T>()
         .toString()
         .takeWhile { it != '(' }
@@ -26,9 +27,12 @@ inline fun <reified T : Any> name(): String =
 inline fun <reified T : Any> Kodein.Builder.bindGeneric(): Kodein.Builder.TypeBinder<T> =
     Bind(
         erased(),
-        name<T>(),
+        nameWithGenerics<T>(),
         null
     )
+
+inline fun <reified T : Any> DKodeinAware.instanceGeneric(): T =
+    dkodein.Instance(erased(), nameWithGenerics<T>())
 
 suspend inline fun <T> def(noinline block: suspend CoroutineScope.() -> T): T =
     withContext(Dispatchers.Default, block = block)

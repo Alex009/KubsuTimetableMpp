@@ -29,7 +29,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class AppActivity : AppCompatActivity(), NavHost, Logger {
     override fun getNavController(): NavController =
-        Navigation.findNavController(this, R.id.fragment_container_view)
+        Navigation.findNavController(this, R.id.nav_host_fragment)
 
     private val alertCreator: MaterialActionDialogCreator?
 
@@ -93,7 +93,7 @@ class AppActivity : AppCompatActivity(), NavHost, Logger {
         if (!PermissionProvider.hasAllPermissions(this))
             PermissionProvider.checkPermissions(this)
 
-        Keyboard.observeKeyboardVisibleStatus(fragment_container_view)
+        Keyboard.observeKeyboardVisibleStatus(root_view)
 
         alertCreator?.run {
             showDialogForAction(

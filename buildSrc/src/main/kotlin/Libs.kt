@@ -8,6 +8,13 @@ object Libs {
     /**
      * https://github.com/Kotlin/kotlinx.serialization
      */
+    const val kotlinx_serialization_runtime: String =
+        "org.jetbrains.kotlinx:kotlinx-serialization-runtime:" +
+                Versions.org_jetbrains_kotlinx_kotlinx_serialization
+
+    /**
+     * https://github.com/Kotlin/kotlinx.serialization
+     */
     const val kotlinx_serialization_runtime_common: String =
         "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:" +
                 Versions.org_jetbrains_kotlinx_kotlinx_serialization
@@ -265,6 +272,12 @@ object Libs {
      */
     const val junit_jupiter_api: String = "org.junit.jupiter:junit-jupiter-api:" +
             Versions.junit_jupiter_api
+
+    /**
+     * http://tools.android.com
+     */
+    const val constraintlayout: String = "androidx.constraintlayout:constraintlayout:" +
+            Versions.constraintlayout
 
     const val google_services: String = "com.google.gms:google-services:" + Versions.google_services
 

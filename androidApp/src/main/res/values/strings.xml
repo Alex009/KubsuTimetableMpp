@@ -49,4 +49,7 @@
     <string name="notification_message">For the application to work correctly, you need to configure notification settings.</string>
     <string name="default_notification_channel_id">kubsu_timetable_channel_id</string>
     <string name="default_notification_channel_name">kubsu_timetable_channel_name</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

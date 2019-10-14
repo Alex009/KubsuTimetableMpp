@@ -20,7 +20,7 @@ object Versions {
 
     const val androidx_multidex: String = "2.0.0"
 
-    const val com_egroden_teaco: String = "0.1.0"
+    const val com_egroden_teaco: String = "0.1.1"
 
     const val androidx_test: String = "1.2.0"
 
@@ -45,6 +45,8 @@ object Versions {
     const val swiperefreshlayout: String = "1.0.0"
 
     const val junit_jupiter_api: String = "5.5.2"
+
+    const val constraintlayout: String = "2.0.0-beta2"
 
     const val google_services: String = "4.3.2"
 

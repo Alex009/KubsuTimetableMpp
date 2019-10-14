@@ -16,5 +16,31 @@
         android:id="@+id/splashFragment"
         android:name="com.kubsu.timetable.fragments.splash.SplashFragment"
         android:label="splash_fragment"
-        tools:layout="@layout/splash_fragment" />
+        tools:layout="@layout/splash_fragment">
+        <action
+            android:id="@+id/action_splashFragment_to_signInFragment"
+            app:destination="@id/signInFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/signInFragment"
+        android:name="com.kubsu.timetable.fragments.signin.SignInFragment"
+        android:label="sign_in_fragment"
+        tools:layout="@layout/sign_in_fragment">
+        <action
+            android:id="@+id/action_signInFragment_to_registrationFragment"
+            app:destination="@id/registrationFragment" />
+        <action
+            android:id="@+id/action_signInFragment_to_bottom_nav_graph"
+            app:destination="@id/bottom_nav_graph" />
+    </fragment>
+    <fragment
+        android:id="@+id/registrationFragment"
+        android:name="com.kubsu.timetable.fragments.registration.RegistrationFragment"
+        android:label="registration_fragment"
+        tools:layout="@layout/registration_fragment">
+        <action
+            android:id="@+id/action_registrationFragment_to_signInFragment"
+            app:destination="@id/signInFragment" />
+    </fragment>
+    <include app:graph="@navigation/bottom_nav_graph" />
 </navigation>

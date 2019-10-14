@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottom_nav_graph"
+    app:startDestination="@id/timetableFragment">
+    <fragment
+        android:id="@+id/createSubscriptionFragment"
+        android:name="com.kubsu.timetable.fragments.subscription.create.CreateSubscriptionFragment"
+        android:label="createSubscriptionFragment"
+        tools:layout="@layout/create_subscription_fragment" />
+    <fragment
+        android:id="@+id/timetableFragment"
+        android:name="com.kubsu.timetable.fragments.timetable.TimetableFragment"
+        android:label="timetable_fragment"
+        tools:layout="@layout/timetable_fragment" />
+    <fragment
+        android:id="@+id/bottomNavFragment"
+        android:name="com.kubsu.timetable.BottomNavFragment"
+        android:label="bottom_nav_fragment"
+        tools:layout="@layout/bottom_nav_fragment" />
+</navigation>

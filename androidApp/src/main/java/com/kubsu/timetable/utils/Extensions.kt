@@ -12,6 +12,9 @@ import androidx.navigation.Navigation
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.kubsu.timetable.R
 
+inline fun <reified T> nameOf(): String =
+    T::class.java.name
+
 fun View.invisible() {
     visibility = View.INVISIBLE
 }

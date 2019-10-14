@@ -80,13 +80,13 @@ kotlin {
                 implementation(Libs.ktor_client_logging_jvm)
 
                 // Serialization
-                implementation(Libs.kotlinx_serialization_runtime_common)
-
-                // Db
-                implementation(Libs.android_driver)
+                implementation(Libs.kotlinx_serialization_runtime)
 
                 // Presentation logic
                 implementation(Libs.teaco_android)
+
+                // Db
+                implementation(Libs.android_driver)
 
                 // Di
                 implementation(Libs.kodein_di_framework_android_x)

@@ -17,7 +17,9 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
 
-        <activity android:name="com.kubsu.timetable.base.AppActivity">
+        <activity
+            android:name="com.kubsu.timetable.base.AppActivity"
+            android:windowSoftInputMode="stateUnchanged|adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
