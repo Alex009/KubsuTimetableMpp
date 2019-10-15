@@ -52,7 +52,6 @@ sealed class UserUpdateFail : DomainFailure() {
 
 sealed class SubscriptionFail : DomainFailure() {
     object TooLongTitle : SubscriptionFail()
-    object SubgroupDoesNotExist : SubscriptionFail()
     object SubscriptionAlreadyExists : SubscriptionFail()
 }
 

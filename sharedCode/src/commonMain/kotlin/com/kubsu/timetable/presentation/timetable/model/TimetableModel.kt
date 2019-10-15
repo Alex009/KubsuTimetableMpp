@@ -1,19 +1,22 @@
 package com.kubsu.timetable.presentation.timetable.model
 
 import com.soywiz.klock.DayOfWeek
-import kotlinx.serialization.Serializable
+import platform.SerializableModel
+import platform.SerializeModel
 
-@Serializable
+@SerializeModel
 data class TimetableModel(
     val id: Int,
     val typeOfWeek: TypeOfWeekModel,
     val facultyId: Int,
     val subgroupId: Int,
     val infoList: List<TimetableInfoToDisplay>
-)
+) : SerializableModel
 
-@Serializable
-sealed class TimetableInfoToDisplay {
+sealed class TimetableInfoToDisplay : SerializableModel {
+    @SerializeModel
     data class Class(val classModel: ClassModel) : TimetableInfoToDisplay()
+
+    @SerializeModel
     data class Day(val dayOfWeek: DayOfWeek) : TimetableInfoToDisplay()
 }

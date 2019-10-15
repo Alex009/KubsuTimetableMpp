@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/createSubscriptionFragment"
-        android:title="@string/create_subscription"/>
-    <item
         android:id="@+id/timetableFragment"
-        android:title="Timetable"/>
+        android:icon="@drawable/ic_view_week_black_24dp"
+        android:title="@string/timetable" />
+    <item
+        android:id="@+id/subscriptionListFragment"
+        android:icon="@drawable/ic_bookmark_border_black_24dp"
+        android:title="@string/subscription_list" />
+    <item
+        android:id="@+id/settingsFragment"
+        android:icon="@drawable/ic_account_circle_black_24dp"
+        android:title="@string/settings" />
 </menu>

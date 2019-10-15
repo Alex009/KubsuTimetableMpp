@@ -2,7 +2,8 @@ package com.kubsu.timetable.presentation.signin
 
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SignInFail
-import kotlinx.serialization.Serializable
+import platform.SerializableModel
+import platform.SerializeModel
 
 sealed class Action {
     class SignIn(val email: String, val password: String) : Action()
@@ -12,10 +13,10 @@ sealed class Action {
     internal class ShowFailure(val failure: RequestFailure<List<SignInFail>>) : Action()
 }
 
-@Serializable
+@SerializeModel
 data class State(
     val progress: Boolean = false
-)
+) : SerializableModel
 
 sealed class SideEffect {
     class Authenticate(val email: String, val password: String) : SideEffect()

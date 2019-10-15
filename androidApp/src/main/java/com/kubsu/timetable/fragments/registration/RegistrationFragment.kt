@@ -2,10 +2,13 @@ package com.kubsu.timetable.fragments.registration
 
 import android.os.Bundle
 import android.view.View
-import com.egroden.teaco.*
+import com.egroden.teaco.TeaFeature
+import com.egroden.teaco.androidConnectors
+import com.egroden.teaco.bindAction
+import com.egroden.teaco.connect
 import com.kubsu.timetable.R
-import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.RegistrationFail
+import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.base.BaseFragment
 import com.kubsu.timetable.presentation.registration.*
 import com.kubsu.timetable.utils.*
@@ -14,10 +17,9 @@ import kotlinx.android.synthetic.main.progress_bar.view.*
 import kotlinx.android.synthetic.main.registration_fragment.view.*
 
 class RegistrationFragment(
-    teaFeature: TeaFeature<Action, SideEffect, State, Subscription>,
-    stateParser: StateParser<State>
+    teaFeature: TeaFeature<Action, SideEffect, State, Subscription>
 ) : BaseFragment(R.layout.registration_fragment) {
-    private val connector by androidConnectors(teaFeature, stateParser)
+    private val connector by androidConnectors(teaFeature)
 
     private val progressEffect = UiEffect(Visibility.INVISIBLE)
     private val emailErrorEffect = UiEffect<Int?>(null)
@@ -30,15 +32,12 @@ class RegistrationFragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        info("onViewCreated")
         progressEffect bind { view.progress_bar.visibility(it) }
         emailErrorEffect bind { it?.let(view.email_edit_text::showError) }
         passwordErrorEffect bind { it?.let(view.password_edit_text::showError) }
 
         view.registration_button.setOnClickListener {
-            info("registration_button: hide keyboard")
             Keyboard.hide(view)
-            info("registration_button: bindAction")
             connector bindAction Action.Registration(
                 email = view.email_edit_text.text.toString(),
                 password = view.password_edit_text.text.toString()
@@ -48,24 +47,20 @@ class RegistrationFragment(
 
     override fun onDestroyView() {
         super.onDestroyView()
-        info("onDestroyView")
         progressEffect.unbind()
         emailErrorEffect.unbind()
         passwordErrorEffect.unbind()
     }
 
     private fun render(state: State) {
-        info("Render: $state")
         progressEffect.value = if (state.progress) Visibility.VISIBLE else Visibility.INVISIBLE
     }
 
-    private fun render(subscription: Subscription) {
-        info("Render: $subscription")
+    private fun render(subscription: Subscription) =
         when (subscription) {
             is Subscription.Navigate -> navigation(subscription.screen)
             is Subscription.ShowFailure -> showFailure(subscription.failure)
         }
-    }
 
     private fun navigation(screen: Screen) {
         getNavControllerOrNull()?.navigate(

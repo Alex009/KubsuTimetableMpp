@@ -3,15 +3,55 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bottom_nav_graph"
-    app:startDestination="@id/timetableFragment">
+    app:startDestination="@id/bottomNavFragment">
+
     <fragment
-        android:id="@+id/createSubscriptionFragment"
-        android:name="com.kubsu.timetable.fragments.subscription.create.CreateSubscriptionFragment"
-        android:label="createSubscriptionFragment"
-        tools:layout="@layout/create_subscription_fragment" />
+        android:id="@+id/bottomNavFragment"
+        android:name="com.kubsu.timetable.fragments.bottomnav.BottomNavFragment"
+        android:label="bottom_nav_fragment"
+        tools:layout="@layout/bottom_nav_fragment">
+        <action
+            android:id="@+id/action_bottomNavFragment_to_timetableFragment"
+            app:destination="@id/timetableFragment" />
+        <action
+            android:id="@+id/action_bottomNavFragment_to_subscriptionListFragment"
+            app:destination="@id/subscriptionListFragment" />
+    </fragment>
+
     <fragment
         android:id="@+id/timetableFragment"
         android:name="com.kubsu.timetable.fragments.bottomnav.timetable.TimetableFragment"
         android:label="timetable_fragment"
-        tools:layout="@layout/timetable_fragment" />
+        tools:layout="@layout/timetable_fragment">
+        <argument
+            android:name="subscription"
+            app:argType="com.kubsu.timetable.presentation.timetable.model.SubscriptionModel" />
+    </fragment>
+    <fragment
+        android:id="@+id/subscriptionListFragment"
+        android:name="com.kubsu.timetable.fragments.bottomnav.subscription.list.SubscriptionListFragment"
+        android:label="fragment_subscription_list"
+        tools:layout="@layout/subscription_list_fragment">
+        <action
+            android:id="@+id/action_subscriptionListFragment_to_timetableFragment"
+            app:destination="@id/timetableFragment" />
+        <action
+            android:id="@+id/action_subscriptionListFragment_to_createSubscriptionFragment"
+            app:destination="@id/createSubscriptionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.kubsu.timetable.fragments.bottomnav.settings.SettingsFragment"
+        android:label="settings_fragment"
+        tools:layout="@layout/settings_fragment" />
+
+    <fragment
+        android:id="@+id/createSubscriptionFragment"
+        android:name="com.kubsu.timetable.fragments.subscription.create.CreateSubscriptionFragment"
+        android:label="create_subscription_fragment"
+        tools:layout="@layout/create_subscription_fragment">
+        <action
+            android:id="@+id/action_createSubscriptionFragment_to_timetableFragment"
+            app:destination="@id/timetableFragment" />
+    </fragment>
 </navigation>

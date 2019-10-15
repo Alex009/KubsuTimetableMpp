@@ -56,4 +56,7 @@
     <string name="password_entirely_numeric">Password entirely numeric</string>
     <string name="password_is_too_short">Password is too short</string>
     <string name="non_unique_email">A user with this email already exists</string>
+    <string name="subscription_list">Subscription list</string>
+    <string name="timetable">Timetable</string>
+    <string name="settings">Settings</string>
 </resources>

@@ -8,9 +8,6 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import com.egroden.teaco.AndroidConnector
-import com.egroden.teaco.Render
-import com.egroden.teaco.connect
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.kubsu.timetable.R
 
@@ -31,16 +28,10 @@ fun TextView.showError(messageRes: Int) {
     requestFocus()
 }
 
-fun <Action, SideEffect, State, Subscription> AndroidConnector<Action, SideEffect, State, Subscription>.connect(
-    renderState: Render<State>,
-    renderSubscription: Render<Subscription>
-) {
-    connector.connect(renderState)
-    connector.connect(renderSubscription)
-}
-
 fun Spinner.showError(messageRes: Int) {
-    (selectedView as TextView).error = context.getString(messageRes)
+    val view = selectedView as TextView
+    view.error = null
+    view.error = context.getString(messageRes)
     requestFocusFromTouch()
     performClick()
 }

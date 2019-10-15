@@ -70,12 +70,7 @@ class SubscriptionNetworkClientImpl(
                 else -> DataFailure.UnknownResponse(responseCode, responseBody)
             }
         }.plus(
-            subgroupFailList.map {
-                when (it) {
-                    "does_not_exist" -> SubscriptionFail.SubgroupDoesNotExist
-                    else -> DataFailure.UnknownResponse(responseCode, responseBody)
-                }
-            }
+            subgroupFailList.map { DataFailure.UnknownResponse(responseCode, responseBody) }
         ).plus(
             nonFieldFailList.map {
                 when (it) {

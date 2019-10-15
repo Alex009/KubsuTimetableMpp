@@ -1,6 +1,7 @@
 package com.kubsu.timetable.presentation.splash
 
-import kotlinx.serialization.Serializable
+import platform.SerializableModel
+import platform.SerializeModel
 
 sealed class Action {
     object Initiate : Action()
@@ -9,8 +10,8 @@ sealed class Action {
     internal object ShowSignInScreen : Action()
 }
 
-@Serializable
-class State
+@SerializeModel
+class State : SerializableModel
 
 sealed class SideEffect {
     object Initiate : SideEffect()

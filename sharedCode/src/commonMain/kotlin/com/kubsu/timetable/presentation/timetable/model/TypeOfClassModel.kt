@@ -1,9 +1,12 @@
 package com.kubsu.timetable.presentation.timetable.model
 
-import kotlinx.serialization.Serializable
+import platform.SerializableModel
+import platform.SerializeModel
 
-@Serializable
-sealed class TypeOfClassModel {
+sealed class TypeOfClassModel : SerializableModel {
+    @SerializeModel
     object Lecture : TypeOfClassModel()
+
+    @SerializeModel
     object Practice : TypeOfClassModel()
 }

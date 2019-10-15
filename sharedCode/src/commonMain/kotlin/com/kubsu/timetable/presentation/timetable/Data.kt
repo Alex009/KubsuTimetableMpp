@@ -4,7 +4,8 @@ import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.presentation.timetable.model.SubscriptionModel
 import com.kubsu.timetable.presentation.timetable.model.TimetableModel
 import com.kubsu.timetable.presentation.timetable.model.UniversityInfoModel
-import kotlinx.serialization.Serializable
+import platform.SerializableModel
+import platform.SerializeModel
 
 sealed class Action {
     class UpdateData(val subscription: SubscriptionModel) : Action()
@@ -20,14 +21,14 @@ sealed class Action {
     ) : Action()
 }
 
-@Serializable
+@SerializeModel
 data class State(
     val progress: Boolean,
     val currentSubscription: SubscriptionModel?,
     val universityInfoModel: UniversityInfoModel?,
     val numeratorTimetable: TimetableModel?,
     val denominatorTimetable: TimetableModel?
-)
+) : SerializableModel
 
 sealed class SideEffect {
     class LoadCurrentTimetable(val subscription: SubscriptionModel) : SideEffect()

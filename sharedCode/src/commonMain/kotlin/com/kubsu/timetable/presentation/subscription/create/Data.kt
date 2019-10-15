@@ -7,7 +7,9 @@ import com.kubsu.timetable.presentation.subscription.model.FacultyModel
 import com.kubsu.timetable.presentation.subscription.model.GroupModel
 import com.kubsu.timetable.presentation.subscription.model.OccupationModel
 import com.kubsu.timetable.presentation.subscription.model.SubgroupModel
-import kotlinx.serialization.Serializable
+import com.kubsu.timetable.presentation.timetable.model.SubscriptionModel
+import platform.SerializableModel
+import platform.SerializeModel
 
 sealed class Action {
     object LoadFacultyList : Action()
@@ -43,18 +45,18 @@ sealed class Action {
     ) : Action()
 }
 
-@Serializable
+@SerializeModel
 data class State(
     val progress: Boolean,
     val facultyList: List<FacultyModel>,
     val occupationList: List<OccupationModel>,
     val groupList: List<GroupModel>,
     val subgroupList: List<SubgroupModel>,
-    val selectedFaculty: FacultyModel?,
-    val selectedOccupation: OccupationModel?,
-    val selectedGroup: GroupModel?,
-    val selectedSubgroup: SubgroupModel?
-)
+    internal val selectedFaculty: FacultyModel?,
+    internal val selectedOccupation: OccupationModel?,
+    internal val selectedGroup: GroupModel?,
+    internal val selectedSubgroup: SubgroupModel?
+) : SerializableModel
 
 sealed class SideEffect {
     object SelectFacultyList : SideEffect()
@@ -83,5 +85,5 @@ sealed class Subscription {
 }
 
 sealed class Screen {
-    object TimetableScreen : Screen()
+    class TimetableScreen(val subscription: SubscriptionModel) : Screen()
 }

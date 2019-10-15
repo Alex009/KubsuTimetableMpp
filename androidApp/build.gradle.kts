@@ -26,6 +26,10 @@ android {
 
         base.archivesBaseName = "${applicationName}_$versionName"
         testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
+
+        vectorDrawables {
+            useSupportLibrary = true
+        }
     }
 
     buildTypes {
@@ -37,7 +41,6 @@ android {
 
         getByName("release") {
             isMinifyEnabled = true
-
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
             //signingConfig = signingConfigs.getByName("release")
         }

@@ -5,6 +5,7 @@ plugins {
     kotlin("multiplatform")
     id("kotlinx-serialization")
     id("com.android.library")
+    id("kotlin-android-extensions")
     id("com.squareup.sqldelight")
 }
 
@@ -136,10 +137,6 @@ tasks.withType<KotlinCompile> {
         jvmTarget = "1.8"
     }
 }
-
-/*tasks.withType<Test> {
-    useJUnitPlatform()
-}*/
 
 // It is necessay because we need to have access to context on CommonCode to use SQLDelight database
 android {

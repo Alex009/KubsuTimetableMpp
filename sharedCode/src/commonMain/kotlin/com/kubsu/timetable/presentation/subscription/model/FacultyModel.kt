@@ -1,9 +1,10 @@
 package com.kubsu.timetable.presentation.subscription.model
 
-import kotlinx.serialization.Serializable
+import platform.SerializableModel
+import platform.SerializeModel
 
-@Serializable
+@SerializeModel
 data class FacultyModel(
     val id: Int,
     val title: String
-)
+) : SerializableModel

@@ -1,9 +1,12 @@
 package com.kubsu.timetable.presentation.timetable.model
 
-import kotlinx.serialization.Serializable
+import platform.SerializableModel
+import platform.SerializeModel
 
-@Serializable
-sealed class TypeOfWeekModel {
+sealed class TypeOfWeekModel : SerializableModel {
+    @SerializeModel
     object Numerator : TypeOfWeekModel()
+
+    @SerializeModel
     object Denominator : TypeOfWeekModel()
 }

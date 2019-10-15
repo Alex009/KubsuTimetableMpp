@@ -2,7 +2,10 @@ package com.kubsu.timetable.fragments.signin
 
 import android.os.Bundle
 import android.view.View
-import com.egroden.teaco.*
+import com.egroden.teaco.TeaFeature
+import com.egroden.teaco.androidConnectors
+import com.egroden.teaco.bindAction
+import com.egroden.teaco.connect
 import com.kubsu.timetable.R
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SignInFail
@@ -12,14 +15,11 @@ import com.kubsu.timetable.utils.*
 import com.kubsu.timetable.utils.logics.Keyboard
 import kotlinx.android.synthetic.main.progress_bar.view.*
 import kotlinx.android.synthetic.main.sign_in_fragment.view.*
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.cancel
 
 class SignInFragment(
-    teaFeature: TeaFeature<Action, SideEffect, State, Subscription>,
-    stateParser: StateParser<State>
+    teaFeature: TeaFeature<Action, SideEffect, State, Subscription>
 ) : BaseFragment(R.layout.sign_in_fragment) {
-    private val connector by androidConnectors(teaFeature, stateParser)
+    private val connector by androidConnectors(teaFeature)
 
     private val progressEffect = UiEffect(Visibility.INVISIBLE)
     private val emailErrorEffect = UiEffect<Int?>(null)

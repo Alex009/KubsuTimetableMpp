@@ -1,9 +1,10 @@
 package com.kubsu.timetable.presentation.timetable.model
 
-import kotlinx.serialization.Serializable
+import platform.SerializableModel
+import platform.SerializeModel
 
-@Serializable
+@SerializeModel
 class UniversityInfoModel(
     val facultyId: Int,
     val typeOfWeek: TypeOfWeekModel
-)
+) : SerializableModel

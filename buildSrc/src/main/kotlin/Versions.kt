@@ -20,7 +20,7 @@ object Versions {
 
     const val androidx_multidex: String = "2.0.0"
 
-    const val com_egroden_teaco: String = "0.1.2"
+    const val com_egroden_teaco: String = "0.1.3"
 
     const val androidx_test: String = "1.2.0"
 

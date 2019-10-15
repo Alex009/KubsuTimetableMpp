@@ -4,7 +4,7 @@
     <color name="colorPrimaryVariant">#121212</color>
     <color name="colorOnPrimary">#FFFFFF</color>
 
-    <color name="colorSecondary">#b71c1c</color>
-    <color name="colorSecondaryVariant">#7f0000</color>
+    <color name="colorSecondary">#001FBB</color>
+    <color name="colorSecondaryVariant">#0059BB</color>
     <color name="colorOnSecondary">#FFFFFF</color>
 </resources>

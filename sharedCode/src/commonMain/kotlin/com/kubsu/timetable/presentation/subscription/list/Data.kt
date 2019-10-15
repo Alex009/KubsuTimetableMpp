@@ -2,7 +2,8 @@ package com.kubsu.timetable.presentation.subscription.list
 
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.presentation.timetable.model.SubscriptionModel
-import kotlinx.serialization.Serializable
+import platform.SerializableModel
+import platform.SerializeModel
 
 sealed class Action {
     object UpdateData : Action()
@@ -20,11 +21,11 @@ sealed class Action {
     ) : Action()
 }
 
-@Serializable
+@SerializeModel
 data class State(
     val progress: Boolean,
     val subscriptionList: List<SubscriptionModel>
-)
+) : SerializableModel
 
 sealed class SideEffect {
     object LoadSubscriptionList : SideEffect()

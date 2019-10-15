@@ -55,4 +55,7 @@
     <string name="password_entirely_numeric">"Пароль состоит только из цифр "</string>
     <string name="password_is_too_short">"Cлишком короткий пароль "</string>
     <string name="non_unique_email">Пользователь с такой электронной почтой уже существует</string>
+    <string name="subscription_list">Список подписок</string>
+    <string name="timetable">Расписание</string>
+    <string name="settings">Настройки</string>
 </resources>

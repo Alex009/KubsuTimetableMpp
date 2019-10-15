@@ -1,10 +1,11 @@
 package com.kubsu.timetable.presentation.subscription.model
 
-import kotlinx.serialization.Serializable
+import platform.SerializableModel
+import platform.SerializeModel
 
-@Serializable
+@SerializeModel
 data class SubgroupModel(
     val id: Int,
     val number: Int,
     val groupId: Int
-)
+) : SerializableModel

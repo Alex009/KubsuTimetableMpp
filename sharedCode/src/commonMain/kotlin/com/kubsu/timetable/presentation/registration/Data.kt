@@ -1,8 +1,9 @@
 package com.kubsu.timetable.presentation.registration
 
-import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.RegistrationFail
-import kotlinx.serialization.Serializable
+import com.kubsu.timetable.RequestFailure
+import platform.SerializableModel
+import platform.SerializeModel
 
 sealed class Action {
     class Registration(val email: String, val password: String) : Action()
@@ -13,10 +14,10 @@ sealed class Action {
     ) : Action()
 }
 
-@Serializable
+@SerializeModel
 data class State(
     val progress: Boolean = false
-)
+) : SerializableModel
 
 sealed class SideEffect {
     data class Registration(val email: String, val password: String) : SideEffect()
