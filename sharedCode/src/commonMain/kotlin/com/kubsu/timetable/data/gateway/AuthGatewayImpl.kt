@@ -38,7 +38,7 @@ class AuthGatewayImpl(
     override suspend fun registrationUser(
         email: String,
         password: String
-    ): Either<RequestFailure<List<UserInfoFail>>, Unit> =
+    ): Either<RequestFailure<List<RegistrationFail>>, Unit> =
         networkClient.registration(email, password)
 
     override suspend fun logout(user: UserEntity): Either<DataFailure, Unit> =

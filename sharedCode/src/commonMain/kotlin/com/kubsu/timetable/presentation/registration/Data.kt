@@ -1,7 +1,7 @@
 package com.kubsu.timetable.presentation.registration
 
 import com.kubsu.timetable.RequestFailure
-import com.kubsu.timetable.UserInfoFail
+import com.kubsu.timetable.RegistrationFail
 import kotlinx.serialization.Serializable
 
 sealed class Action {
@@ -9,7 +9,7 @@ sealed class Action {
 
     internal object ShowResult : Action()
     internal class ShowFailure(
-        val failure: RequestFailure<List<UserInfoFail>>
+        val failure: RequestFailure<List<RegistrationFail>>
     ) : Action()
 }
 
@@ -19,14 +19,14 @@ data class State(
 )
 
 sealed class SideEffect {
-    class Registration(val email: String, val password: String) : SideEffect()
+    data class Registration(val email: String, val password: String) : SideEffect()
 }
 
 sealed class Subscription {
     class Navigate(val screen: Screen) : Subscription()
 
     class ShowFailure(
-        val failure: RequestFailure<List<UserInfoFail>>
+        val failure: RequestFailure<List<RegistrationFail>>
     ) : Subscription()
 }
 

@@ -17,7 +17,7 @@ class AuthInteractorImpl(
     override suspend fun registrationUser(
         email: String,
         password: String
-    ): Either<RequestFailure<List<UserInfoFail>>, Unit> = def {
+    ): Either<RequestFailure<List<RegistrationFail>>, Unit> = def {
         authGateway.registrationUser(email, password)
     }
 

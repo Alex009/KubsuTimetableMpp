@@ -12,7 +12,7 @@ import com.kubsu.timetable.fragments.registration.RegistrationFragment
 import com.kubsu.timetable.fragments.signin.SignInFragment
 import com.kubsu.timetable.fragments.splash.SplashFragment
 import com.kubsu.timetable.fragments.subscription.create.CreateSubscriptionFragment
-import com.kubsu.timetable.fragments.timetable.TimetableFragment
+import com.kubsu.timetable.fragments.bottomnav.timetable.TimetableFragment
 import com.kubsu.timetable.utils.nameOf
 import di.androidModule
 import org.kodein.di.Kodein

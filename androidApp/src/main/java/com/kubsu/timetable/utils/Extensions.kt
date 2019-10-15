@@ -6,35 +6,40 @@ import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import com.egroden.teaco.AndroidConnector
+import com.egroden.teaco.Render
+import com.egroden.teaco.connect
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.kubsu.timetable.R
 
 inline fun <reified T> nameOf(): String =
     T::class.java.name
 
-fun View.invisible() {
-    visibility = View.INVISIBLE
+fun View.visibility(visibility: Visibility) = setVisibility(visibility.value)
+
+enum class Visibility(val value: Int) {
+    VISIBLE(View.VISIBLE),
+    INVISIBLE(View.INVISIBLE),
+    GONE(View.GONE)
 }
 
-fun View.setVisible(value: Boolean) {
-    visibility = if (value) View.VISIBLE else View.INVISIBLE
-}
-
-inline val MutableLiveData<String>.trimmedValueOrEmpty: String
-    get() = value?.trim() ?: ""
-
-inline val MutableLiveData<Int>.valueOrMinusOne: Int
-    get() = value ?: -1
-
-fun TextView.showErrorAndSetFocus(messageRes: Int) {
+fun TextView.showError(messageRes: Int) {
+    error = null
     error = context.getString(messageRes)
     requestFocus()
 }
 
-fun Spinner.showErrorAndSetFocus(messageRes: Int) {
+fun <Action, SideEffect, State, Subscription> AndroidConnector<Action, SideEffect, State, Subscription>.connect(
+    renderState: Render<State>,
+    renderSubscription: Render<Subscription>
+) {
+    connector.connect(renderState)
+    connector.connect(renderSubscription)
+}
+
+fun Spinner.showError(messageRes: Int) {
     (selectedView as TextView).error = context.getString(messageRes)
     requestFocusFromTouch()
     performClick()

@@ -8,9 +8,12 @@ import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SignInFail
 import com.kubsu.timetable.base.BaseFragment
 import com.kubsu.timetable.presentation.signin.*
-import com.kubsu.timetable.utils.getNavControllerOrNull
+import com.kubsu.timetable.utils.*
+import com.kubsu.timetable.utils.logics.Keyboard
 import kotlinx.android.synthetic.main.progress_bar.view.*
 import kotlinx.android.synthetic.main.sign_in_fragment.view.*
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
 
 class SignInFragment(
     teaFeature: TeaFeature<Action, SideEffect, State, Subscription>,
@@ -18,28 +21,41 @@ class SignInFragment(
 ) : BaseFragment(R.layout.sign_in_fragment) {
     private val connector by androidConnectors(teaFeature, stateParser)
 
+    private val progressEffect = UiEffect(Visibility.INVISIBLE)
+    private val emailErrorEffect = UiEffect<Int?>(null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        connector.connect(::render, ::render, lifecycle)
+        connector.connect(::render, ::render)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        progressEffect bind { view.progress_bar.visibility(it) }
+        emailErrorEffect bind { it?.let(view.email_edit_text::showError) }
+
         view.sign_in_button.setOnClickListener {
+            Keyboard.hide(view)
             connector bindAction Action.SignIn(
                 email = view.email_edit_text.text.toString(),
                 password = view.password_edit_text.text.toString()
             )
         }
         view.registration_button.setOnClickListener {
+            Keyboard.hide(view)
             connector bindAction Action.Registration
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        progressEffect.unbind()
+        emailErrorEffect.unbind()
+    }
+
     private fun render(state: State) {
-        view?.run {
-            progress_bar.visibility = if (state.progress) View.VISIBLE else View.INVISIBLE
-        }
+        progressEffect.value = if (state.progress) Visibility.VISIBLE else Visibility.INVISIBLE
     }
 
     private fun render(subscription: Subscription) =
@@ -54,14 +70,22 @@ class SignInFragment(
                 Screen.Registration ->
                     SignInFragmentDirections.actionSignInFragmentToRegistrationFragment()
                 Screen.Timetable ->
-                    SignInFragmentDirections.actionSignInFragmentToRegistrationFragment()
+                    SignInFragmentDirections.actionSignInFragmentToBottomNavGraph()
             }
         )
     }
 
     private fun showFailure(failure: RequestFailure<List<SignInFail>>) =
         failure.handle(
-            ifDomain = {}, //TODO
-            ifData = {} //TODO
+            ifDomain = { it.forEach(::handleSignInFail) },
+            ifData = { it.forEach(::notifyUserOfFailure) }
         )
+
+    private fun handleSignInFail(fail: SignInFail) {
+        emailErrorEffect.value = when (fail) {
+            SignInFail.AccountInactivate -> R.string.account_is_blocked
+            SignInFail.IncorrectEmailOrPassword -> R.string.incorrect_emai_or_password
+            SignInFail.InvalidEmail -> R.string.invalid_email
+        }
+    }
 }

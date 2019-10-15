@@ -47,17 +47,11 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Logger {
             )
     }
 
-    /**
-     * Вывод сообщение об ошибке на экран.
-     * @param markAsUsed необходимо вызвать тогда, когда мы будем уверены, что
-     * пользователь точно отреагировал на ошибку.
-     */
-    protected fun notifyUserOfFailure(failure: DataFailure, markAsUsed: () -> Unit) =
+    protected fun notifyUserOfFailure(failure: DataFailure) =
         when (failure) {
             is DataFailure.ConnectionToRepository -> {
                 materialAlert(
                     message = R.string.error_connecting,
-                    markAsUsed = markAsUsed,
                     onOkButtonClick = {}
                 )
             }
@@ -69,7 +63,6 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Logger {
                 )
                 materialAlert(
                     message = R.string.not_authenticated,
-                    markAsUsed = markAsUsed,
                     onOkButtonClick = {}
                 )
             }
@@ -85,7 +78,6 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Logger {
                 )
                 materialAlert(
                     message = R.string.unknown_failure,
-                    markAsUsed = markAsUsed,
                     onOkButtonClick = {}
                 )
             }
@@ -168,7 +160,6 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Logger {
     private var alertDialog: AlertDialog? = null
 
     protected fun materialAlert(
-        markAsUsed: () -> Unit,
         message: Int,
         title: Int? = null,
         positiveButtonText: Int = android.R.string.ok,
@@ -177,7 +168,6 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Logger {
         onNoButtonClick: (() -> Unit)? = null
     ) =
         materialAlert(
-            markAsUsed = markAsUsed,
             message = getString(message),
             title = title?.let { getString(it) },
             positiveButtonText = positiveButtonText,
@@ -187,7 +177,6 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Logger {
         )
 
     protected fun materialAlert(
-        markAsUsed: () -> Unit,
         message: String,
         title: String? = null,
         positiveButtonText: Int = android.R.string.ok,
@@ -203,13 +192,11 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Logger {
 
                 onOkButtonClick?.let {
                     alert.setPositiveButton(positiveButtonText) { _, _ ->
-                        markAsUsed()
                         it.invoke()
                     }
                 }
                 onNoButtonClick?.let {
                     alert.setNegativeButton(negativeButtonText) { _, _ ->
-                        markAsUsed()
                         it.invoke()
                     }
                 }

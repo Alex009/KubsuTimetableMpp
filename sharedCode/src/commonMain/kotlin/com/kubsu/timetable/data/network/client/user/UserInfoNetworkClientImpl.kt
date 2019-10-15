@@ -20,7 +20,7 @@ class UserInfoNetworkClientImpl(
     override suspend fun registration(
         email: String,
         password: String
-    ): Either<RequestFailure<List<UserInfoFail>>, Unit> =
+    ): Either<RequestFailure<List<RegistrationFail>>, Unit> =
         with(networkSender) {
             handle {
                 post<Unit>("$baseUrl/api/$apiVersion/users/registration/") {
@@ -34,7 +34,7 @@ class UserInfoNetworkClientImpl(
             }
         }
 
-    private fun parseRegistrationFail(response: ServerFailure.Response): RequestFailure<List<UserInfoFail>> {
+    private fun parseRegistrationFail(response: ServerFailure.Response): RequestFailure<List<RegistrationFail>> {
         val incorrectData = json.parse(RegistrationIncorrectData.serializer(), response.body)
         return handleUserInfoFail(
             responseCode = response.code,
@@ -49,25 +49,25 @@ class UserInfoNetworkClientImpl(
         responseBody: String,
         emailFailList: List<String>,
         passwordFailList: List<String>
-    ): RequestFailure<List<UserInfoFail>> {
+    ): RequestFailure<List<RegistrationFail>> {
         val failList = emailFailList.map {
             when (it) {
-                "invalid" -> UserInfoFail.InvalidEmail
-                "unique" -> UserInfoFail.NotUniqueEmail
+                "invalid" -> RegistrationFail.Email.Invalid
+                "unique" -> RegistrationFail.Email.NotUnique
                 else -> DataFailure.UnknownResponse(responseCode, responseBody, "Unknown param: $it")
             }
         }.plus(
             passwordFailList.map {
                 when (it) {
-                    "password_too_short" -> UserInfoFail.ShortPassword
-                    "password_too_common" -> UserInfoFail.CommonPassword
-                    "password_entirely_numeric" -> UserInfoFail.EntirelyNumericPassword
+                    "password_too_short" -> RegistrationFail.Password.TooShort
+                    "password_too_common" -> RegistrationFail.Password.TooCommon
+                    "password_entirely_numeric" -> RegistrationFail.Password.EntirelyNumeric
                     else -> DataFailure.UnknownResponse(responseCode, responseBody, "Unknown param: $it")
                 }
             }
         )
         return RequestFailure(
-            domain = failList.filterIsInstance<UserInfoFail>(),
+            domain = failList.filterIsInstance<RegistrationFail>(),
             data = failList.filterIsInstance<DataFailure>()
         )
     }
@@ -107,8 +107,8 @@ class UserInfoNetworkClientImpl(
     ): RequestFailure<List<SignInFail>> {
         val failList = allFailList.map {
             when (it) {
-                "incorrect_email_or_password" -> SignInFail.AccountInactivate
-                "account_inactivate" -> SignInFail.IncorrectEmailOrPassword
+                "incorrect_email_or_password" -> SignInFail.IncorrectEmailOrPassword
+                "account_inactivate" -> SignInFail.AccountInactivate
                 else -> DataFailure.UnknownResponse(responseCode, responseBody)
             }
         }.plus(

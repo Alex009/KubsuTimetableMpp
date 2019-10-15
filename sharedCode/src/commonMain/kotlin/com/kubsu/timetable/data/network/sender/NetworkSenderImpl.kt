@@ -53,7 +53,7 @@ class NetworkSenderImpl(
             }
             install(Logging) {
                 logger = Logger.SIMPLE
-                level = LogLevel.NONE
+                level = LogLevel.ALL
             }
             install(JsonFeature) {
                 serializer = KotlinxSerializer(json)

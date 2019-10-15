@@ -1,7 +1,7 @@
 package com.kubsu.timetable.di.modules.view
 
 import com.egroden.teaco.StateParser
-import com.kubsu.timetable.fragments.timetable.TimetableFragment
+import com.kubsu.timetable.fragments.bottomnav.timetable.TimetableFragment
 import com.kubsu.timetable.instanceGeneric
 import com.kubsu.timetable.presentation.timetable.State
 import kotlinx.serialization.json.Json

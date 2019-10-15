@@ -5,6 +5,7 @@ import com.egroden.teaco.*
 import com.kubsu.timetable.R
 import com.kubsu.timetable.base.BaseFragment
 import com.kubsu.timetable.presentation.splash.*
+import com.kubsu.timetable.utils.connect
 import com.kubsu.timetable.utils.getNavControllerOrNull
 
 class SplashFragment(
@@ -17,7 +18,7 @@ class SplashFragment(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        connector.connect(::render, ::render, lifecycle)
+        connector.connect(::render, ::render)
     }
 
     private fun render(state: State) = Unit
@@ -33,7 +34,7 @@ class SplashFragment(
                 Screen.SignInScreen ->
                     SplashFragmentDirections.actionSplashFragmentToSignInFragment()
                 Screen.TimetableScreen ->
-                    SplashFragmentDirections.actionSplashFragmentToSignInFragment()
+                    SplashFragmentDirections.actionSplashFragmentToBottomNavGraph()
             }
         )
     }

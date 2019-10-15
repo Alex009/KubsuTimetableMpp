@@ -1,4 +1,4 @@
-package com.kubsu.timetable.fragments.timetable
+package com.kubsu.timetable.fragments.bottomnav.timetable
 
 import com.egroden.teaco.StateParser
 import com.egroden.teaco.TeaFeature
@@ -15,7 +15,4 @@ class TimetableFragment(
     teaFeature: TeaFeature<Action, SideEffect, State, Subscription>,
     stateParser: StateParser<State>
 ) : BaseFragment(R.layout.timetable_fragment) {
-    private val connector by androidConnectors(teaFeature, stateParser) {
-        bindAction(Action.UpdateData())
-    }
 }

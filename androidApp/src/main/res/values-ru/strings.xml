@@ -48,4 +48,11 @@
     <string name="notification_message">Для корректной работы приложения необходимо провести настройки уведомлений.</string>
     <string name="default_notification_channel_id">kubsu_timetable_channel_id</string>
     <string name="default_notification_channel_name">kubsu_timetable_channel_name</string>
+    <string name="account_is_blocked">Аккаунт заблокирован</string>
+    <string name="incorrect_emai_or_password">Неверный aдрес электронной почты или пароль</string>
+    <string name="invalid_email">Некорректный адрес электронной почты</string>
+    <string name="password_is_too_common">Пароль слишком распространен</string>
+    <string name="password_entirely_numeric">"Пароль состоит только из цифр "</string>
+    <string name="password_is_too_short">"Cлишком короткий пароль "</string>
+    <string name="non_unique_email">Пользователь с такой электронной почтой уже существует</string>
 </resources>

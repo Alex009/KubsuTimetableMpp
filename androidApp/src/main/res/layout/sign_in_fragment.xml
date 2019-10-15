@@ -8,13 +8,13 @@
     android:orientation="vertical"
     tools:context=".fragments.signin.SignInFragment">
 
-    <include layout="@layout/progress_bar" />
-
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="?attr/actionBarSize" />
+
+    <include layout="@layout/progress_bar" />
 
     <Space
         android:layout_width="0dp"

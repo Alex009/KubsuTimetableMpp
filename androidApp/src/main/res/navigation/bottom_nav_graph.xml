@@ -11,12 +11,7 @@
         tools:layout="@layout/create_subscription_fragment" />
     <fragment
         android:id="@+id/timetableFragment"
-        android:name="com.kubsu.timetable.fragments.timetable.TimetableFragment"
+        android:name="com.kubsu.timetable.fragments.bottomnav.timetable.TimetableFragment"
         android:label="timetable_fragment"
         tools:layout="@layout/timetable_fragment" />
-    <fragment
-        android:id="@+id/bottomNavFragment"
-        android:name="com.kubsu.timetable.BottomNavFragment"
-        android:label="bottom_nav_fragment"
-        tools:layout="@layout/bottom_nav_fragment" />
 </navigation>

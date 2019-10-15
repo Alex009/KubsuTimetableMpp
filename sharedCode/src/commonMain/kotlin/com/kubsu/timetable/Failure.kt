@@ -31,18 +31,23 @@ sealed class SignInFail : DomainFailure() {
     object InvalidEmail : SignInFail()
 }
 
-sealed class UserInfoFail : DomainFailure() {
-    object InvalidEmail : UserInfoFail()
-    object NotUniqueEmail : UserInfoFail()
-    object ShortPassword : UserInfoFail()
-    object CommonPassword : UserInfoFail()
-    object EntirelyNumericPassword : UserInfoFail()
+sealed class RegistrationFail : DomainFailure() {
+    sealed class Email : RegistrationFail() {
+        object Invalid : Email()
+        object NotUnique : Email()
+    }
+
+    sealed class Password : RegistrationFail() {
+        object TooShort : Password()
+        object TooCommon : Password()
+        object EntirelyNumeric : Password()
+    }
 }
 
 sealed class UserUpdateFail : DomainFailure() {
     object TooLongFirstName : UserUpdateFail()
     object TooLongLastName : UserUpdateFail()
-    class Info(val fail: UserInfoFail) : UserUpdateFail()
+    class Info(val fail: RegistrationFail) : UserUpdateFail()
 }
 
 sealed class SubscriptionFail : DomainFailure() {

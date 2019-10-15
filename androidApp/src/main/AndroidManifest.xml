@@ -19,7 +19,7 @@
 
         <activity
             android:name="com.kubsu.timetable.base.AppActivity"
-            android:windowSoftInputMode="stateUnchanged|adjustResize">
+            android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
