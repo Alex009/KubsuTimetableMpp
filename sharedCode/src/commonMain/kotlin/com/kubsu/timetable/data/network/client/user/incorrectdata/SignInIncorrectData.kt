@@ -8,5 +8,7 @@ data class SignInIncorrectData(
     @SerialName("__all__")
     val all: List<String> = listOf(),
 
-    val email: List<String> = listOf()
+    val email: List<String> = listOf(),
+
+    val password: List<String> = listOf()
 )

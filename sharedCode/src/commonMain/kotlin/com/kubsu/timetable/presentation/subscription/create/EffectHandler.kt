@@ -6,6 +6,7 @@ import com.kubsu.timetable.presentation.subscription.mapper.FacultyModelMapper
 import com.kubsu.timetable.presentation.subscription.mapper.GroupModelMapper
 import com.kubsu.timetable.presentation.subscription.mapper.OccupationModelMapper
 import com.kubsu.timetable.presentation.subscription.mapper.SubgroupModelMapper
+import com.kubsu.timetable.presentation.timetable.mapper.SubscriptionModelMapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -85,7 +86,13 @@ class CreateSubscriptionEffectHandler(
                     )
                     .fold(
                         ifLeft = { emit(Action.ShowRequestFailure(it)) },
-                        ifRight = {}
+                        ifRight = {
+                            emit(
+                                Action.SubscriptionWasCreated(
+                                    SubscriptionModelMapper.toModel(it)
+                                )
+                            )
+                        }
                     )
         }
     }

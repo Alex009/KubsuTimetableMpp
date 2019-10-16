@@ -29,18 +29,22 @@ sealed class SignInFail : DomainFailure() {
     object IncorrectEmailOrPassword : SignInFail()
     object AccountInactivate : SignInFail()
     object InvalidEmail : SignInFail()
+    object RequiredEmail : SignInFail()
+    object RequiredPassword : SignInFail()
 }
 
 sealed class RegistrationFail : DomainFailure() {
     sealed class Email : RegistrationFail() {
         object Invalid : Email()
         object NotUnique : Email()
+        object Required : Email()
     }
 
     sealed class Password : RegistrationFail() {
         object TooShort : Password()
         object TooCommon : Password()
         object EntirelyNumeric : Password()
+        object Required : Password()
     }
 }
 
@@ -52,6 +56,7 @@ sealed class UserUpdateFail : DomainFailure() {
 
 sealed class SubscriptionFail : DomainFailure() {
     object TooLongTitle : SubscriptionFail()
+    object RequiredTitle : SubscriptionFail()
     object SubscriptionAlreadyExists : SubscriptionFail()
 }
 

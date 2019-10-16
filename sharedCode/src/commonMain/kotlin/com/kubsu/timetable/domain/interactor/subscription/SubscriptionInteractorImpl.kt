@@ -38,7 +38,7 @@ class SubscriptionInteractorImpl(
         subgroupId: Int,
         subscriptionName: String,
         isMain: Boolean
-    ): Either<RequestFailure<List<SubscriptionFail>>, Unit> = def {
+    ): Either<RequestFailure<List<SubscriptionFail>>, SubscriptionEntity> = def {
         val user = userInfoGateway.getCurrentUserOrNull()
 
         if (user != null)

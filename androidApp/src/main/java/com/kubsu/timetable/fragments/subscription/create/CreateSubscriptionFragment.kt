@@ -2,8 +2,10 @@ package com.kubsu.timetable.fragments.subscription.create
 
 import android.os.Bundle
 import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import android.widget.TextView
 import com.egroden.teaco.TeaFeature
 import com.egroden.teaco.androidConnectors
 import com.egroden.teaco.bindAction
@@ -38,62 +40,101 @@ class CreateSubscriptionFragment(
     private val chooseGroupEffect = UiEffect(Unit)
     private val chooseSubgroupEffect = UiEffect(Unit)
 
+    private val titleTextEffect = UiEffect("")
+    private val titleErrorEffect = UiEffect(0)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        connector.connect(::render, ::render)
+        connector.connect(::render, ::render, lifecycle)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         progressEffect bind { view.progress_bar.visibility(it) }
+        titleTextEffect bind view.subscription_title::setHint
+        titleErrorEffect bind (view.subscription_title as TextView)::showErrorMessage
 
         view.faculty_spinner.setData(
             listEffect = facultyListEffect,
             convert = { it.title },
             chooseEffect = chooseFacultyEffect,
-            errorRes = R.string.choose_faculty
+            errorRes = R.string.choose_faculty,
+            onItemSelected = { connector bindAction Action.FacultyWasSelected(it) }
         )
         view.occupation_spinner.setData(
             listEffect = occupationListEffect,
             convert = { it.title },
             chooseEffect = chooseOccupationEffect,
-            errorRes = R.string.choose_occupation
+            errorRes = R.string.choose_occupation,
+            onItemSelected = { connector bindAction Action.OccupationWasSelected(it) }
         )
         view.group_spinner.setData(
             listEffect = groupListEffect,
             convert = { it.number.toString() },
             chooseEffect = chooseGroupEffect,
-            errorRes = R.string.choose_group
+            errorRes = R.string.choose_group,
+            onItemSelected = { connector bindAction Action.GroupWasSelected(it) }
         )
         view.subgroup_spinner.setData(
             listEffect = subgroupListEffect,
             convert = { it.number.toString() },
             chooseEffect = chooseSubgroupEffect,
-            errorRes = R.string.choose_subgroup
+            errorRes = R.string.choose_subgroup,
+            onItemSelected = { connector bindAction Action.SubgroupWasSelected(it) }
         )
         view.create_button.setOnClickListener {
             connector bindAction Action.CreateSubscription(
-                subscriptionName =,
-                isMain =
+                subscriptionName = view.subscription_title
+                    .text.toString()
+                    .takeIf { it.isNotBlank() }
+                    ?: view.subscription_title.hint.toString(),
+                isMain = view.is_main_switch.isChecked
             )
         }
+    }
+
+    override fun popBackStack(): Boolean {
+        safeNavigate(
+            CreateSubscriptionFragmentDirections
+                .actionCreateSubscriptionFragmentToBottomNavGraph(null)
+        )
+        return true
     }
 
     private fun <T> Spinner.setData(
         listEffect: UiEffect<List<T>>,
         convert: (T) -> String,
         chooseEffect: UiEffect<Unit>,
-        errorRes: Int
+        errorRes: Int,
+        onItemSelected: (Int?) -> Unit
     ) {
         val arrayAdapter = createArrayAdapter()
         adapter = arrayAdapter
-        listEffect bind { list -> arrayAdapter.addAll(list.map(convert)) }
-        chooseEffect bind { showError(errorRes) }
+        listEffect bind { list ->
+            arrayAdapter.run {
+                clear()
+                add(getString(R.string.not_selected))
+                addAll(list.map(convert))
+            }
+        }
+        chooseEffect bind { showErrorMessage(errorRes) }
+        onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) =
+                onItemSelected(null)
+
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) =
+                onItemSelected(if (position != 0) position - 1 else null)
+        }
     }
 
     private fun View.createArrayAdapter(): ArrayAdapter<String> =
-        ArrayAdapter(context, android.R.layout.simple_spinner_item, emptyList<String>()).also {
+        ArrayAdapter(context, android.R.layout.simple_spinner_item, mutableListOf<String>()).also {
             it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
 
@@ -110,6 +151,9 @@ class CreateSubscriptionFragment(
         chooseOccupationEffect.unbind()
         chooseGroupEffect.unbind()
         chooseSubgroupEffect.unbind()
+
+        titleTextEffect.unbind()
+        titleErrorEffect.unbind()
     }
 
     private fun render(state: State) {
@@ -118,7 +162,22 @@ class CreateSubscriptionFragment(
         occupationListEffect.value = state.occupationList
         groupListEffect.value = state.groupList
         subgroupListEffect.value = state.subgroupList
+
+        titleTextEffect.value = state.selectedFaculty?.title?.short()
+            ?.plus(" ")
+            ?.plusIfNotNull(state.selectedOccupation?.title?.short())
+            ?.plus(" ")
+            ?.plusIfNotNull(state.selectedGroup?.number?.toString()?.plus("/"))
+            ?.plusIfNotNull(state.selectedSubgroup?.number?.toString())
+            ?: getString(R.string.subscription_title)
     }
+
+    private fun String.short(): String =
+        trim()
+            .split(" ")
+            .filter { it != "" }
+            .map { it.first() }
+            .joinToString(separator = "")
 
     private fun render(subscription: Subscription) =
         when (subscription) {
@@ -141,11 +200,11 @@ class CreateSubscriptionFragment(
         }
 
     private fun navigation(screen: Screen) {
-        getNavControllerOrNull()?.navigate(
+        safeNavigate(
             when (screen) {
                 is Screen.TimetableScreen ->
                     CreateSubscriptionFragmentDirections
-                        .actionCreateSubscriptionFragmentToTimetableFragment(screen.subscription)
+                        .actionCreateSubscriptionFragmentToBottomNavGraph(screen.subscription)
             }
         )
     }
@@ -159,6 +218,14 @@ class CreateSubscriptionFragment(
     private fun handleSubscriptionFail(failure: SubscriptionFail) =
         when (failure) {
             SubscriptionFail.TooLongTitle ->
-
+                titleErrorEffect.value = R.string.title_too_long
+            SubscriptionFail.RequiredTitle ->
+                titleErrorEffect.value = R.string.required
+            SubscriptionFail.SubscriptionAlreadyExists ->
+                materialAlert(
+                    title = R.string.error,
+                    message = R.string.subscription_already_exists,
+                    onOkButtonClick = {}
+                )
         }
 }

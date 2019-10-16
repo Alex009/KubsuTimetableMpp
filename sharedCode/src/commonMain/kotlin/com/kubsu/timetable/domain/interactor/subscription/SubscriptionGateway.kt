@@ -22,7 +22,7 @@ interface SubscriptionGateway {
         subgroupId: Int,
         subscriptionName: String,
         isMain: Boolean
-    ): Either<RequestFailure<List<SubscriptionFail>>, Unit>
+    ): Either<RequestFailure<List<SubscriptionFail>>, SubscriptionEntity>
 
     suspend fun getById(id: Int, userId: Int): Either<DataFailure, SubscriptionEntity>
 

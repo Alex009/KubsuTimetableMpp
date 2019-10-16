@@ -59,4 +59,10 @@
     <string name="subscription_list">Subscription list</string>
     <string name="timetable">Timetable</string>
     <string name="settings">Settings</string>
+    <string name="not_selected">Not selected</string>
+    <string name="required">Obligatory field</string>
+    <string name="title_too_long">Title is too long</string>
+    <string name="subscription_already_exists">Subscription already exists</string>
+    <string name="subscription_title">Subscription title</string>
+    <string name="notifications">Notifications</string>
 </resources>

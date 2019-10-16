@@ -36,7 +36,7 @@ class UserInfoNetworkClientImpl(
 
     private fun parseRegistrationFail(response: ServerFailure.Response): RequestFailure<List<RegistrationFail>> {
         val incorrectData = json.parse(RegistrationIncorrectData.serializer(), response.body)
-        return handleUserInfoFail(
+        return handleRegistrationFail(
             responseCode = response.code,
             responseBody = response.body,
             emailFailList = incorrectData.email,
@@ -44,7 +44,7 @@ class UserInfoNetworkClientImpl(
         )
     }
 
-    private fun handleUserInfoFail(
+    private fun handleRegistrationFail(
         responseCode: Int,
         responseBody: String,
         emailFailList: List<String>,
@@ -54,6 +54,7 @@ class UserInfoNetworkClientImpl(
             when (it) {
                 "invalid" -> RegistrationFail.Email.Invalid
                 "unique" -> RegistrationFail.Email.NotUnique
+                "blank" -> RegistrationFail.Email.Required
                 else -> DataFailure.UnknownResponse(responseCode, responseBody, "Unknown param: $it")
             }
         }.plus(
@@ -62,6 +63,7 @@ class UserInfoNetworkClientImpl(
                     "password_too_short" -> RegistrationFail.Password.TooShort
                     "password_too_common" -> RegistrationFail.Password.TooCommon
                     "password_entirely_numeric" -> RegistrationFail.Password.EntirelyNumeric
+                    "blank" -> RegistrationFail.Password.Required
                     else -> DataFailure.UnknownResponse(responseCode, responseBody, "Unknown param: $it")
                 }
             }
@@ -95,7 +97,8 @@ class UserInfoNetworkClientImpl(
             responseCode = response.code,
             responseBody = response.body,
             allFailList = incorrectData.all,
-            emailFailList = incorrectData.email
+            emailFailList = incorrectData.email,
+            passwordFailList = incorrectData.password
         )
     }
 
@@ -103,7 +106,8 @@ class UserInfoNetworkClientImpl(
         responseCode: Int,
         responseBody: String,
         allFailList: List<String>,
-        emailFailList: List<String>
+        emailFailList: List<String>,
+        passwordFailList: List<String>
     ): RequestFailure<List<SignInFail>> {
         val failList = allFailList.map {
             when (it) {
@@ -115,6 +119,14 @@ class UserInfoNetworkClientImpl(
             emailFailList.map {
                 when (it) {
                     "invalid" -> SignInFail.InvalidEmail
+                    "required" -> SignInFail.RequiredEmail
+                    else -> DataFailure.UnknownResponse(responseCode, responseBody)
+                }
+            }
+        ).plus(
+            passwordFailList.map {
+                when (it) {
+                    "required" -> SignInFail.RequiredPassword
                     else -> DataFailure.UnknownResponse(responseCode, responseBody)
                 }
             }
@@ -169,7 +181,7 @@ class UserInfoNetworkClientImpl(
         lastNameFailList: List<String>
     ): RequestFailure<List<UserUpdateFail>> {
         val userInfoRequestFail: RequestFailure<List<UserUpdateFail>> =
-            handleUserInfoFail(responseCode, responseBody, emailFailList, passwordFailList)
+            handleRegistrationFail(responseCode, responseBody, emailFailList, passwordFailList)
                 .mapDomain { it?.map(UserUpdateFail::Info) as? List<UserUpdateFail> ?: emptyList() }
 
         val failList = firstNameFailList.map {

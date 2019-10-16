@@ -8,7 +8,7 @@ import com.egroden.teaco.connect
 import com.kubsu.timetable.R
 import com.kubsu.timetable.base.BaseFragment
 import com.kubsu.timetable.presentation.splash.*
-import com.kubsu.timetable.utils.getNavControllerOrNull
+import com.kubsu.timetable.utils.safeNavigate
 
 class SplashFragment(
     teaFeature: TeaFeature<Action, SideEffect, State, Subscription>
@@ -17,7 +17,12 @@ class SplashFragment(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        connector.connect(::render, ::render)
+        connector.connect(::render, ::render, lifecycle)
+    }
+
+    override fun popBackStack(): Boolean {
+        appActivity?.closeApp()
+        return true
     }
 
     private fun render(state: State) = Unit
@@ -28,12 +33,12 @@ class SplashFragment(
         }
 
     private fun navigation(screen: Screen) {
-        getNavControllerOrNull()?.navigate(
+        safeNavigate(
             when (screen) {
                 Screen.SignInScreen ->
                     SplashFragmentDirections.actionSplashFragmentToSignInFragment()
                 Screen.TimetableScreen ->
-                    SplashFragmentDirections.actionSplashFragmentToBottomNavGraph()
+                    SplashFragmentDirections.actionSplashFragmentToBottomNavGraph(null)
             }
         )
     }

@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/navigation_base_graph"
+    android:id="@+id/base_nav_graph"
     app:startDestination="@id/splashFragment">
 
     <fragment
@@ -12,10 +12,20 @@
         tools:layout="@layout/splash_fragment">
         <action
             android:id="@+id/action_splashFragment_to_signInFragment"
-            app:destination="@id/signInFragment" />
+            app:destination="@id/signInFragment"
+            app:launchSingleTop="false"
+            app:popUpTo="@id/base_nav_graph"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_splashFragment_to_bottom_nav_graph"
-            app:destination="@id/bottom_nav_graph" />
+            app:destination="@id/bottom_nav_graph"
+            app:popUpTo="@id/base_nav_graph"
+            app:popUpToInclusive="true">
+            <argument
+                android:name="subscription"
+                app:argType="com.kubsu.timetable.presentation.timetable.model.SubscriptionModel"
+                app:nullable="true" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/signInFragment"
@@ -27,7 +37,14 @@
             app:destination="@id/registrationFragment" />
         <action
             android:id="@+id/action_signInFragment_to_bottom_nav_graph"
-            app:destination="@id/bottom_nav_graph" />
+            app:destination="@id/bottom_nav_graph"
+            app:popUpTo="@id/base_nav_graph"
+            app:popUpToInclusive="true">
+            <argument
+                android:name="subscription"
+                app:argType="com.kubsu.timetable.presentation.timetable.model.SubscriptionModel"
+                app:nullable="true" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/registrationFragment"
@@ -39,4 +56,27 @@
             app:destination="@id/signInFragment" />
     </fragment>
     <include app:graph="@navigation/bottom_nav_graph" />
+
+    <fragment
+        android:id="@+id/createSubscriptionFragment"
+        android:name="com.kubsu.timetable.fragments.subscription.create.CreateSubscriptionFragment"
+        android:label="create_subscription_fragment"
+        tools:layout="@layout/create_subscription_fragment">
+
+        <action
+            android:id="@+id/action_createSubscriptionFragment_to_bottom_nav_graph"
+            app:destination="@id/bottom_nav_graph"
+            app:popUpTo="@id/bottom_nav_graph"
+            app:popUpToInclusive="true">
+            <argument
+                android:name="subscription"
+                app:argType="com.kubsu.timetable.presentation.timetable.model.SubscriptionModel"
+                app:nullable="true" />
+        </action>
+    </fragment>
+    <action
+        android:id="@+id/action_global_createSubscriptionFragment"
+        app:destination="@id/createSubscriptionFragment"
+        app:popUpTo="@id/bottom_nav_graph"
+        app:popUpToInclusive="false" />
 </navigation>

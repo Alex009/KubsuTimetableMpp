@@ -22,18 +22,25 @@ class SignInFragment(
     private val connector by androidConnectors(teaFeature)
 
     private val progressEffect = UiEffect(Visibility.INVISIBLE)
-    private val emailErrorEffect = UiEffect<Int?>(null)
+    private val emailErrorEffect = UiEffect(0)
+    private val passwordErrorEffect = UiEffect(0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        connector.connect(::render, ::render)
+        connector.connect(::render, ::render, lifecycle)
+    }
+
+    override fun popBackStack(): Boolean {
+        appActivity?.closeApp()
+        return true
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         progressEffect bind { view.progress_bar.visibility(it) }
-        emailErrorEffect bind { it?.let(view.email_edit_text::showError) }
+        emailErrorEffect bind view.email_edit_text::showErrorMessage
+        passwordErrorEffect bind view.password_edit_text::showErrorMessage
 
         view.sign_in_button.setOnClickListener {
             Keyboard.hide(view)
@@ -52,6 +59,7 @@ class SignInFragment(
         super.onDestroyView()
         progressEffect.unbind()
         emailErrorEffect.unbind()
+        passwordErrorEffect.unbind()
     }
 
     private fun render(state: State) {
@@ -65,12 +73,12 @@ class SignInFragment(
         }
 
     private fun navigation(screen: Screen) {
-        getNavControllerOrNull()?.navigate(
+        safeNavigate(
             when (screen) {
                 Screen.Registration ->
                     SignInFragmentDirections.actionSignInFragmentToRegistrationFragment()
                 Screen.Timetable ->
-                    SignInFragmentDirections.actionSignInFragmentToBottomNavGraph()
+                    SignInFragmentDirections.actionSignInFragmentToBottomNavGraph(null)
             }
         )
     }
@@ -81,11 +89,17 @@ class SignInFragment(
             ifData = { it.forEach(::notifyUserOfFailure) }
         )
 
-    private fun handleSignInFail(fail: SignInFail) {
-        emailErrorEffect.value = when (fail) {
-            SignInFail.AccountInactivate -> R.string.account_is_blocked
-            SignInFail.IncorrectEmailOrPassword -> R.string.incorrect_emai_or_password
-            SignInFail.InvalidEmail -> R.string.invalid_email
+    private fun handleSignInFail(fail: SignInFail) =
+        when (fail) {
+            SignInFail.AccountInactivate ->
+                emailErrorEffect.value = R.string.account_is_blocked
+            SignInFail.IncorrectEmailOrPassword ->
+                emailErrorEffect.value = R.string.incorrect_emai_or_password
+            SignInFail.InvalidEmail ->
+                emailErrorEffect.value = R.string.invalid_email
+            SignInFail.RequiredEmail ->
+                emailErrorEffect.value = R.string.required
+            SignInFail.RequiredPassword ->
+                passwordErrorEffect.value = R.string.required
         }
-    }
 }

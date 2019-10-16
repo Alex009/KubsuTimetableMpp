@@ -7,6 +7,7 @@ import com.egroden.teaco.TeaFeature
 import com.egroden.teaco.androidConnectors
 import com.egroden.teaco.bindAction
 import com.egroden.teaco.connect
+import com.kubsu.timetable.BaseNavGraphDirections
 import com.kubsu.timetable.R
 import com.kubsu.timetable.base.BaseFragment
 import com.kubsu.timetable.fragments.bottomnav.subscription.list.adapter.SubscriptionAdapter
@@ -29,7 +30,7 @@ class SubscriptionListFragment(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        connector.connect(::render, ::render)
+        connector.connect(::render, ::render, lifecycle)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -73,17 +74,17 @@ class SubscriptionListFragment(
                 notifyUserOfFailure(subscription.failure)
         }
 
-    private fun navigation(screen: Screen) {
-        getNavControllerOrNull()?.navigate(
-            when (screen) {
-                Screen.CreateSubscription ->
-                    SubscriptionListFragmentDirections
-                        .actionSubscriptionListFragmentToCreateSubscriptionFragment()
+    private fun navigation(screen: Screen) =
+        when (screen) {
+            Screen.CreateSubscription ->
+                safeNavigate(
+                    BaseNavGraphDirections.actionGlobalCreateSubscriptionFragment()
+                )
 
-                is Screen.ShowTimetableForSubscription ->
+            is Screen.ShowTimetableForSubscription ->
+                safeNavigate(
                     SubscriptionListFragmentDirections
                         .actionSubscriptionListFragmentToTimetableFragment(screen.subscription)
-            }
-        )
-    }
+                )
+        }
 }

@@ -67,6 +67,7 @@ class SubscriptionNetworkClientImpl(
         val failList = titleFailList.map {
             when (it) {
                 "max_length" -> SubscriptionFail.TooLongTitle
+                "required" -> SubscriptionFail.RequiredTitle
                 else -> DataFailure.UnknownResponse(responseCode, responseBody)
             }
         }.plus(

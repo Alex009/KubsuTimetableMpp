@@ -22,19 +22,19 @@ class RegistrationFragment(
     private val connector by androidConnectors(teaFeature)
 
     private val progressEffect = UiEffect(Visibility.INVISIBLE)
-    private val emailErrorEffect = UiEffect<Int?>(null)
-    private val passwordErrorEffect = UiEffect<Int?>(null)
+    private val emailErrorEffect = UiEffect(0)
+    private val passwordErrorEffect = UiEffect(0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        connector.connect(::render, ::render)
+        connector.connect(::render, ::render, lifecycle)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         progressEffect bind { view.progress_bar.visibility(it) }
-        emailErrorEffect bind { it?.let(view.email_edit_text::showError) }
-        passwordErrorEffect bind { it?.let(view.password_edit_text::showError) }
+        emailErrorEffect bind view.email_edit_text::showErrorMessage
+        passwordErrorEffect bind view.password_edit_text::showErrorMessage
 
         view.registration_button.setOnClickListener {
             Keyboard.hide(view)
@@ -63,7 +63,7 @@ class RegistrationFragment(
         }
 
     private fun navigation(screen: Screen) {
-        getNavControllerOrNull()?.navigate(
+        safeNavigate(
             when (screen) {
                 Screen.SignIn ->
                     RegistrationFragmentDirections.actionRegistrationFragmentToSignInFragment()
@@ -83,12 +83,14 @@ class RegistrationFragment(
                 emailErrorEffect.value = when (fail) {
                     RegistrationFail.Email.Invalid -> R.string.invalid_email
                     RegistrationFail.Email.NotUnique -> R.string.non_unique_email
+                    RegistrationFail.Email.Required -> R.string.required
                 }
             is RegistrationFail.Password ->
                 passwordErrorEffect.value = when (fail) {
                     RegistrationFail.Password.TooCommon -> R.string.password_is_too_common
                     RegistrationFail.Password.EntirelyNumeric -> R.string.password_entirely_numeric
                     RegistrationFail.Password.TooShort -> R.string.password_is_too_short
+                    RegistrationFail.Password.Required -> R.string.required
                 }
         }
 }

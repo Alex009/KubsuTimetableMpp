@@ -5,16 +5,18 @@ import com.egroden.teaco.Updater
 
 val createSubscriptionUpdater: Updater<State, Action, Subscription, SideEffect> = { state, action ->
     when (action) {
-        Action.LoadFacultyList ->
+        Action.LoadFacultyList -> {
             UpdateResponse(
                 state = state.copy(progress = true),
                 sideEffects = setOf(SideEffect.SelectFacultyList)
             )
+        }
 
-        is Action.FacultyWasSelected ->
+        is Action.FacultyWasSelected -> {
+            val faculty = action.id?.let(state.facultyList::get)
             UpdateResponse(
                 state = state.copy(
-                    selectedFaculty = action.faculty,
+                    selectedFaculty = faculty,
                     occupationList = emptyList(),
                     groupList = emptyList(),
                     subgroupList = emptyList(),
@@ -23,39 +25,55 @@ val createSubscriptionUpdater: Updater<State, Action, Subscription, SideEffect> 
                     selectedSubgroup = null,
                     progress = true
                 ),
-                sideEffects = setOf(SideEffect.SelectOccupationList(action.faculty))
+                sideEffects = if (faculty != null)
+                    setOf(SideEffect.SelectOccupationList(faculty))
+                else
+                    emptySet()
             )
+        }
 
-        is Action.OccupationWasSelected ->
+        is Action.OccupationWasSelected -> {
+            val occupation = action.id?.let(state.occupationList::get)
             UpdateResponse(
                 state = state.copy(
-                    selectedOccupation = action.occupation,
+                    selectedOccupation = occupation,
                     groupList = emptyList(),
                     subgroupList = emptyList(),
                     selectedGroup = null,
                     selectedSubgroup = null,
                     progress = true
                 ),
-                sideEffects = setOf(SideEffect.SelectGroupList(action.occupation))
+                sideEffects = if (occupation != null)
+                    setOf(SideEffect.SelectGroupList(occupation))
+                else
+                    emptySet()
             )
+        }
 
-        is Action.GroupWasSelected ->
+        is Action.GroupWasSelected -> {
+            val group = action.id?.let(state.groupList::get)
             UpdateResponse(
                 state = state.copy(
-                    selectedGroup = action.group,
+                    selectedGroup = group,
                     subgroupList = emptyList(),
                     selectedSubgroup = null,
                     progress = true
                 ),
-                sideEffects = setOf(SideEffect.SelectSubgroupList(action.group))
+                sideEffects = if (group != null)
+                    setOf(SideEffect.SelectSubgroupList(group))
+                else
+                    emptySet()
             )
+        }
 
-        is Action.SubgroupWasSelected ->
+        is Action.SubgroupWasSelected -> {
+            val subgroup = action.id?.let(state.subgroupList::get)
             UpdateResponse(
                 state = state.copy(
-                    selectedSubgroup = action.subgroup
+                    selectedSubgroup = subgroup
                 )
             )
+        }
 
         is Action.CreateSubscription -> {
             when (null) {
@@ -97,10 +115,10 @@ val createSubscriptionUpdater: Updater<State, Action, Subscription, SideEffect> 
             }
         }
 
-        Action.SubscriptionWasCreated ->
+        is Action.SubscriptionWasCreated ->
             UpdateResponse(
                 state = state.copy(progress = false),
-                subscription = Subscription.Navigate(Screen.TimetableScreen)
+                subscription = Subscription.Navigate(Screen.TimetableScreen(action.subscription))
             )
 
         is Action.ShowDataFailure ->

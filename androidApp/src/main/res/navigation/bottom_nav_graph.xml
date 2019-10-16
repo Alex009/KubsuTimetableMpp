@@ -10,12 +10,20 @@
         android:name="com.kubsu.timetable.fragments.bottomnav.BottomNavFragment"
         android:label="bottom_nav_fragment"
         tools:layout="@layout/bottom_nav_fragment">
+        <argument
+            android:name="subscription"
+            app:argType="com.kubsu.timetable.presentation.timetable.model.SubscriptionModel"
+            app:nullable="true" />
         <action
             android:id="@+id/action_bottomNavFragment_to_timetableFragment"
-            app:destination="@id/timetableFragment" />
+            app:destination="@id/timetableFragment"
+            app:popUpTo="@id/bottom_nav_graph"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_bottomNavFragment_to_subscriptionListFragment"
-            app:destination="@id/subscriptionListFragment" />
+            app:destination="@id/subscriptionListFragment"
+            app:popUpTo="@id/bottom_nav_graph"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -35,9 +43,6 @@
         <action
             android:id="@+id/action_subscriptionListFragment_to_timetableFragment"
             app:destination="@id/timetableFragment" />
-        <action
-            android:id="@+id/action_subscriptionListFragment_to_createSubscriptionFragment"
-            app:destination="@id/createSubscriptionFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
@@ -45,13 +50,4 @@
         android:label="settings_fragment"
         tools:layout="@layout/settings_fragment" />
 
-    <fragment
-        android:id="@+id/createSubscriptionFragment"
-        android:name="com.kubsu.timetable.fragments.subscription.create.CreateSubscriptionFragment"
-        android:label="create_subscription_fragment"
-        tools:layout="@layout/create_subscription_fragment">
-        <action
-            android:id="@+id/action_createSubscriptionFragment_to_timetableFragment"
-            app:destination="@id/timetableFragment" />
-    </fragment>
 </navigation>

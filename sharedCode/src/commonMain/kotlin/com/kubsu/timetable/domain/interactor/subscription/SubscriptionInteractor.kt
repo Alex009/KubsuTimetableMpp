@@ -23,7 +23,7 @@ interface SubscriptionInteractor {
         subgroupId: Int,
         subscriptionName: String,
         isMain: Boolean
-    ): Either<RequestFailure<List<SubscriptionFail>>, Unit>
+    ): Either<RequestFailure<List<SubscriptionFail>>, SubscriptionEntity>
 
     suspend fun getById(id: Int): Either<DataFailure, SubscriptionEntity>
 

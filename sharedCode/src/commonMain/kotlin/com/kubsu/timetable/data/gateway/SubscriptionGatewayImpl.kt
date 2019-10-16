@@ -51,7 +51,7 @@ class SubscriptionGatewayImpl(
         subgroupId: Int,
         subscriptionName: String,
         isMain: Boolean
-    ): Either<RequestFailure<List<SubscriptionFail>>, Unit> =
+    ): Either<RequestFailure<List<SubscriptionFail>>, SubscriptionEntity> =
         subscriptionNetworkClient
             .createSubscription(
                 user = UserDtoMapper.toNetworkDto(user),
@@ -61,6 +61,7 @@ class SubscriptionGatewayImpl(
             )
             .map { subscription ->
                 subscriptionQueries.update(SubscriptionDtoMapper.toDbDto(subscription, user.id))
+                SubscriptionDtoMapper.toEntity(subscription, user.id)
             }
 
     override suspend fun getById(id: Int, userId: Int): Either<DataFailure, SubscriptionEntity> {

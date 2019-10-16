@@ -58,4 +58,10 @@
     <string name="subscription_list">Список подписок</string>
     <string name="timetable">Расписание</string>
     <string name="settings">Настройки</string>
+    <string name="not_selected">Не выбрано</string>
+    <string name="required">Обязательное поле</string>
+    <string name="title_too_long">Название слишком длинное</string>
+    <string name="subscription_already_exists">Подписка уже существует</string>
+    <string name="subscription_title">Наименование подписки</string>
+    <string name="notifications">Уведомления</string>
 </resources>

@@ -13,7 +13,6 @@ class UiEffect<T>(initialValue: T) {
 
 infix fun <T> UiEffect<T>.bind(body: (T) -> Unit) {
     change = body
-    body.invoke(value)
 }
 
 fun <T> UiEffect<T>.unbind() {

@@ -13,16 +13,16 @@ import platform.SerializeModel
 
 sealed class Action {
     object LoadFacultyList : Action()
-    class FacultyWasSelected(val faculty: FacultyModel) : Action()
-    class OccupationWasSelected(val occupation: OccupationModel) : Action()
-    class GroupWasSelected(val group: GroupModel) : Action()
-    class SubgroupWasSelected(val subgroup: SubgroupModel) : Action()
+    class FacultyWasSelected(val id: Int?) : Action()
+    class OccupationWasSelected(val id: Int?) : Action()
+    class GroupWasSelected(val id: Int?) : Action()
+    class SubgroupWasSelected(val id: Int?) : Action()
     class CreateSubscription(
         val subscriptionName: String,
         val isMain: Boolean
     ) : Action()
 
-    internal object SubscriptionWasCreated : Action()
+    internal class SubscriptionWasCreated(val subscription: SubscriptionModel) : Action()
     internal class ShowDataFailure(val failure: DataFailure) : Action()
     internal class ShowRequestFailure(
         val failure: RequestFailure<List<SubscriptionFail>>
@@ -52,10 +52,10 @@ data class State(
     val occupationList: List<OccupationModel>,
     val groupList: List<GroupModel>,
     val subgroupList: List<SubgroupModel>,
-    internal val selectedFaculty: FacultyModel?,
-    internal val selectedOccupation: OccupationModel?,
-    internal val selectedGroup: GroupModel?,
-    internal val selectedSubgroup: SubgroupModel?
+    val selectedFaculty: FacultyModel?,
+    val selectedOccupation: OccupationModel?,
+    val selectedGroup: GroupModel?,
+    val selectedSubgroup: SubgroupModel?
 ) : SerializableModel
 
 sealed class SideEffect {

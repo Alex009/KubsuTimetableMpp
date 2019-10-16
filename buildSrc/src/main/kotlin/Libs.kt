@@ -344,11 +344,6 @@ object Libs {
     const val material: String = "com.google.android.material:material:" + Versions.material
 
     /**
-     * https://developer.android.com/studio
-     */
-    const val aapt2: String = "com.android.tools.build:aapt2:" + Versions.aapt2
-
-    /**
      * https://developer.android.com/testing
      */
     const val junit: String = "androidx.test.ext:junit:" + Versions.junit

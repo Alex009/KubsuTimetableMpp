@@ -14,16 +14,15 @@ import com.kubsu.timetable.R
 import com.kubsu.timetable.firebase.NotAuthenticatedException
 import com.kubsu.timetable.firebase.UnknownResponseException
 import com.kubsu.timetable.utils.Logger
-import com.kubsu.timetable.utils.getNavControllerOrNull
 import com.kubsu.timetable.utils.observers.OnDestroyObserver
+import com.kubsu.timetable.utils.safePopBackStack
 import ru.whalemare.sheetmenu.ActionItem
 import ru.whalemare.sheetmenu.SheetMenu
 
 abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Logger {
-    open fun popBackStack() =
-        getNavControllerOrNull()?.popBackStack() ?: false
+    open fun popBackStack(): Boolean = safePopBackStack()
 
-    protected val appActivity: AppActivity?
+    val appActivity: AppActivity?
         get() = activity as? AppActivity
 
     override fun onCreate(savedInstanceState: Bundle?) {
