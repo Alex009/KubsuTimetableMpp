@@ -94,14 +94,6 @@ class CreateSubscriptionFragment(
         }
     }
 
-    override fun popBackStack(): Boolean {
-        safeNavigate(
-            CreateSubscriptionFragmentDirections
-                .actionCreateSubscriptionFragmentToBottomNavGraph(null)
-        )
-        return true
-    }
-
     private fun <T> Spinner.setData(
         listEffect: UiEffect<List<T>>,
         convert: (T) -> String,
@@ -169,12 +161,10 @@ class CreateSubscriptionFragment(
         when (subscription) {
             is Subscription.Navigate ->
                 navigation(subscription.screen)
-
             is Subscription.ShowFailure ->
                 notifyUserOfFailure(subscription.failure)
             is Subscription.ShowRequestFailure ->
                 showRequestFailure(subscription.failure)
-
             is Subscription.ChooseFaculty ->
                 chooseFacultyEffect.value = Unit
             is Subscription.ChooseOccupation ->
@@ -190,7 +180,7 @@ class CreateSubscriptionFragment(
             when (screen) {
                 is Screen.TimetableScreen ->
                     CreateSubscriptionFragmentDirections
-                        .actionCreateSubscriptionFragmentToBottomNavGraph(screen.subscription)
+                        .actionCreateSubscriptionFragmentToBottomNavFragment(screen.subscription)
             }
         )
     }

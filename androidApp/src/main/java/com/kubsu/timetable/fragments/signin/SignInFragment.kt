@@ -30,11 +30,6 @@ class SignInFragment(
         connector.connect(::render, ::render, lifecycle)
     }
 
-    override fun popBackStack(): Boolean {
-        appActivity?.closeApp()
-        return true
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -78,7 +73,7 @@ class SignInFragment(
                 Screen.Registration ->
                     SignInFragmentDirections.actionSignInFragmentToRegistrationFragment()
                 Screen.Timetable ->
-                    SignInFragmentDirections.actionSignInFragmentToBottomNavGraph(null)
+                    SignInFragmentDirections.actionSignInFragmentToBottomNavFragment(null)
             }
         )
     }

@@ -7,9 +7,9 @@ import com.egroden.teaco.TeaFeature
 import com.egroden.teaco.androidConnectors
 import com.egroden.teaco.bindAction
 import com.egroden.teaco.connect
-import com.kubsu.timetable.BaseNavGraphDirections
 import com.kubsu.timetable.R
 import com.kubsu.timetable.base.BaseFragment
+import com.kubsu.timetable.fragments.bottomnav.BottomNavFragmentDirections
 import com.kubsu.timetable.fragments.bottomnav.subscription.list.adapter.SubscriptionAdapter
 import com.kubsu.timetable.fragments.bottomnav.subscription.list.adapter.TouchProvider
 import com.kubsu.timetable.presentation.subscription.list.*
@@ -62,6 +62,7 @@ class SubscriptionListFragment(
     }
 
     private fun render(state: State) {
+        println(state.subscriptionList)
         progressEffect.value = if (state.progress) Visibility.VISIBLE else Visibility.INVISIBLE
         subscriptionListEffect.value = state.subscriptionList
     }
@@ -78,7 +79,8 @@ class SubscriptionListFragment(
         when (screen) {
             Screen.CreateSubscription ->
                 safeNavigate(
-                    BaseNavGraphDirections.actionGlobalCreateSubscriptionFragment()
+                    BottomNavFragmentDirections
+                        .actionBottomNavFragmentToCreateSubscriptionFragment()
                 )
 
             is Screen.ShowTimetableForSubscription ->

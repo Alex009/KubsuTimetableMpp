@@ -15,12 +15,12 @@ import com.kubsu.timetable.firebase.NotAuthenticatedException
 import com.kubsu.timetable.firebase.UnknownResponseException
 import com.kubsu.timetable.utils.Logger
 import com.kubsu.timetable.utils.observers.OnDestroyObserver
-import com.kubsu.timetable.utils.safePopBackStack
+import com.kubsu.timetable.utils.safeNavigateUp
 import ru.whalemare.sheetmenu.ActionItem
 import ru.whalemare.sheetmenu.SheetMenu
 
 abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Logger {
-    open fun popBackStack(): Boolean = safePopBackStack()
+    open fun navigateUp(): Boolean = safeNavigateUp()
 
     val appActivity: AppActivity?
         get() = activity as? AppActivity
@@ -40,7 +40,7 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Logger {
                 this,
                 object : OnBackPressedCallback(true) {
                     override fun handleOnBackPressed() {
-                        popBackStack()
+                        navigateUp()
                     }
                 }
             )
@@ -74,10 +74,6 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Logger {
                         body = failure.body,
                         message = failure.debugMessage
                     )
-                )
-                materialAlert(
-                    message = R.string.unknown_failure,
-                    onOkButtonClick = {}
                 )
             }
         }

@@ -20,11 +20,6 @@ class SplashFragment(
         connector.connect(::render, ::render, lifecycle)
     }
 
-    override fun popBackStack(): Boolean {
-        appActivity?.closeApp()
-        return true
-    }
-
     private fun render(state: State) = Unit
 
     private fun render(subscription: Subscription) =
@@ -38,7 +33,7 @@ class SplashFragment(
                 Screen.SignInScreen ->
                     SplashFragmentDirections.actionSplashFragmentToSignInFragment()
                 Screen.TimetableScreen ->
-                    SplashFragmentDirections.actionSplashFragmentToBottomNavGraph(null)
+                    SplashFragmentDirections.actionSplashFragmentToBottomNavFragment(null)
             }
         )
     }

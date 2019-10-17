@@ -5,16 +5,17 @@ import androidx.navigation.Navigation
 import com.kubsu.timetable.R
 import com.kubsu.timetable.base.BaseFragment
 
-fun BaseFragment.safePopBackStack(): Boolean {
+fun BaseFragment.safeNavigateUp(): Boolean {
+    if (isStateSaved) return false
     val activity = appActivity ?: return false
     return try {
         Navigation
             .findNavController(activity, R.id.nav_host_fragment)
-            .popBackStack()
+            .navigateUp()
     } catch (e: Exception) {
         Navigation
             .findNavController(activity, R.id.bottom_nav_host_fragment)
-            .popBackStack()
+            .navigateUp()
     }
 }
 
