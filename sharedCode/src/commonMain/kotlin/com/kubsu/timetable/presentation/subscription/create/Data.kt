@@ -52,10 +52,11 @@ data class State(
     val occupationList: List<OccupationModel>,
     val groupList: List<GroupModel>,
     val subgroupList: List<SubgroupModel>,
-    val selectedFaculty: FacultyModel?,
-    val selectedOccupation: OccupationModel?,
-    val selectedGroup: GroupModel?,
-    val selectedSubgroup: SubgroupModel?
+    val nameHint: String?,
+    internal val selectedFaculty: FacultyModel?,
+    internal val selectedOccupation: OccupationModel?,
+    internal val selectedGroup: GroupModel?,
+    internal val selectedSubgroup: SubgroupModel?
 ) : SerializableModel
 
 sealed class SideEffect {

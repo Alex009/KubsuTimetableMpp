@@ -2,6 +2,10 @@ package com.kubsu.timetable.presentation.subscription.create
 
 import com.egroden.teaco.UpdateResponse
 import com.egroden.teaco.Updater
+import com.kubsu.timetable.presentation.subscription.model.FacultyModel
+import com.kubsu.timetable.presentation.subscription.model.GroupModel
+import com.kubsu.timetable.presentation.subscription.model.OccupationModel
+import com.kubsu.timetable.presentation.subscription.model.SubgroupModel
 
 val createSubscriptionUpdater: Updater<State, Action, Subscription, SideEffect> = { state, action ->
     when (action) {
@@ -20,6 +24,12 @@ val createSubscriptionUpdater: Updater<State, Action, Subscription, SideEffect> 
                     occupationList = emptyList(),
                     groupList = emptyList(),
                     subgroupList = emptyList(),
+                    nameHint = getHintOrNull(
+                        selectedFaculty = faculty,
+                        selectedOccupation = null,
+                        selectedGroup = null,
+                        selectedSubgroup = null
+                    ),
                     selectedOccupation = null,
                     selectedGroup = null,
                     selectedSubgroup = null,
@@ -39,6 +49,12 @@ val createSubscriptionUpdater: Updater<State, Action, Subscription, SideEffect> 
                     selectedOccupation = occupation,
                     groupList = emptyList(),
                     subgroupList = emptyList(),
+                    nameHint = getHintOrNull(
+                        selectedFaculty = state.selectedFaculty,
+                        selectedOccupation = occupation,
+                        selectedGroup = null,
+                        selectedSubgroup = null
+                    ),
                     selectedGroup = null,
                     selectedSubgroup = null,
                     progress = true
@@ -56,6 +72,12 @@ val createSubscriptionUpdater: Updater<State, Action, Subscription, SideEffect> 
                 state = state.copy(
                     selectedGroup = group,
                     subgroupList = emptyList(),
+                    nameHint = getHintOrNull(
+                        selectedFaculty = state.selectedFaculty,
+                        selectedOccupation = state.selectedOccupation,
+                        selectedGroup = group,
+                        selectedSubgroup = null
+                    ),
                     selectedSubgroup = null,
                     progress = true
                 ),
@@ -70,7 +92,13 @@ val createSubscriptionUpdater: Updater<State, Action, Subscription, SideEffect> 
             val subgroup = action.id?.let(state.subgroupList::get)
             UpdateResponse(
                 state = state.copy(
-                    selectedSubgroup = subgroup
+                    selectedSubgroup = subgroup,
+                    nameHint = getHintOrNull(
+                        selectedFaculty = state.selectedFaculty,
+                        selectedOccupation = state.selectedOccupation,
+                        selectedGroup = state.selectedGroup,
+                        selectedSubgroup = subgroup
+                    )
                 )
             )
         }
@@ -166,3 +194,26 @@ val createSubscriptionUpdater: Updater<State, Action, Subscription, SideEffect> 
             )
     }
 }
+
+private fun getHintOrNull(
+    selectedFaculty: FacultyModel?,
+    selectedOccupation: OccupationModel?,
+    selectedGroup: GroupModel?,
+    selectedSubgroup: SubgroupModel?
+): String? =
+    selectedFaculty?.title?.short()
+        ?.plus(" ")
+        ?.plusIfNotNull(selectedOccupation?.title?.short())
+        ?.plus(" ")
+        ?.plusIfNotNull(selectedGroup?.number?.toString()?.plus("/"))
+        ?.plusIfNotNull(selectedSubgroup?.number?.toString())
+
+private fun String?.plusIfNotNull(str: String?): String? =
+    if (str != null) this?.plus(str) else this
+
+private fun String.short(): String =
+    trim()
+        .split(" ")
+        .filter { it != "" }
+        .map { it.first() }
+        .joinToString(separator = "")

@@ -162,22 +162,8 @@ class CreateSubscriptionFragment(
         occupationListEffect.value = state.occupationList
         groupListEffect.value = state.groupList
         subgroupListEffect.value = state.subgroupList
-
-        titleTextEffect.value = state.selectedFaculty?.title?.short()
-            ?.plus(" ")
-            ?.plusIfNotNull(state.selectedOccupation?.title?.short())
-            ?.plus(" ")
-            ?.plusIfNotNull(state.selectedGroup?.number?.toString()?.plus("/"))
-            ?.plusIfNotNull(state.selectedSubgroup?.number?.toString())
-            ?: getString(R.string.subscription_title)
+        titleTextEffect.value = state.nameHint ?: getString(R.string.subscription_title)
     }
-
-    private fun String.short(): String =
-        trim()
-            .split(" ")
-            .filter { it != "" }
-            .map { it.first() }
-            .joinToString(separator = "")
 
     private fun render(subscription: Subscription) =
         when (subscription) {

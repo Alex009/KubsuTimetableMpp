@@ -32,9 +32,6 @@ fun Spinner.showErrorMessage(messageRes: Int) {
     performClick()
 }
 
-fun String?.plusIfNotNull(str: String?): String? =
-    if (str != null) this?.plus(str) else this
-
 fun Context.showMaterialAlert(
     markAsUsed: () -> Unit,
     message: String,

@@ -17,6 +17,7 @@ internal val createSubscriptionPresentationModule =
                     occupationList = emptyList(),
                     groupList = emptyList(),
                     subgroupList = emptyList(),
+                    nameHint = null,
                     selectedFaculty = null,
                     selectedOccupation = null,
                     selectedGroup = null,
