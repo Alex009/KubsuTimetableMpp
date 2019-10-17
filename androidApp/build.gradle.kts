@@ -54,6 +54,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
+    androidExtensions {
+        isExperimental = true
+    }
 }
 
 tasks.withType<KotlinCompile> {
@@ -108,6 +112,9 @@ dependencies {
     // Coroutines
     implementation(Libs.kotlinx_coroutines_core)
     implementation(Libs.kotlinx_coroutines_android)
+
+    // Klock
+    implementation("com.soywiz.korlibs.klock:klock-jvm:${Versions.klock}")
 
     // Test
     testImplementation(Libs.junit_jupiter_api)

@@ -62,7 +62,6 @@ class SubscriptionListFragment(
     }
 
     private fun render(state: State) {
-        println(state.subscriptionList)
         progressEffect.value = if (state.progress) Visibility.VISIBLE else Visibility.INVISIBLE
         subscriptionListEffect.value = state.subscriptionList
     }

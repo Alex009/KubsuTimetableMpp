@@ -21,7 +21,6 @@ class BottomNavFragment : BaseFragment(R.layout.bottom_nav_fragment) {
         view.bottom_navigation_view.setupWithNavController(navController)
 
         val subscription = args.subscription
-        println(subscription)
         /*navController.navigate(
             if (subscription != null)
                 BottomNavFragmentDirections.actionBottomNavFragmentToTimetableFragment(subscription)

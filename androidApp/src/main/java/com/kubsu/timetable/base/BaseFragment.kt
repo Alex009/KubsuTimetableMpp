@@ -29,6 +29,7 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Logger {
         super.onCreate(savedInstanceState)
         view?.systemUiVisibility =
             View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        info("OnCreate")
     }
 
     override fun onAttach(context: Context) {
