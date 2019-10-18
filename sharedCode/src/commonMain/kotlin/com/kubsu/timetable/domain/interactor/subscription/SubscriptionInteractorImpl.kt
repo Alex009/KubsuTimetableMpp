@@ -1,12 +1,16 @@
 package com.kubsu.timetable.domain.interactor.subscription
 
-import com.kubsu.timetable.*
+import com.kubsu.timetable.DataFailure
+import com.kubsu.timetable.Either
+import com.kubsu.timetable.RequestFailure
+import com.kubsu.timetable.SubscriptionFail
 import com.kubsu.timetable.domain.entity.timetable.data.SubscriptionEntity
 import com.kubsu.timetable.domain.entity.timetable.select.FacultyEntity
 import com.kubsu.timetable.domain.entity.timetable.select.GroupEntity
 import com.kubsu.timetable.domain.entity.timetable.select.OccupationEntity
 import com.kubsu.timetable.domain.entity.timetable.select.SubgroupEntity
 import com.kubsu.timetable.domain.interactor.userInfo.UserInfoGateway
+import com.kubsu.timetable.extensions.def
 
 class SubscriptionInteractorImpl(
     private val subscriptionGateway: SubscriptionGateway,

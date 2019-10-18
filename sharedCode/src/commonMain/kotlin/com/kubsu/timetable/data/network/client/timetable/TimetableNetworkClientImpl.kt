@@ -2,7 +2,6 @@ package com.kubsu.timetable.data.network.client.timetable
 
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.Either
-import com.kubsu.timetable.addSessionKey
 import com.kubsu.timetable.data.network.dto.UserNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.data.ClassNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.data.ClassTimeNetworkDto
@@ -11,6 +10,7 @@ import com.kubsu.timetable.data.network.dto.timetable.data.TimetableNetworkDto
 import com.kubsu.timetable.data.network.sender.NetworkSender
 import com.kubsu.timetable.data.network.sender.failure.ServerFailure
 import com.kubsu.timetable.data.network.sender.failure.toNetworkFail
+import com.kubsu.timetable.extensions.addSessionKey
 import io.ktor.client.request.get
 
 class TimetableNetworkClientImpl(

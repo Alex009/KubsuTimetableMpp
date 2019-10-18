@@ -11,7 +11,6 @@ import com.kubsu.timetable.R
 import com.kubsu.timetable.base.BaseFragment
 import com.kubsu.timetable.fragments.bottomnav.BottomNavFragmentDirections
 import com.kubsu.timetable.fragments.bottomnav.subscription.list.adapter.SubscriptionAdapter
-import com.kubsu.timetable.fragments.bottomnav.subscription.list.adapter.TouchProvider
 import com.kubsu.timetable.presentation.subscription.list.*
 import com.kubsu.timetable.presentation.timetable.model.SubscriptionModel
 import com.kubsu.timetable.utils.*
@@ -21,8 +20,7 @@ import kotlinx.android.synthetic.main.subscription_list_fragment.view.*
 
 class SubscriptionListFragment(
     teaFeature: TeaFeature<Action, SideEffect, State, Subscription>
-) : BaseFragment(R.layout.subscription_list_fragment),
-    TouchProvider {
+) : BaseFragment(R.layout.subscription_list_fragment) {
     private val connector by androidConnectors(teaFeature) { bindAction(Action.UpdateData) }
 
     private val progressEffect = UiEffect(Visibility.INVISIBLE)
@@ -36,7 +34,14 @@ class SubscriptionListFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val subscriptionAdapter = SubscriptionAdapter(this)
+        val subscriptionAdapter = SubscriptionAdapter(
+            subscriptionWasSelected = {
+                connector bindAction Action.SubscriptionWasSelected(it)
+            },
+            changeSubscriptionStatus = {
+                connector bindAction Action.ChangeSubscriptionStatus(it)
+            }
+        )
         with(view.subscription_recycler_view) {
             setHasFixedSize(true)
             adapter = subscriptionAdapter
@@ -57,21 +62,20 @@ class SubscriptionListFragment(
         subscriptionListEffect.unbind()
     }
 
-    override fun subscriptionWasSelected(subscription: SubscriptionModel) {
-        connector bindAction Action.SubscriptionWasSelected(subscription)
-    }
-
     private fun render(state: State) {
         progressEffect.value = if (state.progress) Visibility.VISIBLE else Visibility.INVISIBLE
         subscriptionListEffect.value = state.subscriptionList
+        //TODO show message "list is empty"
     }
 
     private fun render(subscription: Subscription) =
         when (subscription) {
             is Subscription.Navigate ->
                 navigation(subscription.screen)
-            is Subscription.ShowFailure ->
-                notifyUserOfFailure(subscription.failure)
+            is Subscription.ShowSubscriptionFailure ->
+                Unit // because we don't change the subscription data on this screen
+            is Subscription.ShowDataFailure ->
+                subscription.failureList.forEach(::notifyUserOfFailure)
         }
 
     private fun navigation(screen: Screen) =
@@ -82,10 +86,10 @@ class SubscriptionListFragment(
                         .actionBottomNavFragmentToCreateSubscriptionFragment()
                 )
 
-            is Screen.ShowTimetableForSubscription ->
+            Screen.ShowTimetable ->
                 safeNavigate(
                     SubscriptionListFragmentDirections
-                        .actionSubscriptionListFragmentToTimetableFragment(screen.subscription)
+                        .actionSubscriptionListFragmentToTimetableFragment()
                 )
         }
 }

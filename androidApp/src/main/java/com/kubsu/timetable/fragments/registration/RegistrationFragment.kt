@@ -8,7 +8,6 @@ import com.egroden.teaco.bindAction
 import com.egroden.teaco.connect
 import com.kubsu.timetable.R
 import com.kubsu.timetable.RegistrationFail
-import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.base.BaseFragment
 import com.kubsu.timetable.presentation.registration.*
 import com.kubsu.timetable.utils.*
@@ -58,8 +57,12 @@ class RegistrationFragment(
 
     private fun render(subscription: Subscription) =
         when (subscription) {
-            is Subscription.Navigate -> navigation(subscription.screen)
-            is Subscription.ShowFailure -> showFailure(subscription.failure)
+            is Subscription.Navigate ->
+                navigation(subscription.screen)
+            is Subscription.ShowRegistrationFailure ->
+                subscription.failureList.forEach(::handleRegistrationFail)
+            is Subscription.ShowDataFailure ->
+                subscription.failureList.forEach(::notifyUserOfFailure)
         }
 
     private fun navigation(screen: Screen) {
@@ -70,12 +73,6 @@ class RegistrationFragment(
             }
         )
     }
-
-    private fun showFailure(failure: RequestFailure<List<RegistrationFail>>) =
-        failure.handle(
-            ifDomain = { it.forEach(::handleRegistrationFail) },
-            ifData = { it.forEach(::notifyUserOfFailure)}
-        )
 
     private fun handleRegistrationFail(fail: RegistrationFail) =
         when (fail) {

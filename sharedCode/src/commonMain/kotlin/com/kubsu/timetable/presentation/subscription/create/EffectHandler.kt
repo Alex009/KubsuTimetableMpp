@@ -1,7 +1,9 @@
 package com.kubsu.timetable.presentation.subscription.create
 
 import com.egroden.teaco.EffectHandler
+import com.kubsu.timetable.data.storage.displayed.subscription.DisplayedSubscriptionStorage
 import com.kubsu.timetable.domain.interactor.subscription.SubscriptionInteractor
+import com.kubsu.timetable.extensions.checkWhenAllHandled
 import com.kubsu.timetable.presentation.subscription.mapper.FacultyModelMapper
 import com.kubsu.timetable.presentation.subscription.mapper.GroupModelMapper
 import com.kubsu.timetable.presentation.subscription.mapper.OccupationModelMapper
@@ -11,7 +13,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 class CreateSubscriptionEffectHandler(
-    private val interactor: SubscriptionInteractor
+    private val interactor: SubscriptionInteractor,
+    private val displayedSubscriptionStorage: DisplayedSubscriptionStorage
 ) : EffectHandler<SideEffect, Action> {
     override fun invoke(sideEffect: SideEffect): Flow<Action> = flow {
         when (sideEffect) {
@@ -19,7 +22,7 @@ class CreateSubscriptionEffectHandler(
                 interactor
                     .selectFacultyList()
                     .fold(
-                        ifLeft = { emit(Action.ShowDataFailure(it)) },
+                        ifLeft = { emit(Action.ShowDataFailure(listOf(it))) },
                         ifRight = {
                             emit(
                                 Action.FacultyListUploaded(
@@ -35,7 +38,7 @@ class CreateSubscriptionEffectHandler(
                         FacultyModelMapper.toEntity(sideEffect.faculty)
                     )
                     .fold(
-                        ifLeft = { emit(Action.ShowDataFailure(it)) },
+                        ifLeft = { emit(Action.ShowDataFailure(listOf(it))) },
                         ifRight = {
                             emit(
                                 Action.OccupationListUploaded(
@@ -51,7 +54,7 @@ class CreateSubscriptionEffectHandler(
                         OccupationModelMapper.toEntity(sideEffect.occupation)
                     )
                     .fold(
-                        ifLeft = { emit(Action.ShowDataFailure(it)) },
+                        ifLeft = { emit(Action.ShowDataFailure(listOf(it))) },
                         ifRight = {
                             emit(
                                 Action.GroupListUploaded(
@@ -67,7 +70,7 @@ class CreateSubscriptionEffectHandler(
                         GroupModelMapper.toEntity(sideEffect.group)
                     )
                     .fold(
-                        ifLeft = { emit(Action.ShowDataFailure(it)) },
+                        ifLeft = { emit(Action.ShowDataFailure(listOf(it))) },
                         ifRight = {
                             emit(
                                 Action.SubgroupListUploaded(
@@ -85,7 +88,12 @@ class CreateSubscriptionEffectHandler(
                         isMain = sideEffect.isMain
                     )
                     .fold(
-                        ifLeft = { emit(Action.ShowRequestFailure(it)) },
+                        ifLeft = { requestFailure ->
+                            requestFailure.handle(
+                                ifDomain = { emit(Action.ShowSubscriptionFailure(it)) },
+                                ifData = { emit(Action.ShowDataFailure(it)) }
+                            )
+                        },
                         ifRight = {
                             emit(
                                 Action.SubscriptionWasCreated(
@@ -94,6 +102,9 @@ class CreateSubscriptionEffectHandler(
                             )
                         }
                     )
-        }
+
+            is SideEffect.DisplayedSubscription ->
+                displayedSubscriptionStorage.set(sideEffect.subscription)
+        }.checkWhenAllHandled()
     }
 }

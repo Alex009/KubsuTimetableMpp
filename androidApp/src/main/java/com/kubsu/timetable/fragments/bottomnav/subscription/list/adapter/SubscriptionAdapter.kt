@@ -10,12 +10,9 @@ import com.kubsu.timetable.presentation.timetable.model.SubscriptionModel
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_subscription.view.*
 
-interface TouchProvider {
-    fun subscriptionWasSelected(subscription: SubscriptionModel)
-}
-
 class SubscriptionAdapter(
-    private val touchProvider: TouchProvider
+    private val subscriptionWasSelected: (subscription: SubscriptionModel) -> Unit,
+    private val changeSubscriptionStatus: (subscription: SubscriptionModel) -> Unit
 ) : RecyclerView.Adapter<SubscriptionAdapter.SubscriptionViewHolder>() {
     private var subscriptionList = emptyList<SubscriptionModel>()
 
@@ -39,7 +36,8 @@ class SubscriptionAdapter(
             containerView = LayoutInflater
                 .from(parent.context)
                 .inflate(R.layout.item_subscription, parent, false),
-            touchProvider = touchProvider
+            subscriptionWasSelected = subscriptionWasSelected,
+            changeSubscriptionStatus = changeSubscriptionStatus
         )
 
     override fun onBindViewHolder(holder: SubscriptionViewHolder, position: Int) =
@@ -47,11 +45,13 @@ class SubscriptionAdapter(
 
     class SubscriptionViewHolder(
         override val containerView: View,
-        private val touchProvider: TouchProvider
+        private val subscriptionWasSelected: (subscription: SubscriptionModel) -> Unit,
+        private val changeSubscriptionStatus: (subscription: SubscriptionModel) -> Unit
     ) : RecyclerView.ViewHolder(containerView),
         LayoutContainer {
         fun bind(subscription: SubscriptionModel) = with(containerView) {
             text_view.text = subscription.title
+            text_view.setOnClickListener { subscriptionWasSelected(subscription) }
 
             image_button.setImageResource(
                 if (subscription.isMain)
@@ -59,8 +59,9 @@ class SubscriptionAdapter(
                 else
                     R.drawable.ic_notifications_off_black_24dp
             )
-
-            setOnClickListener { touchProvider.subscriptionWasSelected(subscription) }
+            image_button.setOnClickListener {
+                changeSubscriptionStatus(subscription)
+            }
         }
     }
 }

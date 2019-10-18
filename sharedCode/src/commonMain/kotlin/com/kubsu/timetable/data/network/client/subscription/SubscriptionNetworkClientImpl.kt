@@ -1,12 +1,18 @@
 package com.kubsu.timetable.data.network.client.subscription
 
-import com.kubsu.timetable.*
+import com.kubsu.timetable.DataFailure
+import com.kubsu.timetable.Either
+import com.kubsu.timetable.RequestFailure
+import com.kubsu.timetable.SubscriptionFail
 import com.kubsu.timetable.data.network.client.subscription.incorrectdata.SubscriptionIncorrectData
 import com.kubsu.timetable.data.network.dto.UserNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.data.SubscriptionNetworkDto
 import com.kubsu.timetable.data.network.sender.NetworkSender
 import com.kubsu.timetable.data.network.sender.failure.ServerFailure
 import com.kubsu.timetable.data.network.sender.failure.toNetworkFail
+import com.kubsu.timetable.extensions.addSessionKey
+import com.kubsu.timetable.extensions.jsonContent
+import com.kubsu.timetable.extensions.toJson
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.patch

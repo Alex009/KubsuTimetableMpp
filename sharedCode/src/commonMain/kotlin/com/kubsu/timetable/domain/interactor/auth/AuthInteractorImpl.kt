@@ -2,6 +2,7 @@ package com.kubsu.timetable.domain.interactor.auth
 
 import com.kubsu.timetable.*
 import com.kubsu.timetable.domain.interactor.userInfo.UserInfoGateway
+import com.kubsu.timetable.extensions.def
 
 class AuthInteractorImpl(
     private val authGateway: AuthGateway,

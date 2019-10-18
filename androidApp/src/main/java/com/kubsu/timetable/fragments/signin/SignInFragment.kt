@@ -7,7 +7,6 @@ import com.egroden.teaco.androidConnectors
 import com.egroden.teaco.bindAction
 import com.egroden.teaco.connect
 import com.kubsu.timetable.R
-import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SignInFail
 import com.kubsu.timetable.base.BaseFragment
 import com.kubsu.timetable.presentation.signin.*
@@ -63,8 +62,12 @@ class SignInFragment(
 
     private fun render(subscription: Subscription) =
         when (subscription) {
-            is Subscription.Navigate -> navigation(subscription.screen)
-            is Subscription.ShowFailure -> showFailure(subscription.failure)
+            is Subscription.Navigate ->
+                navigation(subscription.screen)
+            is Subscription.ShowSignInFailure ->
+                subscription.failureList.forEach(::handleSignInFail)
+            is Subscription.ShowDataFailure ->
+                subscription.failureList.forEach(::notifyUserOfFailure)
         }
 
     private fun navigation(screen: Screen) {
@@ -73,16 +76,10 @@ class SignInFragment(
                 Screen.Registration ->
                     SignInFragmentDirections.actionSignInFragmentToRegistrationFragment()
                 Screen.Timetable ->
-                    SignInFragmentDirections.actionSignInFragmentToBottomNavFragment(null)
+                    SignInFragmentDirections.actionSignInFragmentToBottomNavFragment(firstStart = true)
             }
         )
     }
-
-    private fun showFailure(failure: RequestFailure<List<SignInFail>>) =
-        failure.handle(
-            ifDomain = { it.forEach(::handleSignInFail) },
-            ifData = { it.forEach(::notifyUserOfFailure) }
-        )
 
     private fun handleSignInFail(fail: SignInFail) =
         when (fail) {

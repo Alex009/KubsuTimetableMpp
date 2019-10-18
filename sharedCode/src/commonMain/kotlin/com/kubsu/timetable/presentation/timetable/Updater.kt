@@ -9,11 +9,13 @@ val timetableUpdater: Updater<State, Action, Subscription, SideEffect> = { state
             UpdateResponse(
                 state = state.copy(
                     currentSubscription = action.subscription,
-                    progress = true
+                    progress = action.subscription != null
                 ),
-                sideEffects = setOf(SideEffect.LoadCurrentTimetable(action.subscription))
+                sideEffects = if (action.subscription != null)
+                    setOf(SideEffect.LoadCurrentTimetable(action.subscription))
+                else
+                    emptySet()
             )
-
         is Action.ShowFailure ->
             UpdateResponse(
                 state = state.copy(progress = false),

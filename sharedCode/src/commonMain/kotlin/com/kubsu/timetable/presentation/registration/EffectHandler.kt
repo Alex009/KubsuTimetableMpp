@@ -2,6 +2,7 @@ package com.kubsu.timetable.presentation.registration
 
 import com.egroden.teaco.EffectHandler
 import com.kubsu.timetable.domain.interactor.auth.AuthInteractor
+import com.kubsu.timetable.extensions.checkWhenAllHandled
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -14,9 +15,14 @@ class RegistrationEffectHandler(
                 authInteractor
                     .registrationUser(sideEffect.email, sideEffect.password)
                     .fold(
-                        ifLeft = { emit(Action.ShowFailure(it)) },
+                        ifLeft = { requestFailure ->
+                            requestFailure.handle(
+                                ifDomain = { emit(Action.ShowRegistrationFailure(it)) },
+                                ifData = { emit(Action.ShowDataFailure(it)) }
+                            )
+                        },
                         ifRight = { emit(Action.ShowResult) }
                     )
-        }
+        }.checkWhenAllHandled()
     }
 }

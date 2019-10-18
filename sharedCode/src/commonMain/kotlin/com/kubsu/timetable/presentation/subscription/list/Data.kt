@@ -1,6 +1,7 @@
 package com.kubsu.timetable.presentation.subscription.list
 
 import com.kubsu.timetable.DataFailure
+import com.kubsu.timetable.SubscriptionFail
 import com.kubsu.timetable.presentation.timetable.model.SubscriptionModel
 import platform.SerializableModel
 import platform.SerializeModel
@@ -12,12 +13,24 @@ sealed class Action {
         val subscription: SubscriptionModel
     ) : Action()
 
+    class ChangeSubscriptionStatus(
+        val subscription: SubscriptionModel
+    ) : Action()
+
     internal class SubscriptionListUploaded(
         val subscriptionList: List<SubscriptionModel>
     ) : Action()
 
-    internal class ShowFailure(
-        val failure: DataFailure
+    internal class SubscriptionWasUpdated(
+        val subscription: SubscriptionModel
+    ) : Action()
+
+    internal class ShowSubscriptionFailure(
+        val failureList: List<SubscriptionFail>
+    ) : Action()
+
+    internal class ShowDataFailure(
+        val failureList: List<DataFailure>
     ) : Action()
 }
 
@@ -29,17 +42,21 @@ data class State(
 
 sealed class SideEffect {
     object LoadSubscriptionList : SideEffect()
+    class UpdateSubscription(
+        val subscription: SubscriptionModel
+    ) : SideEffect()
+
+    class DisplayedSubscription(val subscription: SubscriptionModel) : SideEffect()
 }
 
 sealed class Subscription {
     class Navigate(val screen: Screen) : Subscription()
 
-    class ShowFailure(val failure: DataFailure) : Subscription()
+    class ShowSubscriptionFailure(val failureList: List<SubscriptionFail>) : Subscription()
+    class ShowDataFailure(val failureList: List<DataFailure>) : Subscription()
 }
 
 sealed class Screen {
     object CreateSubscription : Screen()
-    class ShowTimetableForSubscription(
-        val subscription: SubscriptionModel
-    ) : Screen()
+    object ShowTimetable : Screen()
 }

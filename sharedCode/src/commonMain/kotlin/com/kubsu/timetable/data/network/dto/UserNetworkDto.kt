@@ -1,6 +1,6 @@
 package com.kubsu.timetable.data.network.dto
 
-import com.kubsu.timetable.sessionId
+import com.kubsu.timetable.extensions.sessionId
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

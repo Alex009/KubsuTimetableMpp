@@ -1,6 +1,7 @@
 package com.kubsu.timetable.data.gateway
 
-import com.kubsu.timetable.*
+import com.kubsu.timetable.DataFailure
+import com.kubsu.timetable.Either
 import com.kubsu.timetable.data.db.timetable.*
 import com.kubsu.timetable.data.mapper.UserDtoMapper
 import com.kubsu.timetable.data.mapper.timetable.data.*
@@ -11,6 +12,9 @@ import com.kubsu.timetable.data.network.dto.timetable.data.TimetableNetworkDto
 import com.kubsu.timetable.domain.entity.UserEntity
 import com.kubsu.timetable.domain.entity.timetable.data.*
 import com.kubsu.timetable.domain.interactor.timetable.TimetableGateway
+import com.kubsu.timetable.extensions.collectRightListOrFirstLeft
+import com.kubsu.timetable.extensions.flowOfIterable
+import com.kubsu.timetable.flatMap
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.map

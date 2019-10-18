@@ -1,7 +1,6 @@
 package com.kubsu.timetable.presentation.subscription.create
 
 import com.kubsu.timetable.DataFailure
-import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SubscriptionFail
 import com.kubsu.timetable.presentation.subscription.model.FacultyModel
 import com.kubsu.timetable.presentation.subscription.model.GroupModel
@@ -23,10 +22,8 @@ sealed class Action {
     ) : Action()
 
     internal class SubscriptionWasCreated(val subscription: SubscriptionModel) : Action()
-    internal class ShowDataFailure(val failure: DataFailure) : Action()
-    internal class ShowRequestFailure(
-        val failure: RequestFailure<List<SubscriptionFail>>
-    ) : Action()
+    internal class ShowSubscriptionFailure(val failureList: List<SubscriptionFail>) : Action()
+    internal class ShowDataFailure(val failureList: List<DataFailure>) : Action()
 
     internal class FacultyListUploaded(
         val facultyList: List<FacultyModel>
@@ -69,15 +66,15 @@ sealed class SideEffect {
         val subscriptionName: String,
         val isMain: Boolean
     ) : SideEffect()
+
+    class DisplayedSubscription(val subscription: SubscriptionModel) : SideEffect()
 }
 
 sealed class Subscription {
     class Navigate(val screen: Screen) : Subscription()
 
-    class ShowFailure(val failure: DataFailure) : Subscription()
-    class ShowRequestFailure(
-        val failure: RequestFailure<List<SubscriptionFail>>
-    ) : Subscription()
+    class ShowSubscriptionFailure(val failureList: List<SubscriptionFail>) : Subscription()
+    class ShowFailure(val failureList: List<DataFailure>) : Subscription()
 
     object ChooseFaculty : Subscription()
     object ChooseOccupation : Subscription()
@@ -86,5 +83,5 @@ sealed class Subscription {
 }
 
 sealed class Screen {
-    class TimetableScreen(val subscription: SubscriptionModel) : Screen()
+    object TimetableScreen : Screen()
 }

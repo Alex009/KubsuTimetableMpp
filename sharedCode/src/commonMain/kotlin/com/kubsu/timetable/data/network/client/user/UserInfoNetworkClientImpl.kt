@@ -8,6 +8,9 @@ import com.kubsu.timetable.data.network.dto.UserNetworkDto
 import com.kubsu.timetable.data.network.sender.NetworkSender
 import com.kubsu.timetable.data.network.sender.failure.ServerFailure
 import com.kubsu.timetable.data.network.sender.failure.toNetworkFail
+import com.kubsu.timetable.extensions.addSessionKey
+import com.kubsu.timetable.extensions.jsonContent
+import com.kubsu.timetable.extensions.toJson
 import io.ktor.client.request.get
 import io.ktor.client.request.patch
 import io.ktor.client.request.post

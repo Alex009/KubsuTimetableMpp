@@ -69,7 +69,7 @@ class RequestFailure<D>(
 ) {
     constructor(dataFail: DataFailure) : this(data = listOf(dataFail))
 
-    fun handle(ifDomain: (D) -> Unit, ifData: (List<DataFailure>) -> Unit) {
+    inline fun handle(ifDomain: (D) -> Unit, ifData: (List<DataFailure>) -> Unit) {
         domain?.let(ifDomain)
         data?.let(ifData)
     }

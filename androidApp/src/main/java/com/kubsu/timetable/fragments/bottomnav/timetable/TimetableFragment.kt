@@ -5,9 +5,11 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.egroden.teaco.TeaFeature
 import com.egroden.teaco.androidConnectors
+import com.egroden.teaco.bindAction
 import com.egroden.teaco.connect
 import com.kubsu.timetable.R
 import com.kubsu.timetable.base.BaseFragment
+import com.kubsu.timetable.data.storage.displayed.subscription.DisplayedSubscriptionStorage
 import com.kubsu.timetable.fragments.bottomnav.timetable.adapter.TimetableAdapter
 import com.kubsu.timetable.presentation.timetable.*
 import com.kubsu.timetable.presentation.timetable.model.TimetableInfoToDisplay
@@ -17,9 +19,12 @@ import kotlinx.android.synthetic.main.progress_bar.view.*
 import kotlinx.android.synthetic.main.timetable_fragment.view.*
 
 class TimetableFragment(
-    teaFeature: TeaFeature<Action, SideEffect, State, Subscription>
+    teaFeature: TeaFeature<Action, SideEffect, State, Subscription>,
+    displayedSubscriptionStorage: DisplayedSubscriptionStorage
 ) : BaseFragment(R.layout.timetable_fragment) {
-    private val connector by androidConnectors(teaFeature)
+    private val connector by androidConnectors(teaFeature) {
+        bindAction(Action.UpdateData(displayedSubscriptionStorage.get()))
+    }
 
     private val titleEffect = UiEffect("")
     private val progressEffect = UiEffect(Visibility.INVISIBLE)
@@ -65,6 +70,7 @@ class TimetableFragment(
         }
         if (timetable != null)
             timetableListEffect.value = timetable.infoList
+        //TODO show message "list is empty"
     }
 
     private fun render(subscription: Subscription) =

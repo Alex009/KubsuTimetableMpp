@@ -23,10 +23,16 @@ val signInUpdater: Updater<State, Action, Subscription, SideEffect> = { state, a
                 subscription = Subscription.Navigate(Screen.Timetable)
             )
 
-        is Action.ShowFailure ->
+        is Action.ShowSignInFailure ->
             UpdateResponse(
                 state = state.copy(progress = false),
-                subscription = Subscription.ShowFailure(action.failure)
+                subscription = Subscription.ShowSignInFailure(action.failureList)
+            )
+
+        is Action.ShowDataFailure ->
+            UpdateResponse(
+                state = state.copy(progress = false),
+                subscription = Subscription.ShowDataFailure(action.failureList)
             )
     }
 }

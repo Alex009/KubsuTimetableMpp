@@ -1,12 +1,16 @@
 package com.kubsu.timetable.data.network.client.update
 
-import com.kubsu.timetable.*
+import com.kubsu.timetable.DataFailure
+import com.kubsu.timetable.Either
 import com.kubsu.timetable.data.network.dto.UserNetworkDto
 import com.kubsu.timetable.data.network.dto.response.DiffResponse
 import com.kubsu.timetable.data.network.dto.response.SyncResponse
 import com.kubsu.timetable.data.network.sender.NetworkSender
 import com.kubsu.timetable.data.network.sender.failure.ServerFailure
 import com.kubsu.timetable.data.network.sender.failure.toNetworkFail
+import com.kubsu.timetable.extensions.addSessionKey
+import com.kubsu.timetable.extensions.jsonContent
+import com.kubsu.timetable.extensions.toJson
 import io.ktor.client.request.post
 
 class UpdateDataNetworkClientImpl(

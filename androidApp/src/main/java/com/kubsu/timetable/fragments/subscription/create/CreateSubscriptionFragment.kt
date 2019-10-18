@@ -11,7 +11,6 @@ import com.egroden.teaco.androidConnectors
 import com.egroden.teaco.bindAction
 import com.egroden.teaco.connect
 import com.kubsu.timetable.R
-import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SubscriptionFail
 import com.kubsu.timetable.base.BaseFragment
 import com.kubsu.timetable.presentation.subscription.create.*
@@ -162,9 +161,9 @@ class CreateSubscriptionFragment(
             is Subscription.Navigate ->
                 navigation(subscription.screen)
             is Subscription.ShowFailure ->
-                notifyUserOfFailure(subscription.failure)
-            is Subscription.ShowRequestFailure ->
-                showRequestFailure(subscription.failure)
+                subscription.failureList.forEach(::notifyUserOfFailure)
+            is Subscription.ShowSubscriptionFailure ->
+                subscription.failureList.forEach(::handleSubscriptionFail)
             is Subscription.ChooseFaculty ->
                 chooseFacultyEffect.value = Unit
             is Subscription.ChooseOccupation ->
@@ -178,18 +177,12 @@ class CreateSubscriptionFragment(
     private fun navigation(screen: Screen) {
         safeNavigate(
             when (screen) {
-                is Screen.TimetableScreen ->
+                Screen.TimetableScreen ->
                     CreateSubscriptionFragmentDirections
-                        .actionCreateSubscriptionFragmentToBottomNavFragment(screen.subscription)
+                        .actionCreateSubscriptionFragmentToBottomNavFragment()
             }
         )
     }
-
-    private fun showRequestFailure(failure: RequestFailure<List<SubscriptionFail>>) =
-        failure.handle(
-            ifDomain = { it.forEach(::handleSubscriptionFail) },
-            ifData = { it.forEach(::notifyUserOfFailure) }
-        )
 
     private fun handleSubscriptionFail(failure: SubscriptionFail) =
         when (failure) {

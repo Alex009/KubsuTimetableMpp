@@ -14,18 +14,13 @@ class BottomNavFragment : BaseFragment(R.layout.bottom_nav_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         val navController = Navigation.findNavController(
             requireActivity(),
             R.id.bottom_nav_host_fragment
         )
         view.bottom_navigation_view.setupWithNavController(navController)
-
-        val subscription = args.subscription
-        /*navController.navigate(
-            if (subscription != null)
-                BottomNavFragmentDirections.actionBottomNavFragmentToTimetableFragment(subscription)
-            else
-                BottomNavFragmentDirections.actionBottomNavFragmentToSubscriptionListFragment()
-        )*/
+        if (args.firstStart)
+            navController.navigate(R.id.subscriptionListFragment)
     }
 }

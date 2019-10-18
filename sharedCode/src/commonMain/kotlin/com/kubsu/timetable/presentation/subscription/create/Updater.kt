@@ -146,19 +146,20 @@ val createSubscriptionUpdater: Updater<State, Action, Subscription, SideEffect> 
         is Action.SubscriptionWasCreated ->
             UpdateResponse(
                 state = state.copy(progress = false),
-                subscription = Subscription.Navigate(Screen.TimetableScreen(action.subscription))
+                subscription = Subscription.Navigate(Screen.TimetableScreen),
+                sideEffects = setOf(SideEffect.DisplayedSubscription(action.subscription))
             )
 
         is Action.ShowDataFailure ->
             UpdateResponse(
                 state = state.copy(progress = false),
-                subscription = Subscription.ShowFailure(action.failure)
+                subscription = Subscription.ShowFailure(action.failureList)
             )
 
-        is Action.ShowRequestFailure ->
+        is Action.ShowSubscriptionFailure ->
             UpdateResponse(
                 state = state.copy(progress = false),
-                subscription = Subscription.ShowRequestFailure(action.failure)
+                subscription = Subscription.ShowSubscriptionFailure(action.failureList)
             )
 
         is Action.FacultyListUploaded ->

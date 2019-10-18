@@ -33,7 +33,7 @@ class SplashFragment(
                 Screen.SignInScreen ->
                     SplashFragmentDirections.actionSplashFragmentToSignInFragment()
                 Screen.TimetableScreen ->
-                    SplashFragmentDirections.actionSplashFragmentToBottomNavFragment(null)
+                    SplashFragmentDirections.actionSplashFragmentToBottomNavFragment()
             }
         )
     }

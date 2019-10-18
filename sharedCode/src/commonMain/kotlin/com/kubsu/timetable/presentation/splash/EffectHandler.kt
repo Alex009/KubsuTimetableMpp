@@ -2,6 +2,7 @@ package com.kubsu.timetable.presentation.splash
 
 import com.egroden.teaco.EffectHandler
 import com.kubsu.timetable.domain.interactor.auth.AuthInteractor
+import com.kubsu.timetable.extensions.checkWhenAllHandled
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -17,6 +18,6 @@ class SplashEffectHandler(
                     else
                         Action.ShowSignInScreen
                 )
-        }
+        }.checkWhenAllHandled()
     }
 }

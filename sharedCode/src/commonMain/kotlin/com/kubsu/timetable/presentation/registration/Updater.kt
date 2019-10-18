@@ -17,10 +17,16 @@ val registrationUpdater: Updater<State, Action, Subscription, SideEffect> = { st
                 subscription = Subscription.Navigate(Screen.SignIn)
             )
 
-        is Action.ShowFailure ->
+        is Action.ShowRegistrationFailure ->
             UpdateResponse(
                 state = state.copy(progress = false),
-                subscription = Subscription.ShowFailure(action.failure)
+                subscription = Subscription.ShowRegistrationFailure(action.failureList)
+            )
+
+        is Action.ShowDataFailure ->
+            UpdateResponse(
+                state = state.copy(progress = false),
+                subscription = Subscription.ShowDataFailure(action.failureList)
             )
     }
 }

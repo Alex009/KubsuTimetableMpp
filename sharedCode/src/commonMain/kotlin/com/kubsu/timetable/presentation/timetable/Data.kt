@@ -8,7 +8,7 @@ import platform.SerializableModel
 import platform.SerializeModel
 
 sealed class Action {
-    class UpdateData(val subscription: SubscriptionModel) : Action()
+    class UpdateData(val subscription: SubscriptionModel?) : Action()
 
     internal class ShowTimetable(
         val universityInfoModel: UniversityInfoModel?,
