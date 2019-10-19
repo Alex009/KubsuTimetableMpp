@@ -11,8 +11,9 @@ import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_subscription.view.*
 
 class SubscriptionAdapter(
-    private val subscriptionWasSelected: (subscription: SubscriptionModel) -> Unit,
-    private val changeSubscriptionStatus: (subscription: SubscriptionModel) -> Unit
+    private val onClick: (SubscriptionModel) -> Unit,
+    private val onLongClick: (SubscriptionModel) -> Unit,
+    private val changeSubscriptionStatus: (SubscriptionModel) -> Unit
 ) : RecyclerView.Adapter<SubscriptionAdapter.SubscriptionViewHolder>() {
     private var subscriptionList = emptyList<SubscriptionModel>()
 
@@ -36,7 +37,8 @@ class SubscriptionAdapter(
             containerView = LayoutInflater
                 .from(parent.context)
                 .inflate(R.layout.item_subscription, parent, false),
-            subscriptionWasSelected = subscriptionWasSelected,
+            onClick = onClick,
+            onLongClick = onLongClick,
             changeSubscriptionStatus = changeSubscriptionStatus
         )
 
@@ -45,13 +47,18 @@ class SubscriptionAdapter(
 
     class SubscriptionViewHolder(
         override val containerView: View,
-        private val subscriptionWasSelected: (subscription: SubscriptionModel) -> Unit,
-        private val changeSubscriptionStatus: (subscription: SubscriptionModel) -> Unit
+        private val onClick: (SubscriptionModel) -> Unit,
+        private val onLongClick: (SubscriptionModel) -> Unit,
+        private val changeSubscriptionStatus: (SubscriptionModel) -> Unit
     ) : RecyclerView.ViewHolder(containerView),
         LayoutContainer {
         fun bind(subscription: SubscriptionModel) = with(containerView) {
             text_view.text = subscription.title
-            text_view.setOnClickListener { subscriptionWasSelected(subscription) }
+            text_view.setOnClickListener { onClick(subscription) }
+            text_view.setOnLongClickListener {
+                onLongClick(subscription)
+                true
+            }
 
             image_button.setImageResource(
                 if (subscription.isMain)

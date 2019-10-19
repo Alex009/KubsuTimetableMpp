@@ -13,6 +13,10 @@ sealed class Action {
         val subscription: SubscriptionModel
     ) : Action()
 
+    class DeleteSubscription(
+        val subscription: SubscriptionModel
+    ) : Action()
+
     class ChangeSubscriptionStatus(
         val subscription: SubscriptionModel
     ) : Action()
@@ -22,6 +26,10 @@ sealed class Action {
     ) : Action()
 
     internal class SubscriptionWasUpdated(
+        val subscription: SubscriptionModel
+    ) : Action()
+
+    internal class SubscriptionWasDeleted(
         val subscription: SubscriptionModel
     ) : Action()
 
@@ -43,6 +51,10 @@ data class State(
 sealed class SideEffect {
     object LoadSubscriptionList : SideEffect()
     class UpdateSubscription(
+        val subscription: SubscriptionModel
+    ) : SideEffect()
+
+    class DeleteSubscription(
         val subscription: SubscriptionModel
     ) : SideEffect()
 

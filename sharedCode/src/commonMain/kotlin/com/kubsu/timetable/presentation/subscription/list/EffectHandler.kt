@@ -43,6 +43,17 @@ class SubscriptionListEffectHandler(
                         }
                     )
 
+            is SideEffect.DeleteSubscription ->
+                subscriptionInteractor
+                    .deleteById(sideEffect.subscription.id)
+                    .fold(
+                        ifLeft = { emit(Action.ShowDataFailure(listOf(it))) },
+                        ifRight = {
+                            displayedSubscriptionStorage.deleteIfEqual(sideEffect.subscription)
+                            emit(Action.SubscriptionWasDeleted(sideEffect.subscription))
+                        }
+                    )
+
             is SideEffect.DisplayedSubscription ->
                 displayedSubscriptionStorage.set(sideEffect.subscription)
         }.checkWhenAllHandled()

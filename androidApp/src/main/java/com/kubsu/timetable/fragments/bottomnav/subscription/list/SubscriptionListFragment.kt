@@ -35,8 +35,23 @@ class SubscriptionListFragment(
         super.onViewCreated(view, savedInstanceState)
 
         val subscriptionAdapter = SubscriptionAdapter(
-            subscriptionWasSelected = {
+            onClick = {
                 connector bindAction Action.SubscriptionWasSelected(it)
+            },
+            onLongClick = { subscription ->
+                sheetMenu(
+                    context = view.context,
+                    menu = R.menu.subscription_management_menu,
+                    showIcons = true,
+                    onClick = { action ->
+                        when (action.id) {
+                            R.id.item_menu_delete ->
+                                connector bindAction Action.DeleteSubscription(subscription)
+                            else ->
+                                Unit
+                        }
+                    }
+                )
             },
             changeSubscriptionStatus = {
                 connector bindAction Action.ChangeSubscriptionStatus(it)

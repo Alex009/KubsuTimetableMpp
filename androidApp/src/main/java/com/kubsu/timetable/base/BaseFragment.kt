@@ -122,7 +122,6 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Logger {
 
     protected fun sheetMenu(
         context: Context,
-        markAsUsed: () -> Unit,
         titleId: Int = 0,
         title: String? = "",
         menu: Int = 0,
@@ -135,7 +134,6 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Logger {
             menu = menu,
             title = title ?: getString(titleId),
             onClick = onClick,
-            onCancel = markAsUsed,
             showIcons = showIcons
         ).also {
             sheetMenu = it

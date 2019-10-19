@@ -8,12 +8,12 @@ class DisplayedSubscriptionStorageImpl(
     settingsFactory: Settings.Factory
 ) : DisplayedSubscriptionStorage,
     BaseStorage(settingsFactory.create("displayed_subscription")) {
-    override fun set(subscription: SubscriptionModel) {
-        set(idPropName, subscription.id)
-        set(titlePropName, subscription.title)
-        set(userIdPropName, subscription.userId)
-        set(subgroupIdPropName, subscription.subgroupId)
-        set(isMainPropName, subscription.isMain)
+    override fun set(subscription: SubscriptionModel?) {
+        set(idPropName, subscription?.id)
+        set(titlePropName, subscription?.title)
+        set(userIdPropName, subscription?.userId)
+        set(subgroupIdPropName, subscription?.subgroupId)
+        set(isMainPropName, subscription?.isMain)
     }
 
     override fun get(): SubscriptionModel? {
@@ -30,6 +30,11 @@ class DisplayedSubscriptionStorageImpl(
             SubscriptionModel(id, title, userId, subgroupId, isMain)
         else
             null
+    }
+
+    override fun deleteIfEqual(subscription: SubscriptionModel) {
+        if (subscription.id == getInt(idPropName))
+            set(null)
     }
 
     private companion object {

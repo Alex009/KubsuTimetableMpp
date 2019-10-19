@@ -11,8 +11,17 @@ fun <T> List<T>.update(t: T, getId: (T) -> Int): List<T> {
     val id = getId(t)
     for (elem in this)
         result.add(
-            if (id == getId(elem)) t else elem
+            if (id != getId(elem)) elem else t
         )
+    return result
+}
+
+fun <T> List<T>.delete(t: T, getId: (T) -> Int): List<T> {
+    val result = ArrayList<T>()
+    val id = getId(t)
+    for (elem in this)
+        if (id != getId(elem))
+            result.add(elem)
     return result
 }
 

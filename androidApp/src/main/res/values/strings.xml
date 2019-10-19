@@ -65,4 +65,5 @@
     <string name="subscription_already_exists">Subscription already exists</string>
     <string name="subscription_title">Subscription title</string>
     <string name="notifications">Notifications</string>
+    <string name="delete_subscription">Delete subscription</string>
 </resources>
