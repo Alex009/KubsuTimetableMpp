@@ -125,8 +125,6 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:text="@string/create_subscription"
-        android:textColor="@color/colorOnPrimary"
-        app:strokeColor="@color/colorOnPrimary"
         app:strokeWidth="1dp" />
 
     <Space

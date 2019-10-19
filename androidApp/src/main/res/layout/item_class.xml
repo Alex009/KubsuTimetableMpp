@@ -6,7 +6,7 @@
     android:baselineAligned="false"
     android:paddingStart="10dp"
     android:paddingEnd="10dp"
-    android:paddingBottom="10dp">
+    android:paddingTop="10dp">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
