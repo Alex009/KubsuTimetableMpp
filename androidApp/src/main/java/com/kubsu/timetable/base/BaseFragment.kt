@@ -179,7 +179,7 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Logger {
     ) {
         hideDisplayedMessage()
         val alertDialog =
-            MaterialAlertDialogBuilder(context, R.style.DayNight_Dialog_Alert).also { alert ->
+            MaterialAlertDialogBuilder(context).also { alert ->
                 alert.setMessage(message)
                 title?.let(alert::setTitle)
 

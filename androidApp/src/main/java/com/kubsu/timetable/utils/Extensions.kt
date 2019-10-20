@@ -4,11 +4,13 @@ import android.content.Context
 import android.view.View
 import android.widget.Spinner
 import android.widget.TextView
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.kubsu.timetable.R
+import androidx.core.content.ContextCompat
 
 inline fun <reified T> nameOf(): String =
     T::class.java.name
+
+fun Context.getCompatColor(resId: Int) =
+    ContextCompat.getColor(this, resId)
 
 fun View.visibility(visibility: Visibility) = setVisibility(visibility.value)
 
@@ -31,31 +33,3 @@ fun Spinner.showErrorMessage(messageRes: Int) {
     requestFocusFromTouch()
     performClick()
 }
-
-fun Context.showMaterialAlert(
-    markAsUsed: () -> Unit,
-    message: String,
-    title: String? = null,
-    positiveButtonText: Int = android.R.string.ok,
-    negativeButtonText: Int = android.R.string.cancel,
-    onOkButtonClick: (() -> Unit)?,
-    onNoButtonClick: (() -> Unit)? = null
-) = MaterialAlertDialogBuilder(this, R.style.DayNight_Dialog_Alert).also { alert ->
-    alert.setMessage(message)
-    title?.let(alert::setTitle)
-
-    onOkButtonClick?.let {
-        alert.setPositiveButton(positiveButtonText) { _, _ ->
-            markAsUsed()
-            it.invoke()
-        }
-    }
-    onNoButtonClick?.let {
-        alert.setNegativeButton(negativeButtonText) { _, _ ->
-            markAsUsed()
-            it.invoke()
-        }
-    }
-
-    alert.setCancelable(false)
-}.show()

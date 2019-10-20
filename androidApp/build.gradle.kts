@@ -114,7 +114,7 @@ dependencies {
     implementation(Libs.kotlinx_coroutines_android)
 
     // Klock
-    implementation("com.soywiz.korlibs.klock:klock-jvm:${Versions.klock}")
+    implementation(Libs.klock_jvm)
 
     // Test
     testImplementation(Libs.junit_jupiter_api)

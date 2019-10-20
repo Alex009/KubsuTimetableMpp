@@ -7,7 +7,7 @@ import com.kubsu.timetable.presentation.timetable.model.TimetableInfoToDisplay
 import com.kubsu.timetable.presentation.timetable.model.TypeOfClassModel
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_class.*
-import kotlinx.android.synthetic.main.item_woriking_day.*
+import kotlinx.android.synthetic.main.item_working_day.*
 
 sealed class TimetableViewHolder(
     override val containerView: View

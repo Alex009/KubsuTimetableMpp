@@ -17,6 +17,7 @@ import com.crashlytics.android.Crashlytics
 import com.kubsu.timetable.R
 import com.kubsu.timetable.utils.Logger
 import com.kubsu.timetable.utils.MaterialActionDialogCreator
+import com.kubsu.timetable.utils.getCompatColor
 import com.kubsu.timetable.utils.logics.DarkThemeStatus
 import com.kubsu.timetable.utils.logics.Keyboard
 import com.kubsu.timetable.utils.logics.PermissionProvider
@@ -49,6 +50,7 @@ class AppActivity : AppCompatActivity(), NavHost, Logger {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         DarkThemeStatus.applyPreviousTheme(applicationContext)
+        DarkThemeStatus.applyNewTheme(this, true)
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -66,29 +68,10 @@ class AppActivity : AppCompatActivity(), NavHost, Logger {
             )
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            window?.let { window ->
-                val transparent = ContextCompat.getColor(this, android.R.color.transparent)
-                window.navigationBarColor = transparent
-                window.statusBarColor = transparent
-
-                when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
-                    // Night mode is not active, we're using the light theme.
-                    Configuration.UI_MODE_NIGHT_NO ->
-                        // For 23 api and higher, the status bar will be light with dark content.
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            window.decorView.systemUiVisibility =
-                                View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                        } else {
-                            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-                            window.statusBarColor =
-                                ContextCompat.getColor(this, android.R.color.black)
-                        }
-
-                    // Night mode is active, we're using dark theme.
-                    Configuration.UI_MODE_NIGHT_YES -> Unit
-                }
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.statusBarColor = getCompatColor(R.color.colorPrimaryVariant)
+            window.navigationBarColor = getCompatColor(android.R.color.transparent)
+        }
 
         if (!PermissionProvider.hasAllPermissions(this))
             PermissionProvider.checkPermissions(this)

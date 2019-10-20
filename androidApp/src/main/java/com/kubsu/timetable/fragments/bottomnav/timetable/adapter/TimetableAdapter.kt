@@ -36,7 +36,7 @@ class TimetableAdapter : RecyclerView.Adapter<TimetableViewHolder>() {
 
             workingDayViewHolderId ->
                 TimetableViewHolder.WorkingDay(
-                    inflater.inflate(R.layout.item_woriking_day, parent, false)
+                    inflater.inflate(R.layout.item_working_day, parent, false)
                 )
 
             else ->
