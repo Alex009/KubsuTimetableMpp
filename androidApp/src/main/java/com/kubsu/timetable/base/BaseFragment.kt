@@ -22,9 +22,6 @@ import ru.whalemare.sheetmenu.SheetMenu
 abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Logger {
     open fun navigateUp(): Boolean = safeNavigateUp()
 
-    val appActivity: AppActivity?
-        get() = activity as? AppActivity
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         view?.systemUiVisibility =

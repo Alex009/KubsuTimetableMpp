@@ -2,14 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/subscriptionListFragment"
-        android:icon="@drawable/ic_bookmark_border_black_24dp"
-        android:title="@string/subscription_list" />
+        android:icon="@drawable/ic_bookmark_border_24dp"
+        android:title="@string/subscriptions" />
     <item
         android:id="@+id/timetableFragment"
-        android:icon="@drawable/ic_view_week_black_24dp"
+        android:icon="@drawable/ic_view_week_24dp"
         android:title="@string/timetable" />
     <item
         android:id="@+id/settingsFragment"
-        android:icon="@drawable/ic_account_circle_black_24dp"
+        android:icon="@drawable/ic_account_circle_24dp"
         android:title="@string/settings" />
 </menu>

@@ -3,16 +3,12 @@ package com.kubsu.timetable.base
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
-import android.view.View
-import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavHost
-import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import com.crashlytics.android.Crashlytics
 import com.kubsu.timetable.R
 import com.kubsu.timetable.utils.Logger
@@ -29,8 +25,7 @@ import com.thelittlefireman.appkillermanager.models.KillerManagerActionType
 import kotlinx.android.synthetic.main.activity_main.*
 
 class AppActivity : AppCompatActivity(), NavHost, Logger {
-    override fun getNavController(): NavController =
-        Navigation.findNavController(this, R.id.nav_host_fragment)
+    override fun getNavController(): NavController = findNavController(R.id.nav_host_fragment)
 
     private val alertCreator: MaterialActionDialogCreator?
 
@@ -50,7 +45,6 @@ class AppActivity : AppCompatActivity(), NavHost, Logger {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         DarkThemeStatus.applyPreviousTheme(applicationContext)
-        DarkThemeStatus.applyNewTheme(this, true)
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -145,8 +139,9 @@ class AppActivity : AppCompatActivity(), NavHost, Logger {
             closeApp()
     }
 
-    fun closeApp() {
+    fun closeApp(): Boolean {
         moveTaskToBack(true)
         finish()
+        return true
     }
 }

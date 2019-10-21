@@ -7,4 +7,4 @@
     android:layout_height="wrap_content"
     android:layout_gravity="bottom|end"
     android:layout_margin="32dp"
-    app:srcCompat="@drawable/ic_add_circle_black_24dp" />
+    app:srcCompat="@drawable/ic_add_24dp" />

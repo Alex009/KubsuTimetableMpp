@@ -8,7 +8,12 @@ val registrationUpdater: Updater<State, Action, Subscription, SideEffect> = { st
         is Action.Registration ->
             UpdateResponse(
                 state = state.copy(progress = true),
-                sideEffects = setOf(SideEffect.Registration(action.email, action.password))
+                sideEffects = setOf(
+                    SideEffect.Registration(
+                        email = action.email,
+                        password = action.password
+                    )
+                )
             )
 
         Action.ShowResult ->

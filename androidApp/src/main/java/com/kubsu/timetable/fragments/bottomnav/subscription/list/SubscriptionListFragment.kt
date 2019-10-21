@@ -7,6 +7,7 @@ import com.egroden.teaco.TeaFeature
 import com.egroden.teaco.androidConnectors
 import com.egroden.teaco.bindAction
 import com.egroden.teaco.connect
+import com.kubsu.timetable.BottomNavGraphDirections
 import com.kubsu.timetable.R
 import com.kubsu.timetable.base.BaseFragment
 import com.kubsu.timetable.fragments.bottomnav.BottomNavFragmentDirections
@@ -101,10 +102,9 @@ class SubscriptionListFragment(
                         .actionBottomNavFragmentToCreateSubscriptionFragment()
                 )
 
-            Screen.ShowTimetable ->
+            is Screen.ShowTimetable ->
                 safeNavigate(
-                    SubscriptionListFragmentDirections
-                        .actionSubscriptionListFragmentToTimetableFragment()
+                    BottomNavGraphDirections.actionGlobalTimetableFragment(screen.subscription)
                 )
         }
 }

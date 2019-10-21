@@ -33,25 +33,27 @@ sealed class SignInFail : DomainFailure() {
     object RequiredPassword : SignInFail()
 }
 
-sealed class RegistrationFail : DomainFailure() {
-    sealed class Email : RegistrationFail() {
+sealed class UserInfoFail : DomainFailure() {
+    sealed class FirstName : UserInfoFail() {
+        object TooLong : FirstName()
+    }
+
+    sealed class LastName : UserInfoFail() {
+        object TooLong : LastName()
+    }
+
+    sealed class Email : UserInfoFail() {
         object Invalid : Email()
         object NotUnique : Email()
         object Required : Email()
     }
 
-    sealed class Password : RegistrationFail() {
+    sealed class Password : UserInfoFail() {
         object TooShort : Password()
         object TooCommon : Password()
         object EntirelyNumeric : Password()
         object Required : Password()
     }
-}
-
-sealed class UserUpdateFail : DomainFailure() {
-    object TooLongFirstName : UserUpdateFail()
-    object TooLongLastName : UserUpdateFail()
-    class Info(val fail: RegistrationFail) : UserUpdateFail()
 }
 
 sealed class SubscriptionFail : DomainFailure() {

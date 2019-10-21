@@ -81,6 +81,7 @@ dependencies {
     implementation(Libs.swiperefreshlayout)
     implementation(Libs.material)
     implementation(Libs.fragment_ktx)
+    implementation("androidx.preference:preference-ktx:1.1.0")
 
     // Firebase
     implementation(Libs.firebase_core)

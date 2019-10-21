@@ -25,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
                 app:layout_scrollFlags="scroll|snap"
-                app:title="@string/subscription_list" />
+                app:title="@string/subscriptions" />
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 

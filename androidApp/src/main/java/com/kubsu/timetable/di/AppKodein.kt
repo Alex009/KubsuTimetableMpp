@@ -8,6 +8,8 @@ import androidx.fragment.app.FragmentFactory
 import com.kubsu.timetable.base.App
 import com.kubsu.timetable.base.AppActivity
 import com.kubsu.timetable.di.modules.view.*
+import com.kubsu.timetable.fragments.bottomnav.BottomNavFragment
+import com.kubsu.timetable.fragments.bottomnav.settings.SettingsFragment
 import com.kubsu.timetable.fragments.bottomnav.subscription.list.SubscriptionListFragment
 import com.kubsu.timetable.fragments.bottomnav.timetable.TimetableFragment
 import com.kubsu.timetable.fragments.registration.RegistrationFragment
@@ -26,6 +28,8 @@ fun appKodein(app: App) = Kodein {
     importAll(
         splashViewModule,
         signInViewModule,
+        bottomNavViewModule,
+        settingsViewModule,
         registrationViewModule,
         createSubscriptionViewModule,
         subscriptionListViewModule,
@@ -59,6 +63,10 @@ fun appKodein(app: App) = Kodein {
                         instance<SignInFragment>()
                     nameOf<RegistrationFragment>() ->
                         instance<RegistrationFragment>()
+                    nameOf<BottomNavFragment>() ->
+                        instance<BottomNavFragment>()
+                    nameOf<SettingsFragment>() ->
+                        instance<SettingsFragment>()
                     nameOf<CreateSubscriptionFragment>() ->
                         instance<CreateSubscriptionFragment>()
                     nameOf<SubscriptionListFragment>() ->

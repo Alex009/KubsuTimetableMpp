@@ -2,6 +2,7 @@ package com.kubsu.timetable.fragments.bottomnav.timetable
 
 import android.os.Bundle
 import android.view.View
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.egroden.teaco.TeaFeature
 import com.egroden.teaco.androidConnectors
@@ -9,7 +10,6 @@ import com.egroden.teaco.bindAction
 import com.egroden.teaco.connect
 import com.kubsu.timetable.R
 import com.kubsu.timetable.base.BaseFragment
-import com.kubsu.timetable.data.storage.displayed.subscription.DisplayedSubscriptionStorage
 import com.kubsu.timetable.fragments.bottomnav.timetable.adapter.TimetableAdapter
 import com.kubsu.timetable.presentation.timetable.*
 import com.kubsu.timetable.presentation.timetable.model.TimetableInfoToDisplay
@@ -19,11 +19,11 @@ import kotlinx.android.synthetic.main.progress_bar.view.*
 import kotlinx.android.synthetic.main.timetable_fragment.view.*
 
 class TimetableFragment(
-    teaFeature: TeaFeature<Action, SideEffect, State, Subscription>,
-    displayedSubscriptionStorage: DisplayedSubscriptionStorage
+    teaFeature: TeaFeature<Action, SideEffect, State, Subscription>
 ) : BaseFragment(R.layout.timetable_fragment) {
+    private val args: TimetableFragmentArgs by navArgs()
     private val connector by androidConnectors(teaFeature) {
-        bindAction(Action.UpdateData(displayedSubscriptionStorage.get()))
+        bindAction(Action.UpdateData(args.subscription))
     }
 
     private val titleEffect = UiEffect("")

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory>
+        <SwitchPreferenceCompat
+            android:icon="@drawable/ic_palette_24dp"
+            android:key="dark_theme"
+            android:title="@string/dark_theme" />
+    </PreferenceCategory>
+
+    <PreferenceCategory>
+        <Preference
+            android:icon="@drawable/ic_exit_to_app_24dp"
+            android:key="logout"
+            android:title="@string/logout" />
+    </PreferenceCategory>
+</PreferenceScreen>

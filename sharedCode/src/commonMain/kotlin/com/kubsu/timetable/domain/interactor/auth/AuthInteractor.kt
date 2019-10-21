@@ -11,7 +11,7 @@ interface AuthInteractor {
     suspend fun registrationUser(
         email: String,
         password: String
-    ): Either<RequestFailure<List<RegistrationFail>>, Unit>
+    ): Either<RequestFailure<List<UserInfoFail>>, Unit>
 
     suspend fun isUserAuthenticated(): Boolean
 

@@ -11,6 +11,7 @@ internal val commonKodein = Kodein.Module("common_module") {
     // presentation
     importAll(
         splashPresentationModule,
+        settingsPresentationModule,
         signInPresentationModule,
         registrationPresentationModule,
         createSubscriptionPresentationModule,

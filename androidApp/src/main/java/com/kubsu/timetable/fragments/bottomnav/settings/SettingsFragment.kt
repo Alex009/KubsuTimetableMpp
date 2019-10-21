@@ -1,6 +1,63 @@
 package com.kubsu.timetable.fragments.bottomnav.settings
 
+import android.os.Bundle
+import android.view.View
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreferenceCompat
+import com.egroden.teaco.TeaFeature
+import com.egroden.teaco.androidConnectors
+import com.egroden.teaco.bindAction
+import com.egroden.teaco.connect
 import com.kubsu.timetable.R
-import com.kubsu.timetable.base.BaseFragment
+import com.kubsu.timetable.fragments.bottomnav.BottomNavFragmentDirections
+import com.kubsu.timetable.presentation.settings.*
+import com.kubsu.timetable.utils.logics.DarkThemeStatus
+import com.kubsu.timetable.utils.safeNavigate
 
-class SettingsFragment : BaseFragment(R.layout.settings_fragment)
+class SettingsFragment(
+    teaFeature: TeaFeature<Action, SideEffect, State, Subscription>
+) : PreferenceFragmentCompat() {
+    private val connector by androidConnectors(teaFeature)
+
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        setPreferencesFromResource(R.xml.settings, rootKey)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        connector.connect(::render, ::render, lifecycle)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        findPreference<SwitchPreferenceCompat>("dark_theme")?.apply {
+            setDefaultValue(DarkThemeStatus.getCacheStatus(view.context))
+            setOnPreferenceClickListener {
+                DarkThemeStatus.applyNewTheme(view.context, isChecked)
+                true
+            }
+        }
+        findPreference<Preference>("logout")?.apply {
+            setOnPreferenceClickListener {
+                connector bindAction Action.Logout
+                true
+            }
+        }
+    }
+
+    private fun render(state: State) = Unit
+
+    private fun render(subscription: Subscription) =
+        when (subscription) {
+            is Subscription.Navigate -> navigate(subscription.screen)
+        }
+
+    private fun navigate(screen: Screen) =
+        safeNavigate(
+            when (screen) {
+                Screen.SignIn ->
+                    BottomNavFragmentDirections.actionBottomNavFragmentToSignInFragment()
+            }
+        )
+}

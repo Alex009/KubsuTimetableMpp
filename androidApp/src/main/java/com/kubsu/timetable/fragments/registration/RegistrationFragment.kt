@@ -7,7 +7,7 @@ import com.egroden.teaco.androidConnectors
 import com.egroden.teaco.bindAction
 import com.egroden.teaco.connect
 import com.kubsu.timetable.R
-import com.kubsu.timetable.RegistrationFail
+import com.kubsu.timetable.UserInfoFail
 import com.kubsu.timetable.base.BaseFragment
 import com.kubsu.timetable.presentation.registration.*
 import com.kubsu.timetable.utils.*
@@ -65,29 +65,30 @@ class RegistrationFragment(
                 subscription.failureList.forEach(::notifyUserOfFailure)
         }
 
-    private fun navigation(screen: Screen) {
+    private fun navigation(screen: Screen) =
         safeNavigate(
             when (screen) {
                 Screen.SignIn ->
                     RegistrationFragmentDirections.actionRegistrationFragmentToSignInFragment()
             }
         )
-    }
 
-    private fun handleRegistrationFail(fail: RegistrationFail) =
+    private fun handleRegistrationFail(fail: UserInfoFail) =
         when (fail) {
-            is RegistrationFail.Email ->
+            is UserInfoFail.Email ->
                 emailErrorEffect.value = when (fail) {
-                    RegistrationFail.Email.Invalid -> R.string.invalid_email
-                    RegistrationFail.Email.NotUnique -> R.string.non_unique_email
-                    RegistrationFail.Email.Required -> R.string.required
+                    UserInfoFail.Email.Invalid -> R.string.invalid_email
+                    UserInfoFail.Email.NotUnique -> R.string.non_unique_email
+                    UserInfoFail.Email.Required -> R.string.required
                 }
-            is RegistrationFail.Password ->
+            is UserInfoFail.Password ->
                 passwordErrorEffect.value = when (fail) {
-                    RegistrationFail.Password.TooCommon -> R.string.password_is_too_common
-                    RegistrationFail.Password.EntirelyNumeric -> R.string.password_entirely_numeric
-                    RegistrationFail.Password.TooShort -> R.string.password_is_too_short
-                    RegistrationFail.Password.Required -> R.string.required
+                    UserInfoFail.Password.TooCommon -> R.string.password_is_too_common
+                    UserInfoFail.Password.EntirelyNumeric -> R.string.password_entirely_numeric
+                    UserInfoFail.Password.TooShort -> R.string.password_is_too_short
+                    UserInfoFail.Password.Required -> R.string.required
                 }
+            is UserInfoFail.FirstName -> Unit
+            is UserInfoFail.LastName -> Unit
         }
 }

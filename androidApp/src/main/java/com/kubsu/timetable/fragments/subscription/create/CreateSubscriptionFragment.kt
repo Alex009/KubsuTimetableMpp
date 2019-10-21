@@ -174,7 +174,7 @@ class CreateSubscriptionFragment(
                 chooseSubgroupEffect.value = Unit
         }
 
-    private fun navigation(screen: Screen) {
+    private fun navigation(screen: Screen) =
         safeNavigate(
             when (screen) {
                 Screen.TimetableScreen ->
@@ -182,7 +182,6 @@ class CreateSubscriptionFragment(
                         .actionCreateSubscriptionFragmentToBottomNavFragment()
             }
         )
-    }
 
     private fun handleSubscriptionFail(failure: SubscriptionFail) =
         when (failure) {

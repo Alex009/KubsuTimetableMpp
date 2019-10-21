@@ -54,39 +54,22 @@ class SubscriptionNetworkClientImpl(
         response: ServerFailure.Response
     ): RequestFailure<List<SubscriptionFail>> {
         val incorrectData = json.parse(SubscriptionIncorrectData.serializer(), response.body)
-        return handleCreateFail(
-            responseCode = response.code,
-            responseBody = response.body,
-            titleFailList = incorrectData.title,
-            subgroupFailList = incorrectData.subgroup,
-            nonFieldFailList = incorrectData.nonFieldFailures
-        )
-    }
-
-    private fun handleCreateFail(
-        responseCode: Int,
-        responseBody: String,
-        titleFailList: List<String>,
-        subgroupFailList: List<String>,
-        nonFieldFailList: List<String>
-    ): RequestFailure<List<SubscriptionFail>> {
-        val failList = titleFailList.map {
+        val failList = incorrectData.title.map {
             when (it) {
                 "max_length" -> SubscriptionFail.TooLongTitle
                 "required" -> SubscriptionFail.RequiredTitle
-                else -> DataFailure.UnknownResponse(responseCode, responseBody)
+                else -> DataFailure.UnknownResponse(response.code, response.body)
             }
         }.plus(
-            subgroupFailList.map { DataFailure.UnknownResponse(responseCode, responseBody) }
+            incorrectData.subgroup.map { DataFailure.UnknownResponse(response.code, response.body) }
         ).plus(
-            nonFieldFailList.map {
+            incorrectData.nonFieldFailures.map {
                 when (it) {
                     "unique" -> SubscriptionFail.SubscriptionAlreadyExists
-                    else -> DataFailure.UnknownResponse(responseCode, responseBody)
+                    else -> DataFailure.UnknownResponse(response.code, response.body)
                 }
             }
         )
-
         return RequestFailure(
             domain = failList.filterIsInstance<SubscriptionFail>(),
             data = failList.filterIsInstance<DataFailure>()

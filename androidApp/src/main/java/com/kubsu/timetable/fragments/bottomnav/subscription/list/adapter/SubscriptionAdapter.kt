@@ -62,9 +62,9 @@ class SubscriptionAdapter(
 
             image_button.setImageResource(
                 if (subscription.isMain)
-                    R.drawable.ic_notifications_active_black_24dp
+                    R.drawable.ic_notifications_active_24dp
                 else
-                    R.drawable.ic_notifications_off_black_24dp
+                    R.drawable.ic_notifications_off_24dp
             )
             image_button.setOnClickListener {
                 changeSubscriptionStatus(subscription)

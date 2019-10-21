@@ -1,33 +1,37 @@
 package com.kubsu.timetable.utils
 
+import androidx.fragment.app.Fragment
 import androidx.navigation.NavDirections
-import androidx.navigation.Navigation
+import androidx.navigation.Navigation.findNavController
+import androidx.navigation.findNavController
+import com.egroden.teaco.identity
 import com.kubsu.timetable.R
-import com.kubsu.timetable.base.BaseFragment
+import com.kubsu.timetable.base.AppActivity
 
-fun BaseFragment.safeNavigateUp(): Boolean {
+fun Fragment.safeNavigateUp(): Boolean {
     if (isStateSaved) return false
-    val activity = appActivity ?: return false
-    return try {
-        Navigation
-            .findNavController(activity, R.id.nav_host_fragment)
-            .navigateUp()
-    } catch (e: Exception) {
-        Navigation
-            .findNavController(activity, R.id.bottom_nav_host_fragment)
-            .navigateUp()
-    }
+    return (activity as? AppActivity)?.run {
+        try {
+            popBackStackOrClose(R.id.nav_host_fragment)
+        } catch (e: Exception) {
+            popBackStackOrClose(R.id.bottom_nav_host_fragment)
+        }
+    } ?: false
 }
 
-fun BaseFragment.safeNavigate(navDirections: NavDirections): Unit {
-    val activity = appActivity ?: return
+private fun AppActivity.popBackStackOrClose(viewId: Int): Boolean =
+    findNavController(viewId)
+        .popBackStack()
+        .takeIf(::identity)
+        ?: closeApp()
+
+fun Fragment.safeNavigate(navDirections: NavDirections) {
+    val activity = activity ?: return
     return try {
-        Navigation
-            .findNavController(activity, R.id.nav_host_fragment)
+        findNavController(activity, R.id.nav_host_fragment)
             .navigate(navDirections)
     } catch (e: Exception) {
-        Navigation
-            .findNavController(activity, R.id.bottom_nav_host_fragment)
+        findNavController(activity, R.id.bottom_nav_host_fragment)
             .navigate(navDirections)
     }
 }

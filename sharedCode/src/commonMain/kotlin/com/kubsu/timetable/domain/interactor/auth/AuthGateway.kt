@@ -12,7 +12,7 @@ interface AuthGateway {
     suspend fun registrationUser(
         email: String,
         password: String
-    ): Either<RequestFailure<List<RegistrationFail>>, Unit>
+    ): Either<RequestFailure<List<UserInfoFail>>, Unit>
 
     suspend fun logout(user: UserEntity): Either<DataFailure, Unit>
 }

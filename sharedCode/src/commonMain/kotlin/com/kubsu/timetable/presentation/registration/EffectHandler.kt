@@ -13,7 +13,10 @@ class RegistrationEffectHandler(
         when (sideEffect) {
             is SideEffect.Registration ->
                 authInteractor
-                    .registrationUser(sideEffect.email, sideEffect.password)
+                    .registrationUser(
+                        email = sideEffect.email,
+                        password = sideEffect.password
+                    )
                     .fold(
                         ifLeft = { requestFailure ->
                             requestFailure.handle(

@@ -27,7 +27,7 @@ class SplashFragment(
             is Subscription.Navigate -> navigation(subscription.screen)
         }
 
-    private fun navigation(screen: Screen) {
+    private fun navigation(screen: Screen) =
         safeNavigate(
             when (screen) {
                 Screen.SignInScreen ->
@@ -36,5 +36,4 @@ class SplashFragment(
                     SplashFragmentDirections.actionSplashFragmentToBottomNavFragment()
             }
         )
-    }
 }

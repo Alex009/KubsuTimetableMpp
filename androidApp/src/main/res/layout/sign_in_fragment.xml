@@ -8,12 +8,6 @@
     android:orientation="vertical"
     tools:context=".fragments.signin.SignInFragment">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="?attr/actionBarSize" />
-
     <include layout="@layout/progress_bar" />
 
     <Space
@@ -68,18 +62,18 @@
         app:strokeWidth="1dp" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/registration_button"
+        android:id="@+id/create_account_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="32dp"
-        android:text="@string/registration"
+        android:text="@string/create_account"
         app:strokeWidth="1dp" />
 
     <Space
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="5" />
+        android:layout_weight="2" />
 
 </LinearLayout>

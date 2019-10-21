@@ -38,16 +38,14 @@ class AuthGatewayImpl(
     override suspend fun registrationUser(
         email: String,
         password: String
-    ): Either<RequestFailure<List<RegistrationFail>>, Unit> =
+    ): Either<RequestFailure<List<UserInfoFail>>, Unit> =
         networkClient.registration(email, password)
 
-    override suspend fun logout(user: UserEntity): Either<DataFailure, Unit> =
-        networkClient
-            .logout(UserDtoMapper.toNetworkDto(user))
-            .map {
-                userStorage.set(null)
-                clearDatabase()
-            }
+    override suspend fun logout(user: UserEntity): Either<DataFailure, Unit> {
+        userStorage.set(null)
+        clearDatabase()
+        return networkClient.logout(UserDtoMapper.toNetworkDto(user))
+    }
 
     private fun clearDatabase() {
         classQueries.deleteAll()

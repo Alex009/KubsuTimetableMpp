@@ -1,16 +1,19 @@
 package com.kubsu.timetable.presentation.registration
 
 import com.kubsu.timetable.DataFailure
-import com.kubsu.timetable.RegistrationFail
+import com.kubsu.timetable.UserInfoFail
 import platform.SerializableModel
 import platform.SerializeModel
 
 sealed class Action {
-    class Registration(val email: String, val password: String) : Action()
+    class Registration(
+        val email: String,
+        val password: String
+    ) : Action()
 
     internal object ShowResult : Action()
     internal class ShowRegistrationFailure(
-        val failureList: List<RegistrationFail>
+        val failureList: List<UserInfoFail>
     ) : Action()
 
     internal class ShowDataFailure(
@@ -24,13 +27,16 @@ data class State(
 ) : SerializableModel
 
 sealed class SideEffect {
-    data class Registration(val email: String, val password: String) : SideEffect()
+    data class Registration(
+        val email: String,
+        val password: String
+    ) : SideEffect()
 }
 
 sealed class Subscription {
     class Navigate(val screen: Screen) : Subscription()
 
-    class ShowRegistrationFailure(val failureList: List<RegistrationFail>) : Subscription()
+    class ShowRegistrationFailure(val failureList: List<UserInfoFail>) : Subscription()
     class ShowDataFailure(val failureList: List<DataFailure>) : Subscription()
 }
 

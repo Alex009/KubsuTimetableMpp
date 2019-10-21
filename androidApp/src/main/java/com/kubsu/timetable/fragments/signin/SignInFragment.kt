@@ -43,7 +43,7 @@ class SignInFragment(
                 password = view.password_edit_text.text.toString()
             )
         }
-        view.registration_button.setOnClickListener {
+        view.create_account_button.setOnClickListener {
             Keyboard.hide(view)
             connector bindAction Action.Registration
         }
@@ -70,16 +70,15 @@ class SignInFragment(
                 subscription.failureList.forEach(::notifyUserOfFailure)
         }
 
-    private fun navigation(screen: Screen) {
+    private fun navigation(screen: Screen) =
         safeNavigate(
             when (screen) {
                 Screen.Registration ->
                     SignInFragmentDirections.actionSignInFragmentToRegistrationFragment()
                 Screen.Timetable ->
-                    SignInFragmentDirections.actionSignInFragmentToBottomNavFragment(firstStart = true)
+                    SignInFragmentDirections.actionSignInFragmentToBottomNavFragment()
             }
         )
-    }
 
     private fun handleSignInFail(fail: SignInFail) =
         when (fail) {

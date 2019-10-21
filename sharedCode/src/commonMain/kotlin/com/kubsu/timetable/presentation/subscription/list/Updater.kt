@@ -31,7 +31,7 @@ val subscriptionListUpdater: Updater<State, Action, Subscription, SideEffect> = 
         is Action.SubscriptionWasSelected ->
             UpdateResponse(
                 state,
-                subscription = Subscription.Navigate(Screen.ShowTimetable),
+                subscription = Subscription.Navigate(Screen.ShowTimetable(action.subscription)),
                 sideEffects = setOf(SideEffect.DisplayedSubscription(action.subscription))
             )
 

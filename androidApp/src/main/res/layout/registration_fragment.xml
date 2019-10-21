@@ -8,12 +8,6 @@
     android:focusableInTouchMode="true"
     tools:context=".fragments.registration.RegistrationFragment">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="?attr/actionBarSize" />
-
     <include layout="@layout/progress_bar" />
 
     <Space
@@ -33,7 +27,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:layout_marginEnd="32dp"
-            android:autofillHints="email"
             android:ems="10"
             android:hint="@string/email"
             android:inputType="textEmailAddress" />
@@ -51,7 +44,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:layout_marginEnd="32dp"
-            android:autofillHints="password"
             android:ems="10"
             android:hint="@string/password"
             android:inputType="textPassword" />
@@ -70,6 +62,6 @@
     <Space
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="5" />
+        android:layout_weight="2" />
 
 </LinearLayout>

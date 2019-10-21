@@ -13,11 +13,13 @@
         <action
             android:id="@+id/action_splashFragment_to_signInFragment"
             app:destination="@id/signInFragment"
-            app:popUpTo="@id/base_nav_graph"
+            app:popUpTo="@id/splashFragment"
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_splashFragment_to_bottomNavFragment"
-            app:destination="@id/bottomNavFragment" />
+            app:destination="@id/bottomNavFragment"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/signInFragment"
@@ -26,10 +28,20 @@
         tools:layout="@layout/sign_in_fragment">
         <action
             android:id="@+id/action_signInFragment_to_registrationFragment"
-            app:destination="@id/registrationFragment" />
+            app:destination="@id/registrationFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         <action
             android:id="@+id/action_signInFragment_to_bottomNavFragment"
-            app:destination="@id/bottomNavFragment" />
+            app:destination="@id/bottomNavFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@id/signInFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/registrationFragment"
@@ -38,7 +50,11 @@
         tools:layout="@layout/registration_fragment">
         <action
             android:id="@+id/action_registrationFragment_to_signInFragment"
-            app:destination="@id/signInFragment" />
+            app:destination="@id/signInFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
 
     <fragment
@@ -48,11 +64,20 @@
         tools:layout="@layout/bottom_nav_fragment">
         <action
             android:id="@+id/action_bottomNavFragment_to_createSubscriptionFragment"
-            app:destination="@id/createSubscriptionFragment" />
-        <argument
-            android:name="firstStart"
-            android:defaultValue="false"
-            app:argType="boolean" />
+            app:destination="@id/createSubscriptionFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_bottomNavFragment_to_signInFragment"
+            app:destination="@id/signInFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@id/base_nav_graph"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -62,6 +87,12 @@
         tools:layout="@layout/create_subscription_fragment">
         <action
             android:id="@+id/action_createSubscriptionFragment_to_bottomNavFragment"
-            app:destination="@id/bottomNavFragment" />
+            app:destination="@id/bottomNavFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@id/bottomNavFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 </navigation>

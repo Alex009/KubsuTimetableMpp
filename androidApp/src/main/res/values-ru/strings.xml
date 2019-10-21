@@ -55,7 +55,7 @@
     <string name="password_entirely_numeric">"Пароль состоит только из цифр "</string>
     <string name="password_is_too_short">"Cлишком короткий пароль "</string>
     <string name="non_unique_email">Пользователь с такой электронной почтой уже существует</string>
-    <string name="subscription_list">Список подписок</string>
+    <string name="subscriptions">Подписки</string>
     <string name="timetable">Расписание</string>
     <string name="settings">Настройки</string>
     <string name="not_selected">Не выбрано</string>
@@ -65,4 +65,9 @@
     <string name="subscription_title">Наименование подписки</string>
     <string name="notifications">Уведомления</string>
     <string name="delete_subscription">Удалить подписку</string>
+    <string name="logout">Выйти</string>
+    <string name="dark_theme">Тёмная тема</string>
+    <string name="create_account">Создать аккаунт</string>
+    <string name="first_name">Имя</string>
+    <string name="last_name">Фамилия</string>
 </resources>

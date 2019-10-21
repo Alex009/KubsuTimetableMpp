@@ -2,7 +2,7 @@ package com.kubsu.timetable.data.gateway
 
 import com.kubsu.timetable.Either
 import com.kubsu.timetable.RequestFailure
-import com.kubsu.timetable.UserUpdateFail
+import com.kubsu.timetable.UserInfoFail
 import com.kubsu.timetable.data.mapper.UserDtoMapper
 import com.kubsu.timetable.data.network.client.user.UserInfoNetworkClient
 import com.kubsu.timetable.data.storage.user.UserStorage
@@ -21,7 +21,7 @@ class UserInfoGatewayImpl(
 
     override suspend fun updateUserInfo(
         user: UserEntity
-    ): Either<RequestFailure<List<UserUpdateFail>>, Unit> =
+    ): Either<RequestFailure<List<UserInfoFail>>, Unit> =
         networkClient
             .update(UserDtoMapper.toNetworkDto(user))
             .map {
