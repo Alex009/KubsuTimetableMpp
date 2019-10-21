@@ -5,6 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 class UniversityInfoNetworkDto(
+    val id: Int,
+
     @SerialName("faculty_id")
     val facultyId: Int,
 

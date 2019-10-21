@@ -24,10 +24,11 @@ class BottomNavFragment(
         super.onViewCreated(view, savedInstanceState)
         with(view.bottom_navigation_view) {
             setupWithNavController(navController)
-            if (selectedItem.itemId == R.id.timetableFragment)
-                displayedSubscriptionStorage.get()?.let {
-                    navController.navigate(BottomNavGraphDirections.actionGlobalTimetableFragment(it))
-                }
+            if (
+                selectedItem.itemId == R.id.timetableFragment
+                && displayedSubscriptionStorage.get() == null
+            )
+                BottomNavGraphDirections.actionGlobalSubscriptionListFragment()
         }
     }
 }

@@ -1,19 +1,20 @@
 CREATE TABLE universityInfoDb(
-facultyId INTEGER as Int NOT NULL PRIMARY KEY,
+id INTEGER as Int NOT NULL PRIMARY KEY,
+facultyId INTEGER as Int NOT NULL,
 typeOfWeek INTEGER as Int NOT NULL
 );
 
 update:
-INSERT OR REPLACE INTO universityInfoDb(facultyId, typeOfWeek) VALUES ?;
+INSERT OR REPLACE INTO universityInfoDb(id, facultyId, typeOfWeek) VALUES ?;
 
 selectAll:
 SELECT * FROM universityInfoDb;
 
-selectById:
+selectByFacultyId:
 SELECT * FROM universityInfoDb WHERE facultyId = ?;
 
 deleteById:
-DELETE FROM universityInfoDb WHERE facultyId = ?;
+DELETE FROM universityInfoDb WHERE id = ?;
 
 deleteAll:
 DELETE FROM universityInfoDb;

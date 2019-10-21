@@ -71,4 +71,6 @@
     <string name="create_account">Create account</string>
     <string name="first_name">First name</string>
     <string name="last_name">Last name</string>
+    <string name="are_you_sure_you_want_to_logout">Are you sure you want to logout?</string>
+    <string name="are_you_sure_you_want_to_unsubscribe">Are you sure you want to unsubscribe?</string>
 </resources>

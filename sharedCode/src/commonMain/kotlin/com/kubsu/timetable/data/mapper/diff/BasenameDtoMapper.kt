@@ -7,7 +7,7 @@ object BasenameDtoMapper {
     private const val timetableValue = "timetables"
     private const val lecturerValue = "lecturers"
     private const val classValue = "classes"
-    private const val universityInfoValue = "university_info"
+    private const val universityInfoValue = "university-info"
 
     fun toEntity(value: String): Basename =
         when (value) {

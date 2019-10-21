@@ -70,5 +70,5 @@ sealed class Subscription {
 
 sealed class Screen {
     object CreateSubscription : Screen()
-    class ShowTimetable(val subscription: SubscriptionModel) : Screen()
+    object ShowTimetable : Screen()
 }

@@ -13,6 +13,7 @@ import com.crashlytics.android.Crashlytics
 import com.kubsu.timetable.R
 import com.kubsu.timetable.utils.Logger
 import com.kubsu.timetable.utils.MaterialActionDialogCreator
+import com.kubsu.timetable.utils.closeApp
 import com.kubsu.timetable.utils.getCompatColor
 import com.kubsu.timetable.utils.logics.DarkThemeStatus
 import com.kubsu.timetable.utils.logics.Keyboard
@@ -137,11 +138,5 @@ class AppActivity : AppCompatActivity(), NavHost, Logger {
     ) {
         if (!PermissionProvider.isAllPermissionsAllowed(requestCode, permissions, grantResults))
             closeApp()
-    }
-
-    fun closeApp(): Boolean {
-        moveTaskToBack(true)
-        finish()
-        return true
     }
 }

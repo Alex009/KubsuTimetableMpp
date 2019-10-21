@@ -28,11 +28,9 @@ class TimetableGatewayImpl(
     private val timetableNetworkClient: TimetableNetworkClient,
     private val universityDataNetworkClient: UniversityDataNetworkClient
 ) : TimetableGateway {
-    override suspend fun getUniversityData(
-        facultyId: Int
-    ): Either<DataFailure, UniversityInfoEntity> {
+    override suspend fun getUniversityData(facultyId: Int): Either<DataFailure, UniversityInfoEntity> {
         val universityDbDto = universityInfoQueries
-            .selectById(facultyId)
+            .selectByFacultyId(facultyId)
             .executeAsOneOrNull()
 
         return if (universityDbDto != null)
@@ -47,8 +45,8 @@ class TimetableGatewayImpl(
     }
 
     override suspend fun getAll(
-        user: UserEntity,
-        subgroupId: Int
+        subgroupId: Int,
+        user: UserEntity
     ): Either<DataFailure, List<TimetableEntity>> {
         val timetableDbList = timetableQueries
             .selectBySubgroupId(subgroupId)

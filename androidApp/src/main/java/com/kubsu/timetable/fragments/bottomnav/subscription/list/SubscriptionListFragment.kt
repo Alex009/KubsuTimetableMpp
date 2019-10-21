@@ -7,7 +7,6 @@ import com.egroden.teaco.TeaFeature
 import com.egroden.teaco.androidConnectors
 import com.egroden.teaco.bindAction
 import com.egroden.teaco.connect
-import com.kubsu.timetable.BottomNavGraphDirections
 import com.kubsu.timetable.R
 import com.kubsu.timetable.base.BaseFragment
 import com.kubsu.timetable.fragments.bottomnav.BottomNavFragmentDirections
@@ -15,6 +14,8 @@ import com.kubsu.timetable.fragments.bottomnav.subscription.list.adapter.Subscri
 import com.kubsu.timetable.presentation.subscription.list.*
 import com.kubsu.timetable.presentation.timetable.model.SubscriptionModel
 import com.kubsu.timetable.utils.*
+import com.kubsu.timetable.utils.ui.materialAlert
+import com.kubsu.timetable.utils.ui.sheetMenu
 import kotlinx.android.synthetic.main.add_floating_action_button.view.*
 import kotlinx.android.synthetic.main.progress_bar.view.*
 import kotlinx.android.synthetic.main.subscription_list_fragment.view.*
@@ -47,7 +48,13 @@ class SubscriptionListFragment(
                     onClick = { action ->
                         when (action.id) {
                             R.id.item_menu_delete ->
-                                connector bindAction Action.DeleteSubscription(subscription)
+                                requireActivity().materialAlert(
+                                    message = getString(R.string.are_you_sure_you_want_to_unsubscribe),
+                                    onOkButtonClick = {
+                                        connector bindAction Action.DeleteSubscription(subscription)
+                                    },
+                                    onNoButtonClick = {}
+                                )
                             else ->
                                 Unit
                         }
@@ -102,9 +109,10 @@ class SubscriptionListFragment(
                         .actionBottomNavFragmentToCreateSubscriptionFragment()
                 )
 
-            is Screen.ShowTimetable ->
+            Screen.ShowTimetable ->
                 safeNavigate(
-                    BottomNavGraphDirections.actionGlobalTimetableFragment(screen.subscription)
+                    SubscriptionListFragmentDirections
+                        .actionSubscriptionListFragmentToTimetableFragment()
                 )
         }
 }

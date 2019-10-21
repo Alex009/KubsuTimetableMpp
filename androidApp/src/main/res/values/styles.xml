@@ -10,6 +10,7 @@
         <item name="colorOnSecondary">@color/colorOnSecondary</item>
 
         <item name="materialAlertDialogTheme">@style/DayNight.Dialog.Alert</item>
+        <item name="textInputStyle">@style/TextInputLayoutTheme</item>
     </style>
 
     <style name="DayNight.Dialog.Alert" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">

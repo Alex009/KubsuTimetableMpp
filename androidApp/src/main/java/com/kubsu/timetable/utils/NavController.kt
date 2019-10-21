@@ -8,7 +8,7 @@ import com.egroden.teaco.identity
 import com.kubsu.timetable.R
 import com.kubsu.timetable.base.AppActivity
 
-fun Fragment.safeNavigateUp(): Boolean {
+fun Fragment.safePopBackStack(): Boolean {
     if (isStateSaved) return false
     return (activity as? AppActivity)?.run {
         try {

@@ -2,6 +2,7 @@ package com.kubsu.timetable.data.network.client.university
 
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.Either
+import com.kubsu.timetable.data.network.dto.response.FantasticFour
 import com.kubsu.timetable.data.network.dto.timetable.data.UniversityInfoNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.select.FacultyNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.select.GroupNetworkDto
@@ -17,7 +18,7 @@ class UniversityDataNetworkClientImpl(
     override suspend fun selectFacultyList(): Either<DataFailure, List<FacultyNetworkDto>> =
         with(networkSender) {
             handle {
-                get<List<FacultyNetworkDto>>("$baseUrl/api/$apiVersion/university/faculties/")
+                get<List<FacultyNetworkDto>>("$baseUrl/api/$apiVersion/faculties/")
             }.mapLeft(::toNetworkFail)
         }
 
@@ -25,7 +26,7 @@ class UniversityDataNetworkClientImpl(
         with(networkSender) {
             handle {
                 get<List<OccupationNetworkDto>>(
-                    "$baseUrl/api/$apiVersion/university/occupations/?faculty_id=$facultyId"
+                    "$baseUrl/api/$apiVersion/occupations/?faculty_id=$facultyId"
                 )
             }.mapLeft(::toNetworkFail)
         }
@@ -34,7 +35,7 @@ class UniversityDataNetworkClientImpl(
         with(networkSender) {
             handle {
                 get<List<GroupNetworkDto>>(
-                    "$baseUrl/api/$apiVersion/university/groups/?occupation_id=$occupationId"
+                    "$baseUrl/api/$apiVersion/groups/?occupation_id=$occupationId"
                 )
             }.mapLeft(::toNetworkFail)
         }
@@ -43,7 +44,7 @@ class UniversityDataNetworkClientImpl(
         with(networkSender) {
             handle {
                 get<List<SubgroupNetworkDto>>(
-                    "$baseUrl/api/$apiVersion/university/subgroups/?group_id=$groupId"
+                    "$baseUrl/api/$apiVersion/subgroups/?group_id=$groupId"
                 )
             }.mapLeft(::toNetworkFail)
         }
@@ -51,9 +52,20 @@ class UniversityDataNetworkClientImpl(
     override suspend fun selectUniversityInfo(facultyId: Int): Either<DataFailure, UniversityInfoNetworkDto> =
         with(networkSender) {
             handle {
-                get<UniversityInfoNetworkDto>(
-                    "$baseUrl/api/$apiVersion/university-info/$facultyId"
+                get<FantasticFour>(
+                    "$baseUrl/api/$apiVersion/faculties/$facultyId/info"
                 )
-            }.mapLeft(::toNetworkFail)
+            }
+                .mapLeft(::toNetworkFail)
+                .map {
+                    UniversityInfoNetworkDto(
+                        id = it.id,
+                        facultyId = it.objectId,
+                        typeOfWeek = it
+                            .data
+                            .getValue("current_type_of_week")
+                            .int
+                    )
+                }
         }
 }

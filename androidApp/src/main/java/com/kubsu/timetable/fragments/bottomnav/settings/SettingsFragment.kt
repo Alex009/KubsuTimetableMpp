@@ -14,6 +14,7 @@ import com.kubsu.timetable.fragments.bottomnav.BottomNavFragmentDirections
 import com.kubsu.timetable.presentation.settings.*
 import com.kubsu.timetable.utils.logics.DarkThemeStatus
 import com.kubsu.timetable.utils.safeNavigate
+import com.kubsu.timetable.utils.ui.materialAlert
 
 class SettingsFragment(
     teaFeature: TeaFeature<Action, SideEffect, State, Subscription>
@@ -40,7 +41,11 @@ class SettingsFragment(
         }
         findPreference<Preference>("logout")?.apply {
             setOnPreferenceClickListener {
-                connector bindAction Action.Logout
+                requireActivity().materialAlert(
+                    message = getString(R.string.are_you_sure_you_want_to_logout),
+                    onOkButtonClick = { connector bindAction Action.Logout },
+                    onNoButtonClick = {}
+                )
                 true
             }
         }

@@ -8,23 +8,22 @@
         android:id="@+id/subscriptionListFragment"
         android:name="com.kubsu.timetable.fragments.bottomnav.subscription.list.SubscriptionListFragment"
         android:label="fragment_subscription_list"
-        tools:layout="@layout/subscription_list_fragment" />
+        tools:layout="@layout/subscription_list_fragment">
+        <action
+            android:id="@+id/action_subscriptionListFragment_to_timetableFragment"
+            app:destination="@id/timetableFragment" />
+    </fragment>
     <fragment
         android:id="@+id/timetableFragment"
         android:name="com.kubsu.timetable.fragments.bottomnav.timetable.TimetableFragment"
         android:label="timetable_fragment"
         tools:layout="@layout/timetable_fragment">
-        <argument
-            android:name="subscription"
-            android:defaultValue="@null"
-            app:argType="com.kubsu.timetable.presentation.timetable.model.SubscriptionModel"
-            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.kubsu.timetable.fragments.bottomnav.settings.SettingsFragment"
         android:label="settings_fragment" />
     <action
-        android:id="@+id/action_global_timetableFragment"
-        app:destination="@id/timetableFragment" />
+        android:id="@+id/action_global_subscriptionListFragment"
+        app:destination="@id/subscriptionListFragment" />
 </navigation>

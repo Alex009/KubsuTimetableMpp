@@ -70,4 +70,6 @@
     <string name="create_account">Создать аккаунт</string>
     <string name="first_name">Имя</string>
     <string name="last_name">Фамилия</string>
+    <string name="are_you_sure_you_want_to_logout">Вы уверены, что хотите выйти?</string>
+    <string name="are_you_sure_you_want_to_unsubscribe">Вы уверены, что хотите отписаться?</string>
 </resources>

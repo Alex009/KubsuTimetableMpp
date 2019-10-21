@@ -2,11 +2,8 @@ package com.kubsu.timetable.utils
 
 import android.content.Context
 import android.view.Window
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.kubsu.timetable.utils.ui.materialAlert
 import com.thelittlefireman.appkillermanager.Failure
 import com.thelittlefireman.appkillermanager.devices.DeviceBase
 import com.thelittlefireman.appkillermanager.ui.ActionDialogCreator
@@ -21,55 +18,12 @@ class MaterialActionDialogCreator(
         okButton: () -> Unit,
         noButton: () -> Unit
     ) {
-        val alert = materialAlert(
-            message = messageForUser,
+        activity.materialAlert(
+            message = getString(messageForUser),
             positiveButtonText = android.R.string.yes,
             onOkButtonClick = okButton,
             onNoButtonClick = noButton,
-            windowFeature = Window.FEATURE_NO_TITLE,
-            cancelable = false
+            windowFeature = Window.FEATURE_NO_TITLE
         )
-        alert.show()
-        activity
-            .lifecycle
-            .addObserver(
-                LifecycleEventObserver { _, event ->
-                    if (event == Lifecycle.Event.ON_DESTROY)
-                        alert.dismiss()
-                }
-            )
     }
-
-    private fun Context.materialAlert(
-        message: Int,
-        title: Int? = null,
-        positiveButtonText: Int = android.R.string.ok,
-        negativeButtonText: Int = android.R.string.cancel,
-        onOkButtonClick: (() -> Unit)?,
-        onNoButtonClick: (() -> Unit)? = null,
-        windowFeature: Int? = null,
-        cancelable: Boolean,
-        themeRes: Int = 0
-    ): AlertDialog =
-        MaterialAlertDialogBuilder(this, themeRes)
-            .also { alert ->
-                alert.setMessage(message)
-                title?.let(alert::setTitle)
-
-                onOkButtonClick?.let {
-                    alert.setPositiveButton(positiveButtonText) { _, _ ->
-                        it.invoke()
-                    }
-                }
-                onNoButtonClick?.let {
-                    alert.setNegativeButton(negativeButtonText) { _, _ ->
-                        it.invoke()
-                    }
-                }
-                alert.setCancelable(cancelable)
-            }
-            .create()
-            .also {
-                windowFeature?.let(it::requestWindowFeature)
-            }
 }

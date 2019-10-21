@@ -1,5 +1,6 @@
 package com.kubsu.timetable.utils
 
+import android.app.Activity
 import android.content.Context
 import android.view.MenuItem
 import android.view.View
@@ -17,7 +18,8 @@ fun Context.getCompatColor(resId: Int) =
 val BottomNavigationView.selectedItem: MenuItem
     get() = menu.findItem(selectedItemId)
 
-fun View.visibility(visibility: Visibility) = setVisibility(visibility.value)
+fun View.visibility(visibility: Visibility) =
+    setVisibility(visibility.value)
 
 enum class Visibility(val value: Int) {
     VISIBLE(View.VISIBLE),
@@ -37,4 +39,10 @@ fun Spinner.showErrorMessage(messageRes: Int) {
     view.error = context.getString(messageRes)
     requestFocusFromTouch()
     performClick()
+}
+
+fun Activity.closeApp(): Boolean {
+    moveTaskToBack(true)
+    finish()
+    return true
 }

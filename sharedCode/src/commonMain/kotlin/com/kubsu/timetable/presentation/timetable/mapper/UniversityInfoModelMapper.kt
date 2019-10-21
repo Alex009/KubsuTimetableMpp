@@ -6,6 +6,7 @@ import com.kubsu.timetable.presentation.timetable.model.UniversityInfoModel
 object UniversityInfoModelMapper {
     fun toEntity(model: UniversityInfoModel): UniversityInfoEntity =
         UniversityInfoEntity(
+            id = model.id,
             facultyId = model.facultyId,
             typeOfWeek = TypeOfWeekModelMapper.toEntity(model.typeOfWeek)
         )
@@ -13,6 +14,7 @@ object UniversityInfoModelMapper {
 
     fun toModel(entity: UniversityInfoEntity): UniversityInfoModel =
         UniversityInfoModel(
+            id = entity.id,
             facultyId = entity.facultyId,
             typeOfWeek = TypeOfWeekModelMapper.toModel(entity.typeOfWeek)
         )

@@ -10,7 +10,7 @@ interface TimetableGateway {
     suspend fun getUniversityData(facultyId: Int): Either<DataFailure, UniversityInfoEntity>
 
     suspend fun getAll(
-        user: UserEntity,
-        subgroupId: Int
+        subgroupId: Int,
+        user: UserEntity
     ): Either<DataFailure, List<TimetableEntity>>
 }

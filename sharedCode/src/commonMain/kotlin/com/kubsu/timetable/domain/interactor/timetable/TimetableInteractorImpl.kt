@@ -31,7 +31,7 @@ class TimetableInteractorImpl(
     ): Either<DataFailure, List<TimetableEntity>> = def {
         val currentUser = userInfoGateway.getCurrentUserOrNull()
         if (currentUser != null)
-            timetableGateway.getAll(currentUser, subscription.id)
+            timetableGateway.getAll(subscription.id, currentUser)
         else
             Either.left(
                 DataFailure.NotAuthenticated("TimetableInteractor#getAllTimetables")
