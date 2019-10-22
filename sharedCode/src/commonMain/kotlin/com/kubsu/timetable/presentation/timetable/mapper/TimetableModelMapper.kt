@@ -38,7 +38,12 @@ object TimetableModelMapper {
                 .filter { it.day == day }
 
             if (classList.isNotEmpty()) {
-                list.add(TimetableInfoToDisplay.Day(day))
+                list.add(
+                    TimetableInfoToDisplay.Day(
+                        index = DayModelMapper.value(day),
+                        dayOfWeek = day
+                    )
+                )
                 list.addAll(
                     classList
                         .map(ClassModelMapper::toModel)

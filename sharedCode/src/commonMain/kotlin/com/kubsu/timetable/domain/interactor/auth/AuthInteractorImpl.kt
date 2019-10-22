@@ -1,6 +1,11 @@
 package com.kubsu.timetable.domain.interactor.auth
 
-import com.kubsu.timetable.*
+import com.egroden.teaco.Either
+import com.egroden.teaco.left
+import com.kubsu.timetable.DataFailure
+import com.kubsu.timetable.RequestFailure
+import com.kubsu.timetable.SignInFail
+import com.kubsu.timetable.UserInfoFail
 import com.kubsu.timetable.domain.interactor.userInfo.UserInfoGateway
 import com.kubsu.timetable.extensions.def
 

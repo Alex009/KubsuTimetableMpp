@@ -19,9 +19,8 @@ android {
 
         minSdkVersion(16)
         targetSdkVersion(29)
-        multiDexEnabled = true //TODO remove this
 
-        versionName = "1.0.0"
+        versionName = "0.1.0"
         versionCode = 1
 
         base.archivesBaseName = "${applicationName}_$versionName"
@@ -32,22 +31,37 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("release-key.jks")
+            storePassword = "a3JhbnNvZGFyX2t1YnN1"
+            keyAlias = "kubsu"
+            keyPassword = "6b72616e736f6461725f6b75627375"
+        }
+    }
+
     buildTypes {
         getByName("debug") {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
-            //signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName("release")
         }
 
         getByName("release") {
             isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
-            //signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
     packagingOptions {
         exclude("META-INF/*.kotlin_module")
+    }
+
+    sourceSets {
+        val main by getting {
+            java.srcDirs("src/main/kotlin")
+        }
     }
 
     compileOptions {
@@ -81,7 +95,7 @@ dependencies {
     implementation(Libs.swiperefreshlayout)
     implementation(Libs.material)
     implementation(Libs.fragment_ktx)
-    implementation("androidx.preference:preference-ktx:1.1.0")
+    implementation(Libs.preference_ktx)
 
     // Firebase
     implementation(Libs.firebase_core)

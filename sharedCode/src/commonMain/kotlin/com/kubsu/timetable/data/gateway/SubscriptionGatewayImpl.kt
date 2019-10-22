@@ -1,7 +1,9 @@
 package com.kubsu.timetable.data.gateway
 
+import com.egroden.teaco.Either
+import com.egroden.teaco.map
+import com.egroden.teaco.right
 import com.kubsu.timetable.DataFailure
-import com.kubsu.timetable.Either
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SubscriptionFail
 import com.kubsu.timetable.data.db.timetable.SubscriptionQueries

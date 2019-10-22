@@ -1,7 +1,9 @@
 package com.kubsu.timetable.data.gateway
 
+import com.egroden.teaco.Either
+import com.egroden.teaco.flatMap
+import com.egroden.teaco.map
 import com.kubsu.timetable.DataFailure
-import com.kubsu.timetable.Either
 import com.kubsu.timetable.data.db.diff.*
 import com.kubsu.timetable.data.db.timetable.*
 import com.kubsu.timetable.data.mapper.UserDtoMapper
@@ -15,7 +17,6 @@ import com.kubsu.timetable.domain.entity.Timestamp
 import com.kubsu.timetable.domain.entity.UserEntity
 import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
 import com.kubsu.timetable.domain.interactor.sync.SyncMixinGateway
-import com.kubsu.timetable.flatMap
 
 class SyncMixinGatewayImpl(
     private val subscriptionQueries: SubscriptionQueries,

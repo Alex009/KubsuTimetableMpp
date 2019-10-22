@@ -1,16 +1,15 @@
 package com.kubsu.timetable.domain.interactor.timetable
 
+import com.egroden.teaco.Either
+import com.egroden.teaco.map
 import com.kubsu.timetable.DataFailure
-import com.kubsu.timetable.Either
 import com.kubsu.timetable.domain.entity.timetable.data.SubscriptionEntity
 import com.kubsu.timetable.domain.entity.timetable.data.TimetableEntity
 import com.kubsu.timetable.domain.entity.timetable.data.UniversityInfoEntity
-import com.kubsu.timetable.domain.interactor.userInfo.UserInfoGateway
 import com.kubsu.timetable.extensions.def
 
 class TimetableInteractorImpl(
-    private val timetableGateway: TimetableGateway,
-    private val userInfoGateway: UserInfoGateway
+    private val timetableGateway: TimetableGateway
 ) : TimetableInteractor {
     override suspend fun getUniversityData(
         timetable: TimetableEntity
@@ -29,12 +28,6 @@ class TimetableInteractorImpl(
     override suspend fun getAllTimetables(
         subscription: SubscriptionEntity
     ): Either<DataFailure, List<TimetableEntity>> = def {
-        val currentUser = userInfoGateway.getCurrentUserOrNull()
-        if (currentUser != null)
-            timetableGateway.getAll(subscription.id, currentUser)
-        else
-            Either.left(
-                DataFailure.NotAuthenticated("TimetableInteractor#getAllTimetables")
-            )
+        timetableGateway.getAll(subscription.subgroupId)
     }
 }

@@ -18,5 +18,8 @@ sealed class TimetableInfoToDisplay : SerializableModel {
     data class Class(val classModel: ClassModel) : TimetableInfoToDisplay()
 
     @SerializeModel
-    data class Day(val dayOfWeek: DayOfWeek) : TimetableInfoToDisplay()
+    data class Day(
+        val index: Int,
+        val dayOfWeek: DayOfWeek
+    ) : TimetableInfoToDisplay()
 }

@@ -1,6 +1,11 @@
 package com.kubsu.timetable.data.gateway
 
-import com.kubsu.timetable.*
+import com.egroden.teaco.Either
+import com.egroden.teaco.map
+import com.kubsu.timetable.DataFailure
+import com.kubsu.timetable.RequestFailure
+import com.kubsu.timetable.SignInFail
+import com.kubsu.timetable.UserInfoFail
 import com.kubsu.timetable.data.db.diff.DataDiffQueries
 import com.kubsu.timetable.data.db.diff.DeletedEntityQueries
 import com.kubsu.timetable.data.db.diff.UpdatedEntityQueries

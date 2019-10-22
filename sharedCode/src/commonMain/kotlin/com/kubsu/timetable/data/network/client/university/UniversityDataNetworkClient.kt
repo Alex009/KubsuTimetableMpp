@@ -1,7 +1,7 @@
 package com.kubsu.timetable.data.network.client.university
 
+import com.egroden.teaco.Either
 import com.kubsu.timetable.DataFailure
-import com.kubsu.timetable.Either
 import com.kubsu.timetable.data.network.dto.timetable.data.UniversityInfoNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.select.FacultyNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.select.GroupNetworkDto

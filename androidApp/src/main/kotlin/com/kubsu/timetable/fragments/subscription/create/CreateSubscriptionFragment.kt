@@ -51,6 +51,10 @@ class CreateSubscriptionFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        view.toolbar.setNavigationOnClickListener {
+            popBackStack()
+        }
+
         progressEffect bind { view.progress_bar.visibility(it) }
         titleTextEffect bind view.subscription_title::setHint
         titleErrorEffect bind (view.subscription_title as TextView)::showErrorMessage

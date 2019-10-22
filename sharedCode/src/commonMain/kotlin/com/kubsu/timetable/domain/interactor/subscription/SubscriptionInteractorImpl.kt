@@ -1,7 +1,8 @@
 package com.kubsu.timetable.domain.interactor.subscription
 
+import com.egroden.teaco.Either
+import com.egroden.teaco.left
 import com.kubsu.timetable.DataFailure
-import com.kubsu.timetable.Either
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SubscriptionFail
 import com.kubsu.timetable.domain.entity.timetable.data.SubscriptionEntity

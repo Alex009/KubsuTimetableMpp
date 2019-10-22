@@ -1,6 +1,6 @@
 package com.kubsu.timetable.domain.interactor.userInfo
 
-import com.kubsu.timetable.Either
+import com.egroden.teaco.Either
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.UserInfoFail
 import com.kubsu.timetable.domain.entity.UserEntity

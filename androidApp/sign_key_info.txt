@@ -1,0 +1,9 @@
+keystore password = a3JhbnNvZGFyX2t1YnN1
+alias = kubsu
+key password = 6b72616e736f6461725f6b75627375
+first & last name = Kirill Indrih
+org unit = KubSU
+org = KubSU
+city = Krasnodar
+state = Krasnodarskiy Kray
+country code = RU

@@ -1,14 +1,16 @@
 package com.kubsu.timetable.domain.interactor.sync
 
+import com.egroden.teaco.Either
+import com.egroden.teaco.flatMap
+import com.egroden.teaco.left
+import com.egroden.teaco.right
 import com.kubsu.timetable.DataFailure
-import com.kubsu.timetable.Either
 import com.kubsu.timetable.domain.entity.Basename
 import com.kubsu.timetable.domain.entity.Timestamp
 import com.kubsu.timetable.domain.entity.UserEntity
 import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
 import com.kubsu.timetable.domain.interactor.userInfo.UserInfoGateway
 import com.kubsu.timetable.extensions.def
-import com.kubsu.timetable.flatMap
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope

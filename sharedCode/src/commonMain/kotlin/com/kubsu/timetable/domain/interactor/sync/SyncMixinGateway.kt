@@ -1,7 +1,7 @@
 package com.kubsu.timetable.domain.interactor.sync
 
+import com.egroden.teaco.Either
 import com.kubsu.timetable.DataFailure
-import com.kubsu.timetable.Either
 import com.kubsu.timetable.domain.entity.Basename
 import com.kubsu.timetable.domain.entity.Timestamp
 import com.kubsu.timetable.domain.entity.UserEntity

@@ -1,6 +1,11 @@
 package com.kubsu.timetable.data.network.client.user
 
-import com.kubsu.timetable.*
+import com.egroden.teaco.Either
+import com.egroden.teaco.mapLeft
+import com.kubsu.timetable.DataFailure
+import com.kubsu.timetable.RequestFailure
+import com.kubsu.timetable.SignInFail
+import com.kubsu.timetable.UserInfoFail
 import com.kubsu.timetable.data.network.client.user.incorrectdata.SignInIncorrectData
 import com.kubsu.timetable.data.network.client.user.incorrectdata.UserIncorrectData
 import com.kubsu.timetable.data.network.dto.UserNetworkDto

@@ -1,6 +1,8 @@
 package com.kubsu.timetable.data.network.sender
 
-import com.kubsu.timetable.Either
+import com.egroden.teaco.Either
+import com.egroden.teaco.left
+import com.egroden.teaco.right
 import com.kubsu.timetable.data.network.sender.failure.ServerFailure
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig

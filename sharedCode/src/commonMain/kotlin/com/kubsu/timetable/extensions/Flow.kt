@@ -1,6 +1,9 @@
 package com.kubsu.timetable.extensions
 
-import com.kubsu.timetable.Either
+import com.egroden.teaco.Either
+import com.egroden.teaco.fold
+import com.egroden.teaco.left
+import com.egroden.teaco.right
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow

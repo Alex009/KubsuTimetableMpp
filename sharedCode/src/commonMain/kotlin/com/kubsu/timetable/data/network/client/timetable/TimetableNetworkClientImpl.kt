@@ -1,35 +1,26 @@
 package com.kubsu.timetable.data.network.client.timetable
 
+import com.egroden.teaco.Either
+import com.egroden.teaco.mapLeft
 import com.kubsu.timetable.DataFailure
-import com.kubsu.timetable.Either
-import com.kubsu.timetable.data.network.dto.UserNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.data.ClassNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.data.ClassTimeNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.data.LecturerNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.data.TimetableNetworkDto
 import com.kubsu.timetable.data.network.sender.NetworkSender
-import com.kubsu.timetable.data.network.sender.failure.ServerFailure
 import com.kubsu.timetable.data.network.sender.failure.toNetworkFail
-import com.kubsu.timetable.extensions.addSessionKey
 import io.ktor.client.request.get
 
 class TimetableNetworkClientImpl(
     private val networkSender: NetworkSender
 ) : TimetableNetworkClient {
-    override suspend fun selectTimetableListForUser(
-        user: UserNetworkDto
+    override suspend fun selectTimetableList(
+        subgroupId: Int
     ): Either<DataFailure, List<TimetableNetworkDto>> =
         with(networkSender) {
             handle {
-                get<List<TimetableNetworkDto>>("$baseUrl/api/$apiVersion/timetables/") {
-                    addSessionKey(user)
-                }
-            }.mapLeft {
-                if (it is ServerFailure.Response && it.code == 401)
-                    DataFailure.NotAuthenticated(it.body)
-                else
-                    toNetworkFail(it)
-            }
+                get<List<TimetableNetworkDto>>("$baseUrl/api/$apiVersion/timetables/?subgroup_id=$subgroupId")
+            }.mapLeft(::toNetworkFail)
         }
 
     override suspend fun selectClassesByTimetableId(

@@ -10,12 +10,12 @@ import com.egroden.teaco.connect
 import com.kubsu.timetable.R
 import com.kubsu.timetable.base.BaseFragment
 import com.kubsu.timetable.data.storage.displayed.subscription.DisplayedSubscriptionStorage
+import com.kubsu.timetable.extensions.getCurrentDayOfWeek
 import com.kubsu.timetable.fragments.bottomnav.timetable.adapter.TimetableAdapter
 import com.kubsu.timetable.presentation.timetable.*
 import com.kubsu.timetable.presentation.timetable.model.TimetableInfoToDisplay
 import com.kubsu.timetable.presentation.timetable.model.TypeOfWeekModel
 import com.kubsu.timetable.utils.*
-import com.soywiz.klock.DateTime
 import kotlinx.android.synthetic.main.progress_bar.view.*
 import kotlinx.android.synthetic.main.timetable_fragment.view.*
 
@@ -88,7 +88,7 @@ class TimetableFragment(
     private fun navigate(screen: Screen) = Unit
 
     private fun List<TimetableInfoToDisplay>.indexOfCurrentDayOrNull(): Int? {
-        val currentDay = DateTime.nowLocal().dayOfWeek
+        val currentDay = getCurrentDayOfWeek()
         return indexOfFirst {
             (it as? TimetableInfoToDisplay.Day)?.dayOfWeek == currentDay
         }.takeIf { it > -1 }

@@ -1,4 +1,4 @@
-package com.kubsu.timetable.utils
+package com.kubsu.timetable.utils.logics
 
 import android.app.Activity
 import android.app.Application

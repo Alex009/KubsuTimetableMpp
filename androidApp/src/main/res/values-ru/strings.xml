@@ -72,4 +72,14 @@
     <string name="last_name">Фамилия</string>
     <string name="are_you_sure_you_want_to_logout">Вы уверены, что хотите выйти?</string>
     <string name="are_you_sure_you_want_to_unsubscribe">Вы уверены, что хотите отписаться?</string>
+
+    <string-array name="day_of_week">
+        <item>Понедельник</item>
+        <item>Вторник</item>
+        <item>Среда</item>
+        <item>Четверг</item>
+        <item>Пятница</item>
+        <item>Суббота</item>
+        <item>Воскресенье</item>
+    </string-array>
 </resources>

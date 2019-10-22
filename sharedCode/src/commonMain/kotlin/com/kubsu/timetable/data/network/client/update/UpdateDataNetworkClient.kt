@@ -1,7 +1,7 @@
 package com.kubsu.timetable.data.network.client.update
 
+import com.egroden.teaco.Either
 import com.kubsu.timetable.DataFailure
-import com.kubsu.timetable.Either
 import com.kubsu.timetable.data.network.dto.UserNetworkDto
 import com.kubsu.timetable.data.network.dto.response.DiffResponse
 import com.kubsu.timetable.data.network.dto.response.SyncResponse

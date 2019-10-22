@@ -1,15 +1,13 @@
 package com.kubsu.timetable.presentation.timetable
 
-import com.egroden.teaco.EffectHandler
+import com.egroden.teaco.*
 import com.kubsu.timetable.domain.entity.timetable.data.TimetableEntity
 import com.kubsu.timetable.domain.entity.timetable.data.TypeOfWeek
 import com.kubsu.timetable.domain.interactor.timetable.TimetableInteractor
 import com.kubsu.timetable.extensions.checkWhenAllHandled
-import com.kubsu.timetable.flatMap
 import com.kubsu.timetable.presentation.timetable.mapper.SubscriptionModelMapper
 import com.kubsu.timetable.presentation.timetable.mapper.TimetableModelMapper
 import com.kubsu.timetable.presentation.timetable.mapper.UniversityInfoModelMapper
-import com.kubsu.timetable.right
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 

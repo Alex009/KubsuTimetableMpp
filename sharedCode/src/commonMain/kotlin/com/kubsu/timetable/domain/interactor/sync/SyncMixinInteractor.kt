@@ -1,7 +1,7 @@
 package com.kubsu.timetable.domain.interactor.sync
 
+import com.egroden.teaco.Either
 import com.kubsu.timetable.DataFailure
-import com.kubsu.timetable.Either
 
 interface SyncMixinInteractor {
     suspend fun updateData(): Either<DataFailure, Unit>

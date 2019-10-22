@@ -5,8 +5,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.kubsu.timetable.utils.addObserver
-import com.kubsu.timetable.utils.removeObserver
+import com.kubsu.timetable.utils.logics.addObserver
+import com.kubsu.timetable.utils.logics.removeObserver
 
 fun ComponentActivity.materialAlert(
     message: String,

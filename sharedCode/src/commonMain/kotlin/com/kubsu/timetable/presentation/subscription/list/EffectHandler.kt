@@ -1,6 +1,7 @@
 package com.kubsu.timetable.presentation.subscription.list
 
 import com.egroden.teaco.EffectHandler
+import com.egroden.teaco.fold
 import com.kubsu.timetable.data.storage.displayed.subscription.DisplayedSubscriptionStorage
 import com.kubsu.timetable.domain.interactor.subscription.SubscriptionInteractor
 import com.kubsu.timetable.extensions.checkWhenAllHandled

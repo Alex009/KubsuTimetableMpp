@@ -3,7 +3,7 @@ package com.kubsu.timetable.base
 import android.app.Application
 import com.crashlytics.android.Crashlytics
 import com.kubsu.timetable.di.appKodein
-import com.kubsu.timetable.utils.activityLifecycleInjector
+import com.kubsu.timetable.utils.logics.activityLifecycleInjector
 import io.fabric.sdk.android.Fabric
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware

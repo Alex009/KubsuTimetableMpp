@@ -1,7 +1,7 @@
 package com.kubsu.timetable.data.network.client.subscription
 
+import com.egroden.teaco.Either
 import com.kubsu.timetable.DataFailure
-import com.kubsu.timetable.Either
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SubscriptionFail
 import com.kubsu.timetable.data.network.dto.UserNetworkDto

@@ -1,6 +1,7 @@
 package com.kubsu.timetable.presentation.signin
 
 import com.egroden.teaco.EffectHandler
+import com.egroden.teaco.fold
 import com.kubsu.timetable.domain.interactor.auth.AuthInteractor
 import com.kubsu.timetable.extensions.checkWhenAllHandled
 import kotlinx.coroutines.flow.Flow

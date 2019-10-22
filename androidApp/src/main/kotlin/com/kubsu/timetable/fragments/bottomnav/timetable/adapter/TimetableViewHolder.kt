@@ -10,9 +10,12 @@ import kotlinx.android.synthetic.main.item_class.*
 import kotlinx.android.synthetic.main.item_working_day.*
 
 sealed class TimetableViewHolder(
-    override val containerView: View
+    final override val containerView: View
 ) : RecyclerView.ViewHolder(containerView),
     LayoutContainer {
+    val dayOfWeekArray: Array<String> =
+        containerView.context.resources.getStringArray(R.array.day_of_week)
+
     class Class(itemView: View) : TimetableViewHolder(itemView) {
         fun bind(classModel: TimetableInfoToDisplay.Class) {
             val `class` = classModel.classModel
@@ -53,7 +56,7 @@ sealed class TimetableViewHolder(
 
     class WorkingDay(itemView: View) : TimetableViewHolder(itemView) {
         fun bind(dayModel: TimetableInfoToDisplay.Day) {
-            working_day_text_view.text = dayModel.dayOfWeek.localName
+            working_day_text_view.text = dayOfWeekArray[dayModel.index]
         }
     }
 }

@@ -52,6 +52,8 @@ object Versions {
 
     const val google_services: String = "4.3.2"
 
+    const val preference_ktx: String = "1.1.0"
+
     const val espresso_core: String = "3.2.0"
 
     const val exifinterface: String = "1.0.0"
