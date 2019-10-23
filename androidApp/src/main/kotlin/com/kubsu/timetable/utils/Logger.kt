@@ -20,6 +20,7 @@ interface Logger {
     fun error(message: String?, exception: Exception?, tag: String? = null) {
         val loggerTag = getTag(tag ?: className)
         Crashlytics.log(Log.ERROR, loggerTag, message)
+        Crashlytics.logException(exception)
     }
 
     private fun getTag(className: String): String =

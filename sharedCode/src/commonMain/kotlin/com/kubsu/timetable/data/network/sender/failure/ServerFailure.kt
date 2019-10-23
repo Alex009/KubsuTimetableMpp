@@ -9,6 +9,10 @@ sealed class ServerFailure {
         val code: Int
     ) : ServerFailure()
 
+    class Parsing(
+        val message: String
+    ) : ServerFailure()
+
     class Connection(val message: String?) : ServerFailure()
 }
 
@@ -16,6 +20,9 @@ fun toNetworkFail(failure: ServerFailure): DataFailure =
     when (failure) {
         is ServerFailure.Response ->
             DataFailure.UnknownResponse(failure.code, failure.body, failure.message)
+
+        is ServerFailure.Parsing ->
+            DataFailure.ParsingError(failure.message)
 
         is ServerFailure.Connection ->
             DataFailure.ConnectionToRepository(failure.message)

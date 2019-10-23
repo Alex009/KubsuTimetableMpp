@@ -7,7 +7,7 @@ import com.kubsu.timetable.domain.entity.Timestamp
 import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
 
 interface SyncMixinGateway {
-    fun registerDataDiff(entity: DataDiffEntity)
+    suspend fun registerDataDiff(entity: DataDiffEntity)
     suspend fun getAvailableDiffList(userId: Int): List<DataDiffEntity>
     suspend fun delete(list: List<DataDiffEntity>)
     suspend fun diff(): Either<DataFailure, Pair<Timestamp, List<Basename>>>

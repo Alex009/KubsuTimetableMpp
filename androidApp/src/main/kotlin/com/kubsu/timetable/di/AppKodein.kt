@@ -5,7 +5,6 @@ import android.app.Application
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
-import com.kubsu.timetable.base.App
 import com.kubsu.timetable.base.AppActivity
 import com.kubsu.timetable.di.modules.view.*
 import com.kubsu.timetable.fragments.bottomnav.BottomNavFragment
@@ -17,14 +16,19 @@ import com.kubsu.timetable.fragments.signin.SignInFragment
 import com.kubsu.timetable.fragments.splash.SplashFragment
 import com.kubsu.timetable.fragments.subscription.create.CreateSubscriptionFragment
 import com.kubsu.timetable.utils.nameOf
-import di.androidModule
+import di.androidCommonKodein
+import org.kodein.di.Copy
 import org.kodein.di.Kodein
 import org.kodein.di.erased.bind
 import org.kodein.di.erased.instance
 import org.kodein.di.erased.singleton
+import platform.PlatformArgs
 
-fun appKodein(app: App) = Kodein {
-    import(androidModule(app))
+fun appKodein(application: Application) = Kodein {
+    extend(androidCommonKodein, copy = Copy.All)
+
+    bind() from singleton { PlatformArgs(application.applicationContext) }
+
     importAll(
         splashViewModule,
         signInViewModule,

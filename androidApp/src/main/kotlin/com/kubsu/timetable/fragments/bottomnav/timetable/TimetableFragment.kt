@@ -2,6 +2,7 @@ package com.kubsu.timetable.fragments.bottomnav.timetable
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.egroden.teaco.TeaFeature
 import com.egroden.teaco.androidConnectors
@@ -49,6 +50,10 @@ class TimetableFragment(
         titleEffect bind view.toolbar::setTitle
         progressEffect bind { view.progress_bar.visibility(it) }
         timetableListEffect bind { timetableInfoList ->
+            val listIsNotEmpty = timetableInfoList.isNotEmpty()
+            view.empty_list_layout.isVisible = !listIsNotEmpty
+            view.timetable_recycler_view.isVisible = listIsNotEmpty
+
             timetableAdapter.setData(timetableInfoList)
             timetableInfoList
                 .indexOfCurrentDayOrNull()
@@ -74,9 +79,7 @@ class TimetableFragment(
             TypeOfWeekModel.Denominator -> state.denominatorTimetable
             null -> null
         }
-        if (timetable != null)
-            timetableListEffect.value = timetable.infoList
-        //TODO show message "list is empty"
+        timetableListEffect.value = timetable?.infoList ?: emptyList()
     }
 
     private fun render(subscription: Subscription) =

@@ -15,6 +15,7 @@ import com.kubsu.timetable.data.mapper.UserDtoMapper
 import com.kubsu.timetable.data.network.client.user.UserInfoNetworkClient
 import com.kubsu.timetable.data.storage.user.info.UserStorage
 import com.kubsu.timetable.data.storage.user.session.SessionStorage
+import com.kubsu.timetable.data.storage.user.token.TokenStorage
 import com.kubsu.timetable.domain.interactor.auth.AuthGateway
 
 class AuthGatewayImpl(
@@ -28,18 +29,22 @@ class AuthGatewayImpl(
     private val deletedEntityQueries: DeletedEntityQueries,
     private val networkClient: UserInfoNetworkClient,
     private val userStorage: UserStorage,
-    private val sessionStorage: SessionStorage
+    private val sessionStorage: SessionStorage,
+    private val tokenStorage: TokenStorage
 ) : AuthGateway {
     override suspend fun signIn(
         email: String,
         password: String
-    ): Either<RequestFailure<List<SignInFail>>, Unit> =
-        networkClient
-            .signIn(email, password)
+    ): Either<RequestFailure<List<SignInFail>>, Unit> {
+        val currentToken = tokenStorage.get()
+        return networkClient
+            .signIn(email, password, currentToken)
             .map {
                 userStorage.set(UserDtoMapper.toStorageDto(it.user))
                 sessionStorage.set(it.session)
+                tokenStorage.set(currentToken?.copy(delivered = true))
             }
+    }
 
     override suspend fun registrationUser(
         email: String,

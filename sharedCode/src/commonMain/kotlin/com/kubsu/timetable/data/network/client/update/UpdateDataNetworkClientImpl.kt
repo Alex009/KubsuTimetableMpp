@@ -3,8 +3,8 @@ package com.kubsu.timetable.data.network.client.update
 import com.egroden.teaco.Either
 import com.egroden.teaco.mapLeft
 import com.kubsu.timetable.DataFailure
-import com.kubsu.timetable.data.network.dto.response.DiffResponse
-import com.kubsu.timetable.data.network.dto.response.SyncResponse
+import com.kubsu.timetable.data.network.dto.diff.DiffResponse
+import com.kubsu.timetable.data.network.dto.diff.SyncResponse
 import com.kubsu.timetable.data.network.sender.NetworkSender
 import com.kubsu.timetable.data.network.sender.failure.ServerFailure
 import com.kubsu.timetable.data.network.sender.failure.toNetworkFail

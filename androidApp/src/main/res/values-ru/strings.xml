@@ -82,4 +82,5 @@
         <item>Суббота</item>
         <item>Воскресенье</item>
     </string-array>
+    <string name="list_is_empty">Список пуст</string>
 </resources>

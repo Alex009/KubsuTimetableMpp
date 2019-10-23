@@ -2,8 +2,8 @@ package com.kubsu.timetable.data.network.client.update
 
 import com.egroden.teaco.Either
 import com.kubsu.timetable.DataFailure
-import com.kubsu.timetable.data.network.dto.response.DiffResponse
-import com.kubsu.timetable.data.network.dto.response.SyncResponse
+import com.kubsu.timetable.data.network.dto.diff.DiffResponse
+import com.kubsu.timetable.data.network.dto.diff.SyncResponse
 import com.kubsu.timetable.data.storage.user.session.SessionDto
 
 interface UpdateDataNetworkClient {

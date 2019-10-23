@@ -7,7 +7,7 @@ import com.kubsu.timetable.di.modules.domain.*
 import com.kubsu.timetable.di.modules.presentation.*
 import org.kodein.di.Kodein
 
-internal val commonKodein = Kodein.Module("common_module") {
+internal val mppCommonKodeinModule = Kodein.Module("mpp_common_module") {
     // presentation
     importAll(
         splashPresentationModule,

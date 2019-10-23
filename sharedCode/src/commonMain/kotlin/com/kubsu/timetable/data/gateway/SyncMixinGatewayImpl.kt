@@ -30,7 +30,7 @@ class SyncMixinGatewayImpl(
     private val networkClient: UpdateDataNetworkClient,
     private val sessionStorage: SessionStorage
 ) : SyncMixinGateway {
-    override fun registerDataDiff(entity: DataDiffEntity) {
+    override suspend fun registerDataDiff(entity: DataDiffEntity) {
         dataDiffQueries.update(
             basename = BasenameDtoMapper.value(entity.basename),
             userId = entity.userId

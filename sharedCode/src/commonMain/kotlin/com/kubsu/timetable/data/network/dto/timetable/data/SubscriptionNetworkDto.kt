@@ -6,11 +6,12 @@ import kotlinx.serialization.Serializable
 @Serializable
 class SubscriptionNetworkDto(
     val id: Int,
-    val title: String,
-    val subgroup: Int,
 
-    @SerialName("user_id")
-    val userId: Int,
+    val user: Int,
+
+    val title: String,
+
+    val subgroup: Int,
 
     @SerialName("is_main")
     val isMain: Boolean

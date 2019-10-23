@@ -4,7 +4,7 @@ import com.egroden.teaco.Either
 import com.egroden.teaco.bimap
 import com.egroden.teaco.mapLeft
 import com.kubsu.timetable.DataFailure
-import com.kubsu.timetable.data.network.dto.response.FantasticFour
+import com.kubsu.timetable.data.network.dto.diff.FantasticFour
 import com.kubsu.timetable.data.network.dto.timetable.data.UniversityInfoNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.select.FacultyNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.select.GroupNetworkDto

@@ -26,6 +26,7 @@ class SplashFragment(
     private fun render(subscription: Subscription) =
         when (subscription) {
             is Subscription.Navigate -> navigation(subscription.screen)
+            is Subscription.ShowFailure -> notifyUserOfFailure(subscription.failure)
         }
 
     private fun navigation(screen: Screen) =

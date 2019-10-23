@@ -7,6 +7,8 @@ import com.kubsu.timetable.SignInFail
 import com.kubsu.timetable.UserInfoFail
 
 interface AuthInteractor {
+    suspend fun init(): Either<DataFailure, Unit>
+
     suspend fun signIn(
         email: String,
         password: String

@@ -31,3 +31,8 @@ fun List<String>.toJson(): JsonArray =
 @JvmName("toJsonBooleanList")
 fun List<Boolean>.toJson(): JsonArray =
     JsonArray(map(::JsonLiteral))
+
+fun Map<String, String>.toJson(): JsonObject =
+    JsonObject(
+        map { (key, value) -> key to value.toJson() }.toMap()
+    )

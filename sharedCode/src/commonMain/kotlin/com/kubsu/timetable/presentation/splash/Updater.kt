@@ -22,5 +22,11 @@ val splashUpdater: Updater<State, Action, Subscription, SideEffect> = { state, a
                 state,
                 subscription = Subscription.Navigate(Screen.TimetableScreen)
             )
+
+        is Action.ShowFailure ->
+            UpdateResponse(
+                state,
+                subscription = Subscription.ShowFailure(action.dataFailure)
+            )
     }
 }

@@ -83,4 +83,5 @@
         <item>Saturday</item>
         <item>Sunday</item>
     </string-array>
+    <string name="list_is_empty">List is empty</string>
 </resources>

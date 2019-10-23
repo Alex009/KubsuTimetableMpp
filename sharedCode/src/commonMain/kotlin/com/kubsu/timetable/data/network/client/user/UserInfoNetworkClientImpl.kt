@@ -13,18 +13,16 @@ import com.kubsu.timetable.data.network.sender.NetworkSender
 import com.kubsu.timetable.data.network.sender.failure.ServerFailure
 import com.kubsu.timetable.data.network.sender.failure.toNetworkFail
 import com.kubsu.timetable.data.storage.user.session.SessionDto
+import com.kubsu.timetable.data.storage.user.token.TokenDto
 import com.kubsu.timetable.domain.entity.Timestamp
-import com.kubsu.timetable.extensions.addSessionKey
-import com.kubsu.timetable.extensions.jsonContent
-import com.kubsu.timetable.extensions.sessionId
-import com.kubsu.timetable.extensions.toJson
+import com.kubsu.timetable.extensions.*
 import io.ktor.client.request.get
 import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.response.HttpResponse
-import io.ktor.utils.io.readUTF8Line
 import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.json.Json
+import platform.currentPlatform
 
 class UserInfoNetworkClientImpl(
     private val networkSender: NetworkSender,
@@ -54,13 +52,19 @@ class UserInfoNetworkClientImpl(
     @UseExperimental(ImplicitReflectionSerializer::class)
     override suspend fun signIn(
         email: String,
-        password: String
+        password: String,
+        token: TokenDto?
     ): Either<RequestFailure<List<SignInFail>>, UserData> =
         with(networkSender) {
             handle {
                 post<HttpResponse>("$baseUrl/api/$apiVersion/users/login/") {
-                    body = jsonContent("email" to email.toJson(), "password" to password.toJson())
-                }
+                    body = jsonContent(
+                        "email" to email.toJson(),
+                        "password" to password.toJson(),
+                        "token" to (token?.value ?: "").toJson(),
+                        "platform" to currentPlatform.toJson()
+                    )
+                }.also(::validate)
             }.mapLeft {
                 if (it is ServerFailure.Response && it.code == 400)
                     parseSignInFail(it)
@@ -91,7 +95,7 @@ class UserInfoNetworkClientImpl(
     }
 
     private suspend fun parseUser(response: HttpResponse): Either<DataFailure, UserNetworkDto> {
-        val body = response.content.readUTF8Line() ?: ""
+        val body = response.readContent()
         return try {
             Either.right(json.parse(UserNetworkDto.serializer(), body))
         } catch (e: Exception) {
@@ -208,6 +212,22 @@ class UserInfoNetworkClientImpl(
             data = failList.filterIsInstance<DataFailure>()
         )
     }
+
+    override suspend fun updateToken(
+        session: SessionDto,
+        token: TokenDto
+    ): Either<DataFailure, Unit> =
+        with(networkSender) {
+            handle {
+                get<Unit>("$baseUrl/api/$apiVersion/users/device/") {
+                    addSessionKey(session)
+                    body = jsonContent(
+                        "token" to token.value.toJson(),
+                        "platform" to currentPlatform.toJson()
+                    )
+                }
+            }.mapLeft(::toNetworkFail)
+        }
 
     override suspend fun logout(session: SessionDto): Either<DataFailure, Unit> =
         with(networkSender) {

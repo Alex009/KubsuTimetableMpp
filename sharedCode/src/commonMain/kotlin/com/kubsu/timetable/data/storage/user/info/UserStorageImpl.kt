@@ -6,7 +6,7 @@ import com.russhwolf.settings.Settings
 class UserStorageImpl(
     settingsFactory: Settings.Factory
 ) : UserStorage,
-    BaseStorage(settingsFactory.create("timetable_user")) {
+    BaseStorage(settingsFactory.create("user_kubsu_timetable")) {
     override suspend fun set(user: UserDto?) {
         set(idPropName, user?.id)
         set(firstNamePropName, user?.firstName)
@@ -35,9 +35,9 @@ class UserStorageImpl(
     }
 
     private companion object {
-        private const val idPropName = "id"
-        private const val firstNamePropName = "first_name"
-        private const val secondNamePropName = "second_name"
-        private const val emailPropName = "email"
+        private const val idPropName = "id_prop"
+        private const val firstNamePropName = "first_name_prop"
+        private const val secondNamePropName = "second_name_prop"
+        private const val emailPropName = "email_prop"
     }
 }

@@ -10,6 +10,7 @@ import com.kubsu.timetable.BottomNavGraphDirections
 import com.kubsu.timetable.R
 import com.kubsu.timetable.base.BaseFragment
 import com.kubsu.timetable.data.storage.displayed.subscription.DisplayedSubscriptionStorage
+import com.kubsu.timetable.utils.safeNavigate
 import com.kubsu.timetable.utils.selectedItem
 import kotlinx.android.synthetic.main.bottom_nav_fragment.view.*
 
@@ -28,7 +29,7 @@ class BottomNavFragment(
                 selectedItem.itemId == R.id.timetableFragment
                 && displayedSubscriptionStorage.get() == null
             )
-                BottomNavGraphDirections.actionGlobalSubscriptionListFragment()
+                safeNavigate(BottomNavGraphDirections.actionGlobalSubscriptionListFragment())
         }
     }
 }

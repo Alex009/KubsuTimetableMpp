@@ -13,26 +13,41 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.kubsu.timetable.R
 import com.kubsu.timetable.base.AppActivity
-import com.kubsu.timetable.utils.Logger
+import com.kubsu.timetable.data.mapper.diff.DataDiffDtoMapper
+import com.kubsu.timetable.data.network.dto.diff.DataDiffNetworkDto
+import com.kubsu.timetable.di.appKodein
+import com.kubsu.timetable.domain.interactor.sync.SyncMixinInteractor
+import com.kubsu.timetable.domain.interactor.userInfo.UserInteractor
+import com.kubsu.timetable.extensions.toJson
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
+import org.kodein.di.Kodein
+import org.kodein.di.KodeinAware
+import org.kodein.di.erased.instance
 
-class FirebasePushService : FirebaseMessagingService(), Logger {
+class FirebasePushService : FirebaseMessagingService(), KodeinAware {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        remoteMessage.data.forEach {
-            info("remote message data: ${it.key} to ${it.value}")
+        val dataDiffModel = json.fromJson(
+            DataDiffNetworkDto.serializer(),
+            remoteMessage.data.toJson()
+        )
+        val dataDiffEntity = DataDiffDtoMapper.toEntity(dataDiffModel)
+        GlobalScope.launch {
+            mixinInteractor.registerDataDiff(dataDiffEntity)
+            if (userInteractor.getCurrentUserOrNull()?.id == dataDiffEntity.userId)
+                showNotification(notificationId = dataDiffEntity.hashCode())
         }
-        remoteMessage.notification?.let {
-            info("remote message notification: ${it.title}, ${it.body}")
-        }
-
-        showNotification(remoteMessage.data["id"] ?: "NOT CONTAINS MESSAGE")
     }
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        info("new token: $token")
+        GlobalScope.launch {
+            userInteractor.updateToken(token)
+        }
     }
 
-    private fun showNotification(message: String) {
+    private fun showNotification(notificationId: Int) {
         val intent = Intent(this, AppActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
 
@@ -40,7 +55,7 @@ class FirebasePushService : FirebaseMessagingService(), Logger {
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle("Title")
-            .setContentText(message)
+            .setContentText("Посмотрите, пришло новое расписание")
             .setAutoCancel(true)
             .setPriority(NotificationManagerCompat.IMPORTANCE_HIGH)
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
@@ -64,8 +79,28 @@ class FirebasePushService : FirebaseMessagingService(), Logger {
         NotificationManagerCompat
             .from(this)
             .notify(
-                message.hashCode(),
+                notificationId,
                 notificationBuilder.build()
             )
     }
+
+    override val kodein: Kodein by lazy { appKodein(application) }
+
+    private val userInteractor: UserInteractor
+        get() {
+            val userInteractor by kodein.instance<UserInteractor>()
+            return userInteractor
+        }
+
+    private val mixinInteractor: SyncMixinInteractor
+        get() {
+            val mixinInteractor by kodein.instance<SyncMixinInteractor>()
+            return mixinInteractor
+        }
+
+    private val json: Json
+        get() {
+            val json by kodein.instance<Json>()
+            return json
+        }
 }

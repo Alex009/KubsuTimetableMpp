@@ -1,5 +1,6 @@
 package com.kubsu.timetable.presentation.splash
 
+import com.kubsu.timetable.DataFailure
 import platform.SerializableModel
 import platform.SerializeModel
 
@@ -8,6 +9,8 @@ sealed class Action {
 
     internal object ShowTimetableScreen : Action()
     internal object ShowSignInScreen : Action()
+
+    internal class ShowFailure(val dataFailure: DataFailure) : Action()
 }
 
 @SerializeModel
@@ -19,6 +22,7 @@ sealed class SideEffect {
 
 sealed class Subscription {
     class Navigate(val screen: Screen) : Subscription()
+    class ShowFailure(val failure: DataFailure) : Subscription()
 }
 
 sealed class Screen {

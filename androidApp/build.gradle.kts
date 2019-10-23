@@ -20,8 +20,8 @@ android {
         minSdkVersion(16)
         targetSdkVersion(29)
 
-        versionName = "0.1.1"
-        versionCode = 2
+        versionName = "0.1.2"
+        versionCode = 3
 
         base.archivesBaseName = "${applicationName}_$versionName"
         testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
@@ -43,13 +43,19 @@ android {
     buildTypes {
         getByName("debug") {
             isMinifyEnabled = true
-            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android.txt"),
+                "proguard-rules-debug.pro"
+            )
             signingConfig = signingConfigs.getByName("release")
         }
 
         getByName("release") {
             isMinifyEnabled = true
-            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
             signingConfig = signingConfigs.getByName("release")
         }
     }

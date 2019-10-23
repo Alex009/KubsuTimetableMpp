@@ -2,6 +2,8 @@ package com.kubsu.timetable.extensions
 
 import com.soywiz.klock.DateTime
 import com.soywiz.klock.DayOfWeek
+import io.ktor.client.response.HttpResponse
+import io.ktor.utils.io.readRemaining
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -10,6 +12,9 @@ fun <T> T.checkWhenAllHandled() = Unit
 
 fun getCurrentDayOfWeek(): DayOfWeek =
     DateTime.nowLocal().dayOfWeek
+
+suspend fun HttpResponse.readContent() =
+    content.readRemaining().readText()
 
 fun <T> List<T>.update(t: T, getId: (T) -> Int): List<T> {
     val result = ArrayList<T>()

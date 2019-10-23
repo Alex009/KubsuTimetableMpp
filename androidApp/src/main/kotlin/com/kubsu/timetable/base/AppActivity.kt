@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.NavHost
 import androidx.navigation.findNavController
-import com.crashlytics.android.Crashlytics
 import com.kubsu.timetable.R
 import com.kubsu.timetable.utils.Logger
 import com.kubsu.timetable.utils.MaterialActionDialogCreator
@@ -91,11 +90,7 @@ class AppActivity : AppCompatActivity(), NavHost, Logger {
         }
     }
 
-    private fun onFailure(failure: Failure) {
-        handleFail(failure)?.let(Crashlytics::logException)
-    }
-
-    private fun handleFail(failure: Failure): Exception? =
+    private fun onFailure(failure: Failure) =
         when (failure) {
             is InternalFail -> {
                 error(
@@ -103,14 +98,15 @@ class AppActivity : AppCompatActivity(), NavHost, Logger {
                     exception = failure.exception,
                     message = failure.message
                 )
-                failure.exception
             }
 
-            is UnknownDeviceFail ->
-                null
+            is UnknownDeviceFail -> Unit
 
             is IntentFailure ->
-                handleIntentFail(failure)
+                error(
+                    exception = handleIntentFail(failure),
+                    message = ""
+                )
         }
 
     private fun handleIntentFail(intentFailure: IntentFailure): Exception? =

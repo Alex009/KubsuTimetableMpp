@@ -2,6 +2,7 @@ package com.kubsu.timetable.fragments.bottomnav.subscription.list
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.egroden.teaco.TeaFeature
 import com.egroden.teaco.androidConnectors
@@ -76,7 +77,13 @@ class SubscriptionListFragment(
         }
 
         progressEffect bind { view.progress_bar.visibility(it) }
-        subscriptionListEffect bind subscriptionAdapter::setData
+        subscriptionListEffect bind { subscriptionList ->
+            val listIsNotEmpty = subscriptionList.isNotEmpty()
+            view.empty_list_layout.isVisible = !listIsNotEmpty
+            view.subscription_recycler_view.isVisible = listIsNotEmpty
+
+            subscriptionAdapter.setData(subscriptionList)
+        }
     }
 
     override fun onDestroyView() {
@@ -88,7 +95,6 @@ class SubscriptionListFragment(
     private fun render(state: State) {
         progressEffect.value = if (state.progress) Visibility.VISIBLE else Visibility.INVISIBLE
         subscriptionListEffect.value = state.subscriptionList
-        //TODO show message "list is empty"
     }
 
     private fun render(subscription: Subscription) =

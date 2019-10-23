@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.kubsu.timetable.BaseNavGraphDirections
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.R
+import com.kubsu.timetable.extensions.checkWhenAllHandled
 import com.kubsu.timetable.firebase.NotAuthenticatedException
 import com.kubsu.timetable.firebase.ParsingException
 import com.kubsu.timetable.firebase.UnknownResponseException
@@ -40,14 +41,14 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Logger {
             )
     }
 
-    protected fun notifyUserOfFailure(failure: DataFailure) =
+    protected fun notifyUserOfFailure(failure: DataFailure) {
+        val activity = requireActivity()
         when (failure) {
             is DataFailure.ConnectionToRepository -> {
-                requireActivity().materialAlert(
+                activity.materialAlert(
                     message = getString(R.string.error_connecting),
                     onOkButtonClick = {}
                 )
-                Unit
             }
 
             is DataFailure.NotAuthenticated -> {
@@ -55,19 +56,22 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Logger {
                     message = failure.debugMessage,
                     exception = NotAuthenticatedException(failure.debugMessage)
                 )
-                requireActivity().materialAlert(
+                activity.materialAlert(
                     message = getString(R.string.not_authenticated),
                     onOkButtonClick = {
                         safeNavigate(BaseNavGraphDirections.actionGlobalSignInFragment())
                     }
                 )
-                Unit
             }
 
             is DataFailure.ParsingError -> {
                 error(
                     message = failure.debugMessage,
                     exception = ParsingException(failure.debugMessage)
+                )
+                activity.materialAlert(
+                    message = getString(R.string.unknown_failure),
+                    onOkButtonClick = {}
                 )
             }
 
@@ -80,6 +84,11 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Logger {
                         message = failure.debugMessage
                     )
                 )
+                activity.materialAlert(
+                    message = getString(R.string.unknown_failure),
+                    onOkButtonClick = {}
+                )
             }
-        }
+        }.checkWhenAllHandled()
+    }
 }

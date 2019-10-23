@@ -11,7 +11,7 @@ object SubscriptionDtoMapper {
         SubscriptionEntity(
             id = networkDto.id,
             title = networkDto.title,
-            userId = networkDto.userId,
+            userId = networkDto.user,
             subgroupId = networkDto.subgroup,
             isMain = networkDto.isMain
         )
@@ -38,7 +38,7 @@ object SubscriptionDtoMapper {
         SubscriptionDb.Impl(
             id = subscription.id,
             name = subscription.title,
-            userId = subscription.userId,
+            userId = subscription.user,
             subgroupId = subscription.subgroup,
             isMain = subscription.isMain
         )
@@ -49,7 +49,7 @@ object SubscriptionDtoMapper {
             title = entity.title,
             subgroup = entity.subgroupId,
             isMain = entity.isMain,
-            userId = entity.userId
+            user = entity.userId
         )
 
     fun toNetworkDto(dbDto: SubscriptionDb): SubscriptionNetworkDto =
@@ -58,6 +58,6 @@ object SubscriptionDtoMapper {
             title = dbDto.name,
             subgroup = dbDto.subgroupId,
             isMain = dbDto.isMain,
-            userId = dbDto.userId
+            user = dbDto.userId
         )
 }

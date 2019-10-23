@@ -18,6 +18,10 @@ class SyncMixinInteractorImpl(
     private val mixinGateway: SyncMixinGateway,
     private val userInfoGateway: UserInfoGateway
 ) : SyncMixinInteractor {
+    override suspend fun registerDataDiff(entity: DataDiffEntity) = def {
+        mixinGateway.registerDataDiff(entity)
+    }
+
     override suspend fun updateData(): Either<DataFailure, Unit> = def {
         val user = userInfoGateway.getCurrentUserOrNull()
 
