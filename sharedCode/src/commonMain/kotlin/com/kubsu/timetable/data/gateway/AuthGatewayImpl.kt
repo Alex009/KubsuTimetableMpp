@@ -2,6 +2,7 @@ package com.kubsu.timetable.data.gateway
 
 import com.egroden.teaco.Either
 import com.egroden.teaco.map
+import com.egroden.teaco.right
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SignInFail
@@ -12,9 +13,8 @@ import com.kubsu.timetable.data.db.diff.UpdatedEntityQueries
 import com.kubsu.timetable.data.db.timetable.*
 import com.kubsu.timetable.data.mapper.UserDtoMapper
 import com.kubsu.timetable.data.network.client.user.UserInfoNetworkClient
-import com.kubsu.timetable.data.storage.user.UserStorage
-import com.kubsu.timetable.domain.entity.Timestamp
-import com.kubsu.timetable.domain.entity.UserEntity
+import com.kubsu.timetable.data.storage.user.info.UserStorage
+import com.kubsu.timetable.data.storage.user.session.SessionStorage
 import com.kubsu.timetable.domain.interactor.auth.AuthGateway
 
 class AuthGatewayImpl(
@@ -27,7 +27,8 @@ class AuthGatewayImpl(
     private val updatedEntityQueries: UpdatedEntityQueries,
     private val deletedEntityQueries: DeletedEntityQueries,
     private val networkClient: UserInfoNetworkClient,
-    private val userStorage: UserStorage
+    private val userStorage: UserStorage,
+    private val sessionStorage: SessionStorage
 ) : AuthGateway {
     override suspend fun signIn(
         email: String,
@@ -36,8 +37,8 @@ class AuthGatewayImpl(
         networkClient
             .signIn(email, password)
             .map {
-                val timestamp = Timestamp.create()
-                userStorage.set(UserDtoMapper.toStorageDto(it, timestamp))
+                userStorage.set(UserDtoMapper.toStorageDto(it.user))
+                sessionStorage.set(it.session)
             }
 
     override suspend fun registrationUser(
@@ -46,10 +47,13 @@ class AuthGatewayImpl(
     ): Either<RequestFailure<List<UserInfoFail>>, Unit> =
         networkClient.registration(email, password)
 
-    override suspend fun logout(user: UserEntity): Either<DataFailure, Unit> {
-        userStorage.set(null)
+    override suspend fun logout(): Either<DataFailure, Unit> {
         clearDatabase()
-        return networkClient.logout(UserDtoMapper.toNetworkDto(user))
+        userStorage.set(null)
+        return sessionStorage.get()?.let {
+            sessionStorage.set(null)
+            networkClient.logout(it)
+        } ?: Either.right(Unit)
     }
 
     private fun clearDatabase() {

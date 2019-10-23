@@ -7,3 +7,7 @@ class UnknownResponseException(
     val body: String,
     override val message: String?
 ) : Exception()
+
+class ParsingException(
+    override val message: String?
+) : Exception()

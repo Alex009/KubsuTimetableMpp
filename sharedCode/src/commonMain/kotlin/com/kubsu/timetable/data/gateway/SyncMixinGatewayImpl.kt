@@ -6,15 +6,15 @@ import com.egroden.teaco.map
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.data.db.diff.*
 import com.kubsu.timetable.data.db.timetable.*
-import com.kubsu.timetable.data.mapper.UserDtoMapper
 import com.kubsu.timetable.data.mapper.diff.BasenameDtoMapper
 import com.kubsu.timetable.data.mapper.diff.DataDiffDtoMapper
 import com.kubsu.timetable.data.mapper.timetable.data.*
 import com.kubsu.timetable.data.network.client.update.UpdateDataNetworkClient
 import com.kubsu.timetable.data.network.dto.timetable.data.*
+import com.kubsu.timetable.data.storage.user.session.SessionStorage
+import com.kubsu.timetable.data.storage.user.session.getEitherFailure
 import com.kubsu.timetable.domain.entity.Basename
 import com.kubsu.timetable.domain.entity.Timestamp
-import com.kubsu.timetable.domain.entity.UserEntity
 import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
 import com.kubsu.timetable.domain.interactor.sync.SyncMixinGateway
 
@@ -27,7 +27,8 @@ class SyncMixinGatewayImpl(
     private val universityInfoQueries: UniversityInfoQueries,
     private val updatedEntityQueries: UpdatedEntityQueries,
     private val deletedEntityQueries: DeletedEntityQueries,
-    private val networkClient: UpdateDataNetworkClient
+    private val networkClient: UpdateDataNetworkClient,
+    private val sessionStorage: SessionStorage
 ) : SyncMixinGateway {
     override fun registerDataDiff(entity: DataDiffEntity) {
         dataDiffQueries.update(
@@ -89,82 +90,95 @@ class SyncMixinGatewayImpl(
             Basename.UniversityInfo -> deletedIds.forEach(universityInfoQueries::deleteById)
         }
 
-    override suspend fun diff(user: UserEntity): Either<DataFailure, Pair<Timestamp, List<Basename>>> =
-        networkClient
-            .diff(UserDtoMapper.toNetworkDto(user), user.timestamp.value)
-            .map {
-                val newTimestamp = Timestamp(it.timestamp)
-                val list = it.basenameList.map { basename -> BasenameDtoMapper.toEntity(basename) }
-                newTimestamp to list
+    override suspend fun diff(): Either<DataFailure, Pair<Timestamp, List<Basename>>> =
+        sessionStorage
+            .getEitherFailure()
+            .flatMap { session ->
+                networkClient
+                    .diff(session)
+                    .map {
+                        val newTimestamp = Timestamp(it.timestamp)
+                        val list = it.basenameList.map { basename ->
+                            BasenameDtoMapper.toEntity(basename)
+                        }
+                        newTimestamp to list
+                    }
             }
 
     override suspend fun updateData(
         basename: Basename,
-        availableDiff: DataDiffEntity,
-        user: UserEntity
+        availableDiff: DataDiffEntity
     ): Either<DataFailure, Unit> {
         val existsIds = availableDiff.updatedIds + availableDiff.deletedIds
-        return networkClient
-            .sync(
-                user = UserDtoMapper.toNetworkDto(user),
-                basename = BasenameDtoMapper.value(basename),
-                timestamp = user.timestamp.value,
-                existsIds = existsIds
-            ).flatMap { (updatedIds, deletedIds) ->
-                deleteData(basename, deletedIds)
-                meta(basename, user, updatedIds)
+        return sessionStorage
+            .getEitherFailure()
+            .flatMap { session ->
+                networkClient
+                    .sync(
+                        session = session,
+                        basename = BasenameDtoMapper.value(basename),
+                        existsIds = existsIds
+                    ).flatMap { (updatedIds, deletedIds) ->
+                        deleteData(basename, deletedIds)
+                        meta(basename, updatedIds)
+                    }
             }
     }
 
     override suspend fun meta(
         basename: Basename,
-        user: UserEntity,
         updatedIds: List<Int>
-    ): Either<DataFailure, Unit> {
-        val strBasename = BasenameDtoMapper.value(basename)
-        val userNetworkDto = UserDtoMapper.toNetworkDto(user)
-        return when (basename) {
-            Basename.Subscription ->
-                networkClient
-                    .meta<SubscriptionNetworkDto>(userNetworkDto, strBasename, updatedIds)
-                    .map { list ->
-                        for (networkDto in list)
-                            subscriptionQueries.update(
-                                SubscriptionDtoMapper.toDbDto(networkDto, user.id)
-                            )
-                    }
+    ): Either<DataFailure, Unit> =
+        sessionStorage
+            .getEitherFailure()
+            .flatMap { session ->
+                val strBasename = BasenameDtoMapper.value(basename)
+                when (basename) {
+                    Basename.Subscription ->
+                        networkClient
+                            .meta<SubscriptionNetworkDto>(session, strBasename, updatedIds)
+                            .map { list ->
+                                for (networkDto in list)
+                                    subscriptionQueries.update(
+                                        SubscriptionDtoMapper.toDbDto(networkDto)
+                                    )
+                            }
 
-            Basename.Timetable ->
-                networkClient
-                    .meta<TimetableNetworkDto>(userNetworkDto, strBasename, updatedIds)
-                    .map { list ->
-                        for (timetable in list)
-                            timetableQueries.update(TimetableDtoMapper.toDbDto(timetable))
-                    }
+                    Basename.Timetable ->
+                        networkClient
+                            .meta<TimetableNetworkDto>(session, strBasename, updatedIds)
+                            .map { list ->
+                                for (timetable in list)
+                                    timetableQueries.update(TimetableDtoMapper.toDbDto(timetable))
+                            }
 
-            Basename.Lecturer ->
-                networkClient
-                    .meta<LecturerNetworkDto>(userNetworkDto, strBasename, updatedIds)
-                    .map { list ->
-                        for (lecturer in list)
-                            lecturerQueries.update(LecturerDtoMapper.toDbDto(lecturer))
-                    }
+                    Basename.Lecturer ->
+                        networkClient
+                            .meta<LecturerNetworkDto>(session, strBasename, updatedIds)
+                            .map { list ->
+                                for (lecturer in list)
+                                    lecturerQueries.update(LecturerDtoMapper.toDbDto(lecturer))
+                            }
 
-            Basename.Class ->
-                networkClient
-                    .meta<ClassNetworkDto>(userNetworkDto, strBasename, updatedIds)
-                    .map { list ->
-                        for (`class` in list)
-                            classQueries.update(ClassDtoMapper.toDbDto(`class`))
-                    }
+                    Basename.Class ->
+                        networkClient
+                            .meta<ClassNetworkDto>(session, strBasename, updatedIds)
+                            .map { list ->
+                                for (`class` in list)
+                                    classQueries.update(ClassDtoMapper.toDbDto(`class`))
+                            }
 
-            Basename.UniversityInfo ->
-                networkClient
-                    .meta<UniversityInfoNetworkDto>(userNetworkDto, strBasename, updatedIds)
-                    .map { list ->
-                        for (info in list)
-                            universityInfoQueries.update(UniversityInfoDtoMapper.toDbDto(info))
-                    }
-        }
-    }
+                    Basename.UniversityInfo ->
+                        networkClient
+                            .meta<UniversityInfoNetworkDto>(session, strBasename, updatedIds)
+                            .map { list ->
+                                for (info in list)
+                                    universityInfoQueries.update(
+                                        UniversityInfoDtoMapper.toDbDto(
+                                            info
+                                        )
+                                    )
+                            }
+                }
+            }
 }

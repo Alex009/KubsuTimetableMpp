@@ -5,6 +5,7 @@ import com.egroden.teaco.TeaFeature
 import com.egroden.teaco.androidConnectors
 import com.egroden.teaco.bindAction
 import com.egroden.teaco.connect
+import com.kubsu.timetable.BaseNavGraphDirections
 import com.kubsu.timetable.R
 import com.kubsu.timetable.base.BaseFragment
 import com.kubsu.timetable.presentation.splash.*
@@ -31,7 +32,7 @@ class SplashFragment(
         safeNavigate(
             when (screen) {
                 Screen.SignInScreen ->
-                    SplashFragmentDirections.actionSplashFragmentToSignInFragment()
+                    BaseNavGraphDirections.actionGlobalSignInFragment()
                 Screen.TimetableScreen ->
                     SplashFragmentDirections.actionSplashFragmentToBottomNavFragment()
             }

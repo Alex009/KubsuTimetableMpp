@@ -5,7 +5,6 @@ import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SignInFail
 import com.kubsu.timetable.UserInfoFail
-import com.kubsu.timetable.domain.entity.UserEntity
 
 interface AuthGateway {
     suspend fun signIn(
@@ -18,5 +17,5 @@ interface AuthGateway {
         password: String
     ): Either<RequestFailure<List<UserInfoFail>>, Unit>
 
-    suspend fun logout(user: UserEntity): Either<DataFailure, Unit>
+    suspend fun logout(): Either<DataFailure, Unit>
 }

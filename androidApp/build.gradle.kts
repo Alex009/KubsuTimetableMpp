@@ -20,8 +20,8 @@ android {
         minSdkVersion(16)
         targetSdkVersion(29)
 
-        versionName = "0.1.0"
-        versionCode = 1
+        versionName = "0.1.1"
+        versionCode = 2
 
         base.archivesBaseName = "${applicationName}_$versionName"
         testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
@@ -33,7 +33,7 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file("release-key.jks")
+            storeFile = file("release-key.keystore")
             storePassword = "a3JhbnNvZGFyX2t1YnN1"
             keyAlias = "kubsu"
             keyPassword = "6b72616e736f6461725f6b75627375"

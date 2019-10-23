@@ -11,5 +11,7 @@ import org.kodein.di.erased.singleton
 
 internal val userDomainModule = Kodein.Module("user_domain") {
     bind<UserInteractor>() with singleton { UserInteractorImpl(instance()) }
-    bind<UserInfoGateway>() with singleton { UserInfoGatewayImpl(instance(), instance()) }
+    bind<UserInfoGateway>() with singleton {
+        UserInfoGatewayImpl(instance(), instance(), instance())
+    }
 }

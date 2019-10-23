@@ -1,7 +1,6 @@
 package com.kubsu.timetable.utils
 
 import android.content.Context
-import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import com.kubsu.timetable.utils.ui.materialAlert
 import com.thelittlefireman.appkillermanager.Failure
@@ -22,8 +21,7 @@ class MaterialActionDialogCreator(
             message = getString(messageForUser),
             positiveButtonText = android.R.string.yes,
             onOkButtonClick = okButton,
-            onNoButtonClick = noButton,
-            windowFeature = Window.FEATURE_NO_TITLE
+            onNoButtonClick = noButton
         )
     }
 }

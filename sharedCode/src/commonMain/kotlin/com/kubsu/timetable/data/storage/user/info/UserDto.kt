@@ -1,6 +1,6 @@
-package com.kubsu.timetable.domain.entity
+package com.kubsu.timetable.data.storage.user.info
 
-data class UserEntity(
+data class UserDto(
     val id: Int,
     val firstName: String,
     val lastName: String,

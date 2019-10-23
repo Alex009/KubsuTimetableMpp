@@ -11,11 +11,6 @@
         android:label="splash_fragment"
         tools:layout="@layout/splash_fragment">
         <action
-            android:id="@+id/action_splashFragment_to_signInFragment"
-            app:destination="@id/signInFragment"
-            app:popUpTo="@id/splashFragment"
-            app:popUpToInclusive="true" />
-        <action
             android:id="@+id/action_splashFragment_to_bottomNavFragment"
             app:destination="@id/bottomNavFragment"
             app:popUpTo="@id/splashFragment"
@@ -47,15 +42,7 @@
         android:id="@+id/registrationFragment"
         android:name="com.kubsu.timetable.fragments.registration.RegistrationFragment"
         android:label="registration_fragment"
-        tools:layout="@layout/registration_fragment">
-        <action
-            android:id="@+id/action_registrationFragment_to_signInFragment"
-            app:destination="@id/signInFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
-    </fragment>
+        tools:layout="@layout/registration_fragment" />
 
     <fragment
         android:id="@+id/bottomNavFragment"
@@ -69,15 +56,6 @@
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
-        <action
-            android:id="@+id/action_bottomNavFragment_to_signInFragment"
-            app:destination="@id/signInFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim"
-            app:popUpTo="@id/base_nav_graph"
-            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -95,4 +73,7 @@
             app:popUpTo="@id/bottomNavFragment"
             app:popUpToInclusive="true" />
     </fragment>
+    <action
+        android:id="@+id/action_global_signInFragment"
+        app:destination="@id/signInFragment" />
 </navigation>

@@ -1,7 +1,6 @@
 package com.kubsu.timetable.domain.interactor.auth
 
 import com.egroden.teaco.Either
-import com.egroden.teaco.left
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SignInFail
@@ -33,10 +32,6 @@ class AuthInteractorImpl(
     }
 
     override suspend fun logout(): Either<DataFailure, Unit> = def {
-        val user = userInfoGateway.getCurrentUserOrNull()
-        if (user != null)
-            authGateway.logout(user)
-        else
-            Either.left(DataFailure.NotAuthenticated("AuthInteractor#logout"))
+        authGateway.logout()
     }
 }

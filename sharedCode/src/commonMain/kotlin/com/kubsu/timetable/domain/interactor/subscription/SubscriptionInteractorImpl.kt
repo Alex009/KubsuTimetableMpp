@@ -44,27 +44,11 @@ class SubscriptionInteractorImpl(
         subscriptionName: String,
         isMain: Boolean
     ): Either<RequestFailure<List<SubscriptionFail>>, SubscriptionEntity> = def {
-        val user = userInfoGateway.getCurrentUserOrNull()
-
-        if (user != null)
-            subscriptionGateway.create(user, subgroupId, subscriptionName, isMain)
-        else
-            Either.left(
-                RequestFailure(
-                    DataFailure.NotAuthenticated("SubscriptionInteractor#create")
-                )
-            )
+        subscriptionGateway.create(subgroupId, subscriptionName, isMain)
     }
 
     override suspend fun getById(id: Int): Either<DataFailure, SubscriptionEntity> = def {
-        val user = userInfoGateway.getCurrentUserOrNull()
-
-        if (user != null)
-            subscriptionGateway.getById(id, user.id)
-        else
-            Either.left(
-                DataFailure.NotAuthenticated("SubscriptionInteractor#getById")
-            )
+        subscriptionGateway.getById(id)
     }
 
     override suspend fun getAll(): Either<DataFailure, List<SubscriptionEntity>> = def {
@@ -81,26 +65,10 @@ class SubscriptionInteractorImpl(
     override suspend fun update(
         subscription: SubscriptionEntity
     ): Either<RequestFailure<List<SubscriptionFail>>, Unit> = def {
-        val user = userInfoGateway.getCurrentUserOrNull()
-
-        if (user != null)
-            subscriptionGateway.update(user, subscription)
-        else
-            Either.left(
-                RequestFailure(
-                    DataFailure.NotAuthenticated("SubscriptionInteractor#update")
-                )
-            )
+        subscriptionGateway.update(subscription)
     }
 
     override suspend fun deleteById(id: Int): Either<DataFailure, Unit> = def {
-        val user = userInfoGateway.getCurrentUserOrNull()
-
-        if (user != null)
-            subscriptionGateway.deleteById(user, id)
-        else
-            Either.left(
-                DataFailure.NotAuthenticated("SubscriptionInteractor#deleteById")
-            )
+        subscriptionGateway.deleteById(id)
     }
 }

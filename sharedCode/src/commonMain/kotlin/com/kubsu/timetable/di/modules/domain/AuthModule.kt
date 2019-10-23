@@ -24,7 +24,8 @@ internal val authDomainModule = Kodein.Module("auth_domain") {
             updatedEntityQueries = db.updatedEntityQueries,
             deletedEntityQueries = db.deletedEntityQueries,
             networkClient = instance(),
-            userStorage = instance()
+            userStorage = instance(),
+            sessionStorage = instance()
         )
     }
 }

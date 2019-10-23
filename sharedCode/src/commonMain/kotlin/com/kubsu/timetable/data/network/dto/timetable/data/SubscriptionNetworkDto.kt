@@ -9,6 +9,9 @@ class SubscriptionNetworkDto(
     val title: String,
     val subgroup: Int,
 
+    @SerialName("user_id")
+    val userId: Int,
+
     @SerialName("is_main")
     val isMain: Boolean
 )

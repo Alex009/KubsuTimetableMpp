@@ -3,12 +3,12 @@ package com.kubsu.timetable.data.network.client.update
 import com.egroden.teaco.Either
 import com.egroden.teaco.mapLeft
 import com.kubsu.timetable.DataFailure
-import com.kubsu.timetable.data.network.dto.UserNetworkDto
 import com.kubsu.timetable.data.network.dto.response.DiffResponse
 import com.kubsu.timetable.data.network.dto.response.SyncResponse
 import com.kubsu.timetable.data.network.sender.NetworkSender
 import com.kubsu.timetable.data.network.sender.failure.ServerFailure
 import com.kubsu.timetable.data.network.sender.failure.toNetworkFail
+import com.kubsu.timetable.data.storage.user.session.SessionDto
 import com.kubsu.timetable.extensions.addSessionKey
 import com.kubsu.timetable.extensions.jsonContent
 import com.kubsu.timetable.extensions.toJson
@@ -17,15 +17,12 @@ import io.ktor.client.request.post
 class UpdateDataNetworkClientImpl(
     private val networkSender: NetworkSender
 ) : UpdateDataNetworkClient {
-    override suspend fun diff(
-        user: UserNetworkDto,
-        timestamp: Long
-    ): Either<DataFailure, DiffResponse> =
+    override suspend fun diff(session: SessionDto): Either<DataFailure, DiffResponse> =
         with(networkSender) {
             handle {
                 post<DiffResponse>("$baseUrl/api/$apiVersion/university/diff/") {
-                    addSessionKey(user)
-                    body = jsonContent("timestamp" to timestamp.toJson())
+                    addSessionKey(session)
+                    body = jsonContent("timestamp" to session.timestamp.value.toJson())
                 }
             }.mapLeft {
                 if (it is ServerFailure.Response && it.code == 401)
@@ -36,17 +33,16 @@ class UpdateDataNetworkClientImpl(
         }
 
     override suspend fun sync(
-        user: UserNetworkDto,
+        session: SessionDto,
         basename: String,
-        timestamp: Long,
         existsIds: List<Int>
     ): Either<DataFailure, SyncResponse> =
         with(networkSender) {
             handle {
                 post<SyncResponse>("$baseUrl/api/$apiVersion/$basename/sync/") {
-                    addSessionKey(user)
+                    addSessionKey(session)
                     body = jsonContent(
-                        "timestamp" to timestamp.toJson(),
+                        "timestamp" to session.timestamp.value.toJson(),
                         "existing_ids" to existsIds.toJson()
                     )
                 }
@@ -59,14 +55,14 @@ class UpdateDataNetworkClientImpl(
         }
 
     override suspend fun <T> meta(
-        user: UserNetworkDto,
+        session: SessionDto,
         basename: String,
         updatedIds: List<Int>
     ): Either<DataFailure, List<T>> =
         with(networkSender) {
             handle {
                 post<List<T>>("$baseUrl/api/$apiVersion/$basename/meta/") {
-                    addSessionKey(user)
+                    addSessionKey(session)
                     body = jsonContent("ids" to updatedIds.toJson())
                 }
             }.mapLeft {

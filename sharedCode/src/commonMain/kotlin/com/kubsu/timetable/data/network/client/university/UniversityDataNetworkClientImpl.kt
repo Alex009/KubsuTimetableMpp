@@ -1,7 +1,7 @@
 package com.kubsu.timetable.data.network.client.university
 
 import com.egroden.teaco.Either
-import com.egroden.teaco.map
+import com.egroden.teaco.bimap
 import com.egroden.teaco.mapLeft
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.data.network.dto.response.FantasticFour
@@ -58,16 +58,18 @@ class UniversityDataNetworkClientImpl(
                     "$baseUrl/api/$apiVersion/faculties/$facultyId/info"
                 )
             }
-                .mapLeft(::toNetworkFail)
-                .map {
-                    UniversityInfoNetworkDto(
-                        id = it.id,
-                        facultyId = it.objectId,
-                        typeOfWeek = it
-                            .data
-                            .getValue("current_type_of_week")
-                            .int
-                    )
-                }
+                .bimap(
+                    leftOperation = ::toNetworkFail,
+                    rightOperation = {
+                        UniversityInfoNetworkDto(
+                            id = it.id,
+                            facultyId = it.objectId,
+                            typeOfWeek = it
+                                .data
+                                .getValue("current_type_of_week")
+                                .int
+                        )
+                    }
+                )
         }
 }

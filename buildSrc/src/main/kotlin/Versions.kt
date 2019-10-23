@@ -38,7 +38,7 @@ object Versions {
 
     const val multiplatform_settings: String = "0.3.3"
 
-    const val app_killer_manager: String = "0.3.5"
+    const val app_killer_manager: String = "0.3.6"
 
     const val firebase_analytics: String = "17.2.0"
 

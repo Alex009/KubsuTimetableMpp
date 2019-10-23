@@ -18,20 +18,18 @@ interface SubscriptionGateway {
     suspend fun selectSubgroupList(groupId: Int): Either<DataFailure, List<SubgroupEntity>>
 
     suspend fun create(
-        user: UserEntity,
         subgroupId: Int,
         subscriptionName: String,
         isMain: Boolean
     ): Either<RequestFailure<List<SubscriptionFail>>, SubscriptionEntity>
 
-    suspend fun getById(id: Int, userId: Int): Either<DataFailure, SubscriptionEntity>
+    suspend fun getById(id: Int): Either<DataFailure, SubscriptionEntity>
 
     suspend fun getAll(user: UserEntity): Either<DataFailure, List<SubscriptionEntity>>
 
     suspend fun update(
-        user: UserEntity,
         subscription: SubscriptionEntity
     ): Either<RequestFailure<List<SubscriptionFail>>, Unit>
 
-    suspend fun deleteById(user: UserEntity, id: Int): Either<DataFailure, Unit>
+    suspend fun deleteById(id: Int): Either<DataFailure, Unit>
 }

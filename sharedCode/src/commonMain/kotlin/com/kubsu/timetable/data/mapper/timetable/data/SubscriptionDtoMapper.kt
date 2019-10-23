@@ -6,13 +6,12 @@ import com.kubsu.timetable.domain.entity.timetable.data.SubscriptionEntity
 
 object SubscriptionDtoMapper {
     fun toEntity(
-        networkDto: SubscriptionNetworkDto,
-        userId: Int
+        networkDto: SubscriptionNetworkDto
     ): SubscriptionEntity =
         SubscriptionEntity(
             id = networkDto.id,
             title = networkDto.title,
-            userId = userId,
+            userId = networkDto.userId,
             subgroupId = networkDto.subgroup,
             isMain = networkDto.isMain
         )
@@ -35,11 +34,11 @@ object SubscriptionDtoMapper {
             isMain = entity.isMain
         )
 
-    fun toDbDto(subscription: SubscriptionNetworkDto, userId: Int): SubscriptionDb =
+    fun toDbDto(subscription: SubscriptionNetworkDto): SubscriptionDb =
         SubscriptionDb.Impl(
             id = subscription.id,
             name = subscription.title,
-            userId = userId,
+            userId = subscription.userId,
             subgroupId = subscription.subgroup,
             isMain = subscription.isMain
         )
@@ -49,7 +48,8 @@ object SubscriptionDtoMapper {
             id = entity.id,
             title = entity.title,
             subgroup = entity.subgroupId,
-            isMain = entity.isMain
+            isMain = entity.isMain,
+            userId = entity.userId
         )
 
     fun toNetworkDto(dbDto: SubscriptionDb): SubscriptionNetworkDto =
@@ -57,6 +57,7 @@ object SubscriptionDtoMapper {
             id = dbDto.id,
             title = dbDto.name,
             subgroup = dbDto.subgroupId,
-            isMain = dbDto.isMain
+            isMain = dbDto.isMain,
+            userId = dbDto.userId
         )
 }

@@ -7,7 +7,6 @@ import com.egroden.teaco.right
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.domain.entity.Basename
 import com.kubsu.timetable.domain.entity.Timestamp
-import com.kubsu.timetable.domain.entity.UserEntity
 import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
 import com.kubsu.timetable.domain.interactor.userInfo.UserInfoGateway
 import com.kubsu.timetable.extensions.def
@@ -24,11 +23,11 @@ class SyncMixinInteractorImpl(
 
         return@def if (user != null) {
             val diffList = mixinGateway.getAvailableDiffList(user.id)
-            handleAvailableDiffList(diffList, user).flatMap {
+            handleAvailableDiffList(diffList).flatMap {
                 mixinGateway
-                    .diff(user)
+                    .diff()
                     .flatMap { (newTimestamp, basenameList) ->
-                        handleBasenameList(basenameList, newTimestamp, diffList, user)
+                        handleBasenameList(basenameList, newTimestamp, diffList)
                     }
             }
         } else {
@@ -37,11 +36,10 @@ class SyncMixinInteractorImpl(
     }
 
     private suspend fun handleAvailableDiffList(
-        diffList: List<DataDiffEntity>,
-        user: UserEntity
+        diffList: List<DataDiffEntity>
     ): Either<DataFailure, Unit> = coroutineScope {
         diffList
-            .map { async { mixinGateway.meta(it.basename, user, it.updatedIds) } }
+            .map { async { mixinGateway.meta(it.basename, it.updatedIds) } }
             .awaitAll()
             .firstOrNull { it is Either.Left }
             ?: Either.right(mixinGateway.delete(diffList))
@@ -50,21 +48,19 @@ class SyncMixinInteractorImpl(
     private suspend fun handleBasenameList(
         basenameList: List<Basename>,
         timestamp: Timestamp,
-        diffList: List<DataDiffEntity>,
-        user: UserEntity
+        diffList: List<DataDiffEntity>
     ): Either<DataFailure, Unit> = coroutineScope {
         basenameList
             .map { basename ->
                 async {
                     mixinGateway.updateData(
                         basename = basename,
-                        availableDiff = diffList.first { it.basename == basename },
-                        user = user
+                        availableDiff = diffList.first { it.basename == basename }
                     )
                 }
             }
             .awaitAll()
             .firstOrNull { it is Either.Left }
-            ?: Either.right(userInfoGateway.updateTimestamp(user, timestamp))
+            ?: userInfoGateway.updateTimestamp(timestamp)
     }
 }

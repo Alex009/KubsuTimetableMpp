@@ -1,49 +1,40 @@
 package com.kubsu.timetable.data.mapper
 
 import com.kubsu.timetable.data.network.dto.UserNetworkDto
-import com.kubsu.timetable.data.storage.user.UserStorageDto
-import com.kubsu.timetable.domain.entity.Timestamp
+import com.kubsu.timetable.data.storage.user.info.UserDto
 import com.kubsu.timetable.domain.entity.UserEntity
 
 object UserDtoMapper {
-    fun toEntity(storageDto: UserStorageDto): UserEntity =
+    fun toEntity(storageDto: UserDto): UserEntity =
         UserEntity(
             id = storageDto.id,
             firstName = storageDto.firstName,
             lastName = storageDto.lastName,
-            email = storageDto.email,
-            timestamp = Timestamp(storageDto.timestamp),
-            sessionKey = storageDto.sessionKey
+            email = storageDto.email
         )
 
-    fun toEntity(networkDto: UserNetworkDto, timestamp: Timestamp): UserEntity =
+    fun toEntity(networkDto: UserNetworkDto): UserEntity =
         UserEntity(
             id = networkDto.id,
             firstName = networkDto.firstName,
             lastName = networkDto.lastName,
-            email = networkDto.email,
-            timestamp = timestamp,
-            sessionKey = networkDto.sessionKey
+            email = networkDto.email
         )
 
-    fun toStorageDto(entity: UserEntity): UserStorageDto =
-        UserStorageDto(
+    fun toStorageDto(entity: UserEntity): UserDto =
+        UserDto(
             id = entity.id,
             firstName = entity.firstName,
             lastName = entity.lastName,
-            email = entity.email,
-            timestamp = entity.timestamp.value,
-            sessionKey = entity.sessionKey
+            email = entity.email
         )
 
-    fun toStorageDto(entity: UserNetworkDto, timestamp: Timestamp): UserStorageDto =
-        UserStorageDto(
+    fun toStorageDto(entity: UserNetworkDto): UserDto =
+        UserDto(
             id = entity.id,
             firstName = entity.firstName,
             lastName = entity.lastName,
-            email = entity.email,
-            timestamp = timestamp.value,
-            sessionKey = entity.sessionKey
+            email = entity.email
         )
 
     fun toNetworkDto(entity: UserEntity): UserNetworkDto =
@@ -51,16 +42,14 @@ object UserDtoMapper {
             id = entity.id,
             email = entity.email,
             firstName = entity.firstName,
-            lastName = entity.lastName,
-            sessionKey = entity.sessionKey
+            lastName = entity.lastName
         )
 
-    fun toNetworkDto(storageDto: UserStorageDto): UserNetworkDto =
+    fun toNetworkDto(storageDto: UserDto): UserNetworkDto =
         UserNetworkDto(
             id = storageDto.id,
             email = storageDto.email,
             firstName = storageDto.firstName,
-            lastName = storageDto.lastName,
-            sessionKey = storageDto.sessionKey
+            lastName = storageDto.lastName
         )
 }

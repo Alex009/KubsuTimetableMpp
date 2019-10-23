@@ -9,8 +9,8 @@ import com.egroden.teaco.TeaFeature
 import com.egroden.teaco.androidConnectors
 import com.egroden.teaco.bindAction
 import com.egroden.teaco.connect
+import com.kubsu.timetable.BaseNavGraphDirections
 import com.kubsu.timetable.R
-import com.kubsu.timetable.fragments.bottomnav.BottomNavFragmentDirections
 import com.kubsu.timetable.presentation.settings.*
 import com.kubsu.timetable.utils.logics.DarkThemeStatus
 import com.kubsu.timetable.utils.safeNavigate
@@ -62,7 +62,7 @@ class SettingsFragment(
         safeNavigate(
             when (screen) {
                 Screen.SignIn ->
-                    BottomNavFragmentDirections.actionBottomNavFragmentToSignInFragment()
+                    BaseNavGraphDirections.actionGlobalSignInFragment()
             }
         )
 }

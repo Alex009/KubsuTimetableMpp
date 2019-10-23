@@ -19,13 +19,10 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
--optimizations !code/simplification/arithmetic,!field/*,!class/merging/*,!code/allocation/variable
+-keepattributes *Annotation*
+-keepattributes SourceFile,LineNumberTable
+-keep public class * extends java.lang.Exception
 -keepattributes *Annotation*, InnerClasses
 -dontnote kotlinx.serialization.SerializationKt
--keep,includedescriptorclasses class com.yourcompany.yourpackage.**$$serializer { *; } # <-- change package name to your app's
--keepclassmembers class com.yourcompany.yourpackage.** { # <-- change package name to your app's
-    *** Companion;
-}
--keepclasseswithmembers class com.yourcompany.yourpackage.** { # <-- change package name to your app's
-    kotlinx.serialization.KSerializer serializer(...);
-}
+-keep class com.crashlytics.** { *; }
+-dontwarn com.crashlytics.**

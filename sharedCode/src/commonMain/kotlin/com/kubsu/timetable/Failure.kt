@@ -12,7 +12,9 @@ sealed class DataFailure(val debugMessage: String?) : Failure() {
         debugMessage: String? = null
     ) : DataFailure(debugMessage)
 
-    class NotAuthenticated(debugMessage: String?) : DataFailure(debugMessage)
+    class ParsingError(debugMessage: String) : DataFailure(debugMessage)
+
+    class NotAuthenticated(debugMessage: String? = null) : DataFailure(debugMessage)
 
     class ConnectionToRepository(debugMessage: String?) : DataFailure(debugMessage)
 }
@@ -76,13 +78,14 @@ class RequestFailure<D>(
         data?.let(ifData)
     }
 
-    fun plus(requestFailure: RequestFailure<D>, domainPlus: (D?, D?) -> D?): RequestFailure<D> =
-        RequestFailure(
+    fun plus(requestFailure: RequestFailure<D>, domainPlus: (D?, D?) -> D?): RequestFailure<D> {
+        val oldDataList = data ?: emptyList()
+        val newDataList = requestFailure.data ?: emptyList()
+        return RequestFailure(
             domain = domainPlus(domain, requestFailure.domain),
-            data = data
-                ?.plus(requestFailure.data ?: emptyList())
-                ?.toList()
+            data = oldDataList + newDataList
         )
+    }
 
     fun <R> mapDomain(block: (D?) -> R?): RequestFailure<R> =
         RequestFailure(block(domain))

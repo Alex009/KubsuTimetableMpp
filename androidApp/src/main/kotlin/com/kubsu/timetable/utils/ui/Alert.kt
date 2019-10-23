@@ -14,8 +14,7 @@ fun ComponentActivity.materialAlert(
     positiveButtonText: Int = android.R.string.ok,
     negativeButtonText: Int = android.R.string.cancel,
     onOkButtonClick: (() -> Unit)?,
-    onNoButtonClick: (() -> Unit)? = null,
-    windowFeature: Int? = null
+    onNoButtonClick: (() -> Unit)? = null
 ): AlertDialog {
     var dialog: AlertDialog? = null
     val observer = LifecycleEventObserver { _, event ->
@@ -47,8 +46,6 @@ fun ComponentActivity.materialAlert(
         }
         alert.setCancelable(false)
     }.create()
-
-    windowFeature?.let(alertDialog::requestWindowFeature)
 
     dialog = alertDialog
     addObserver(observer)
