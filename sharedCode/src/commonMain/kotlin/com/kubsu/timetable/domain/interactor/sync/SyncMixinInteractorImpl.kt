@@ -2,7 +2,6 @@ package com.kubsu.timetable.domain.interactor.sync
 
 import com.egroden.teaco.Either
 import com.egroden.teaco.flatMap
-import com.egroden.teaco.left
 import com.egroden.teaco.right
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.domain.entity.Basename
@@ -13,6 +12,8 @@ import com.kubsu.timetable.extensions.def
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class SyncMixinInteractorImpl(
     private val mixinGateway: SyncMixinGateway,
@@ -22,22 +23,18 @@ class SyncMixinInteractorImpl(
         mixinGateway.registerDataDiff(entity)
     }
 
-    override suspend fun updateData(): Either<DataFailure, Unit> = def {
-        val user = userInfoGateway.getCurrentUserOrNull()
-
-        return@def if (user != null) {
-            val diffList = mixinGateway.getAvailableDiffList(user.id)
-            handleAvailableDiffList(diffList).flatMap {
-                mixinGateway
-                    .diff()
-                    .flatMap { (newTimestamp, basenameList) ->
-                        handleBasenameList(basenameList, newTimestamp, diffList)
-                    }
+    override fun updateData(): Flow<Either<DataFailure, Unit>> =
+        mixinGateway
+            .getAvailableDiffListFlowForCurrentUser()
+            .map { diffList ->
+                handleAvailableDiffList(diffList).flatMap {
+                    mixinGateway
+                        .diff()
+                        .flatMap { (newTimestamp, basenameList) ->
+                            handleBasenameList(basenameList, newTimestamp, diffList)
+                        }
+                }
             }
-        } else {
-            Either.left(DataFailure.NotAuthenticated("SyncMixinInteractor#updateData"))
-        }
-    }
 
     private suspend fun handleAvailableDiffList(
         diffList: List<DataDiffEntity>

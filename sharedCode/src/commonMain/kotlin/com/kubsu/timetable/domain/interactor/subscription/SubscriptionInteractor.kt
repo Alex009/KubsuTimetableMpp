@@ -9,6 +9,7 @@ import com.kubsu.timetable.domain.entity.timetable.select.FacultyEntity
 import com.kubsu.timetable.domain.entity.timetable.select.GroupEntity
 import com.kubsu.timetable.domain.entity.timetable.select.OccupationEntity
 import com.kubsu.timetable.domain.entity.timetable.select.SubgroupEntity
+import kotlinx.coroutines.flow.Flow
 
 interface SubscriptionInteractor {
     suspend fun selectFacultyList(): Either<DataFailure, List<FacultyEntity>>
@@ -25,9 +26,7 @@ interface SubscriptionInteractor {
         isMain: Boolean
     ): Either<RequestFailure<List<SubscriptionFail>>, SubscriptionEntity>
 
-    suspend fun getById(id: Int): Either<DataFailure, SubscriptionEntity>
-
-    suspend fun getAll(): Either<DataFailure, List<SubscriptionEntity>>
+    fun getAllSubscriptionsFlow(): Flow<Either<DataFailure, List<SubscriptionEntity>>>
 
     suspend fun update(
         subscription: SubscriptionEntity

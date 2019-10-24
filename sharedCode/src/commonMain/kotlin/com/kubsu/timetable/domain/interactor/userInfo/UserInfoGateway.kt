@@ -9,13 +9,13 @@ import com.kubsu.timetable.domain.entity.Timestamp
 import com.kubsu.timetable.domain.entity.UserEntity
 
 interface UserInfoGateway {
-    suspend fun getCurrentUserOrNull(): UserEntity?
+    fun getCurrentUserOrNull(): UserEntity?
 
     suspend fun updateUserInfo(user: UserEntity): Either<RequestFailure<List<UserInfoFail>>, Unit>
 
     suspend fun updateToken(token: String): Either<DataFailure, Unit>
 
-    suspend fun getCurrentTokenOrNull(): TokenDto?
+    fun getCurrentTokenOrNull(): TokenDto?
 
-    suspend fun updateTimestamp(timestamp: Timestamp): Either<DataFailure, Unit>
+    fun updateTimestamp(timestamp: Timestamp): Either<DataFailure, Unit>
 }

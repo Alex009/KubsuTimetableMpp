@@ -73,6 +73,9 @@ object Libs {
     const val com_squareup_sqldelight_runtime: String = "com.squareup.sqldelight:runtime:" +
             Versions.com_squareup_sqldelight
 
+    const val com_squareup_sqldelight_coroutines_extensions: String =
+        "com.squareup.sqldelight:coroutines-extensions:" + Versions.com_squareup_sqldelight
+
     /**
      * https://kotlinlang.org/
      */

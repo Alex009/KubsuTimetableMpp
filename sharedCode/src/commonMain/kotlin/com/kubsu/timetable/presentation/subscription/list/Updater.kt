@@ -2,9 +2,6 @@ package com.kubsu.timetable.presentation.subscription.list
 
 import com.egroden.teaco.UpdateResponse
 import com.egroden.teaco.Updater
-import com.kubsu.timetable.extensions.delete
-import com.kubsu.timetable.extensions.update
-import com.kubsu.timetable.presentation.timetable.model.SubscriptionModel
 
 val subscriptionListUpdater: Updater<State, Action, Subscription, SideEffect> = { state, action ->
     when (action) {
@@ -48,26 +45,6 @@ val subscriptionListUpdater: Updater<State, Action, Subscription, SideEffect> = 
                     SideEffect.UpdateSubscription(
                         action.subscription.copy(isMain = !action.subscription.isMain)
                     )
-                )
-            )
-
-        is Action.SubscriptionWasUpdated ->
-            UpdateResponse(
-                state = state.copy(
-                    progress = false,
-                    subscriptionList = state
-                        .subscriptionList
-                        .update(action.subscription, SubscriptionModel::id)
-                )
-            )
-
-        is Action.SubscriptionWasDeleted ->
-            UpdateResponse(
-                state = state.copy(
-                    progress = false,
-                    subscriptionList = state
-                        .subscriptionList
-                        .delete(action.subscription, SubscriptionModel::id)
                 )
             )
 

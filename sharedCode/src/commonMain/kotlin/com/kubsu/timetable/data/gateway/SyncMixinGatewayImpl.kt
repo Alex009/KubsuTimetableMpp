@@ -4,19 +4,28 @@ import com.egroden.teaco.Either
 import com.egroden.teaco.flatMap
 import com.egroden.teaco.map
 import com.kubsu.timetable.DataFailure
-import com.kubsu.timetable.data.db.diff.*
+import com.kubsu.timetable.data.db.diff.DataDiffDb
+import com.kubsu.timetable.data.db.diff.DataDiffQueries
+import com.kubsu.timetable.data.db.diff.DeletedEntityQueries
+import com.kubsu.timetable.data.db.diff.UpdatedEntityQueries
 import com.kubsu.timetable.data.db.timetable.*
 import com.kubsu.timetable.data.mapper.diff.BasenameDtoMapper
 import com.kubsu.timetable.data.mapper.diff.DataDiffDtoMapper
 import com.kubsu.timetable.data.mapper.timetable.data.*
 import com.kubsu.timetable.data.network.client.update.UpdateDataNetworkClient
 import com.kubsu.timetable.data.network.dto.timetable.data.*
+import com.kubsu.timetable.data.storage.user.info.UserStorage
 import com.kubsu.timetable.data.storage.user.session.SessionStorage
 import com.kubsu.timetable.data.storage.user.session.getEitherFailure
 import com.kubsu.timetable.domain.entity.Basename
 import com.kubsu.timetable.domain.entity.Timestamp
 import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
 import com.kubsu.timetable.domain.interactor.sync.SyncMixinGateway
+import com.kubsu.timetable.extensions.asFilteredFlowNotNull
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class SyncMixinGatewayImpl(
     private val subscriptionQueries: SubscriptionQueries,
@@ -28,14 +37,17 @@ class SyncMixinGatewayImpl(
     private val updatedEntityQueries: UpdatedEntityQueries,
     private val deletedEntityQueries: DeletedEntityQueries,
     private val networkClient: UpdateDataNetworkClient,
+    private val userStorage: UserStorage,
     private val sessionStorage: SessionStorage
 ) : SyncMixinGateway {
     override suspend fun registerDataDiff(entity: DataDiffEntity) {
+        val id = dataDiffQueries.count().executeAsOne().toInt()
+
         dataDiffQueries.update(
+            id = id,
             basename = BasenameDtoMapper.value(entity.basename),
             userId = entity.userId
         )
-        val id = dataDiffQueries.lastInsertRowId().executeAsOne().toInt()
 
         for (updatedId in entity.updatedIds)
             updatedEntityQueries.update(id, updatedId)
@@ -43,41 +55,56 @@ class SyncMixinGatewayImpl(
             deletedEntityQueries.update(id, deletedId)
     }
 
-    override suspend fun getAvailableDiffList(userId: Int): List<DataDiffEntity> {
-        val dataDiffList = dataDiffQueries.selectByUserId(userId).executeAsList()
-
-        return Basename
-            .list
-            .flatMap { basename ->
-                val basenameStr = BasenameDtoMapper.value(basename)
-                val dataDiffIdList = dataDiffList
-                    .filter { it.basename == basenameStr }
-                    .map { it.id }
-
-                dataDiffIdList.map { id ->
-                    val updated: List<UpdatedEntityDb> = updatedEntityQueries
-                        .selectByDataDiffId(id)
-                        .executeAsList()
-
-                    val deleted: List<DeletedEntityDb> = deletedEntityQueries
-                        .selectByDataDiffId(id)
-                        .executeAsList()
-
-                    DataDiffDtoMapper.toEntity(userId, basename, updated, deleted)
-                }
+    @UseExperimental(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    override fun getAvailableDiffListFlowForCurrentUser(): Flow<List<DataDiffEntity>> =
+        dataDiffQueries
+            .selectAll()
+            .asFilteredFlowNotNull { query ->
+                val userId = userStorage.get()?.id ?: return@asFilteredFlowNotNull null
+                val dataDiffList = query.executeAsList().filter { it.userId == userId }
+                dataDiffList to userId
             }
-    }
+            .map { (dataDiffList, userId) ->
+                Basename
+                    .list
+                    .flatMap { basename ->
+                        getIdsListFlow(userId, basename, dataDiffList)
+                    }
+            }
 
+    @UseExperimental(ExperimentalCoroutinesApi::class)
+    private fun getIdsListFlow(
+        userId: Int,
+        basename: Basename,
+        dataDiffList: List<DataDiffDb>
+    ): List<DataDiffEntity> {
+        val basenameStr = BasenameDtoMapper.value(basename)
+        val dataDiffIdList = dataDiffList
+            .filter { it.basename == basenameStr }
+            .map { it.id }
+
+        return dataDiffIdList.map { id ->
+            val updateIds = updatedEntityQueries
+                .selectByDataDiffId(id)
+                .executeAsList()
+            val deletedIds = deletedEntityQueries
+                .selectByDataDiffId(id)
+                .executeAsList()
+            DataDiffDtoMapper.toEntity(userId, basename, updateIds, deletedIds)
+        }
+    }
     override suspend fun delete(list: List<DataDiffEntity>) {
         for (diff in list) {
             deleteData(diff.basename, diff.deletedIds)
 
+            val basenameStringify = BasenameDtoMapper.value(diff.basename)
             val diffId = dataDiffQueries
-                .select(BasenameDtoMapper.value(diff.basename), diff.userId)
+                .select(basenameStringify, diff.userId)
                 .executeAsOne()
                 .id
             deletedEntityQueries.deleteByDataDiffId(diffId)
             updatedEntityQueries.deleteByDataDiffId(diffId)
+            dataDiffQueries.delete(basenameStringify, diff.userId)
         }
     }
 
@@ -118,7 +145,8 @@ class SyncMixinGatewayImpl(
                         session = session,
                         basename = BasenameDtoMapper.value(basename),
                         existsIds = existsIds
-                    ).flatMap { (updatedIds, deletedIds) ->
+                    )
+                    .flatMap { (updatedIds, deletedIds) ->
                         deleteData(basename, deletedIds)
                         meta(basename, updatedIds)
                     }
@@ -136,7 +164,12 @@ class SyncMixinGatewayImpl(
                 when (basename) {
                     Basename.Subscription ->
                         networkClient
-                            .meta<SubscriptionNetworkDto>(session, strBasename, updatedIds)
+                            .meta(
+                                session,
+                                strBasename,
+                                SubscriptionNetworkDto.serializer(),
+                                updatedIds
+                            )
                             .map { list ->
                                 for (networkDto in list)
                                     subscriptionQueries.update(
@@ -146,7 +179,12 @@ class SyncMixinGatewayImpl(
 
                     Basename.Timetable ->
                         networkClient
-                            .meta<TimetableNetworkDto>(session, strBasename, updatedIds)
+                            .meta(
+                                session,
+                                strBasename,
+                                TimetableNetworkDto.serializer(),
+                                updatedIds
+                            )
                             .map { list ->
                                 for (timetable in list)
                                     timetableQueries.update(TimetableDtoMapper.toDbDto(timetable))
@@ -154,7 +192,7 @@ class SyncMixinGatewayImpl(
 
                     Basename.Lecturer ->
                         networkClient
-                            .meta<LecturerNetworkDto>(session, strBasename, updatedIds)
+                            .meta(session, strBasename, LecturerNetworkDto.serializer(), updatedIds)
                             .map { list ->
                                 for (lecturer in list)
                                     lecturerQueries.update(LecturerDtoMapper.toDbDto(lecturer))
@@ -162,7 +200,7 @@ class SyncMixinGatewayImpl(
 
                     Basename.Class ->
                         networkClient
-                            .meta<ClassNetworkDto>(session, strBasename, updatedIds)
+                            .meta(session, strBasename, ClassNetworkDto.serializer(), updatedIds)
                             .map { list ->
                                 for (`class` in list)
                                     classQueries.update(ClassDtoMapper.toDbDto(`class`))
@@ -170,7 +208,12 @@ class SyncMixinGatewayImpl(
 
                     Basename.UniversityInfo ->
                         networkClient
-                            .meta<UniversityInfoNetworkDto>(session, strBasename, updatedIds)
+                            .meta(
+                                session,
+                                strBasename,
+                                UniversityInfoNetworkDto.serializer(),
+                                updatedIds
+                            )
                             .map { list ->
                                 for (info in list)
                                     universityInfoQueries.update(

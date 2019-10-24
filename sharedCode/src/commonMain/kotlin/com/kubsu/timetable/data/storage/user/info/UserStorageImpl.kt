@@ -7,14 +7,14 @@ class UserStorageImpl(
     settingsFactory: Settings.Factory
 ) : UserStorage,
     BaseStorage(settingsFactory.create("user_kubsu_timetable")) {
-    override suspend fun set(user: UserDto?) {
+    override fun set(user: UserDto?) {
         set(idPropName, user?.id)
         set(firstNamePropName, user?.firstName)
         set(secondNamePropName, user?.lastName)
         set(emailPropName, user?.email)
     }
 
-    override suspend fun get(): UserDto? {
+    override fun get(): UserDto? {
         val id: Int? = getInt(idPropName)
         val firstName: String? = getString(firstNamePropName)
         val lastName: String? = getString(secondNamePropName)

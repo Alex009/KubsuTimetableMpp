@@ -4,11 +4,12 @@ import com.egroden.teaco.Either
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.domain.entity.timetable.data.TimetableEntity
 import com.kubsu.timetable.domain.entity.timetable.data.UniversityInfoEntity
+import kotlinx.coroutines.flow.Flow
 
 interface TimetableGateway {
-    suspend fun getUniversityData(facultyId: Int): Either<DataFailure, UniversityInfoEntity>
+    fun getUniversityData(facultyId: Int): Flow<Either<DataFailure, UniversityInfoEntity>>
 
-    suspend fun getAll(
+    fun getAllTimetablesFlow(
         subgroupId: Int
-    ): Either<DataFailure, List<TimetableEntity>>
+    ): Flow<Either<DataFailure, List<TimetableEntity>>>
 }

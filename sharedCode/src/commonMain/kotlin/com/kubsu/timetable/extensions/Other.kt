@@ -1,9 +1,11 @@
 package com.kubsu.timetable.extensions
 
+import com.egroden.teaco.Either
+import com.egroden.teaco.fold
+import com.egroden.teaco.left
+import com.egroden.teaco.right
 import com.soywiz.klock.DateTime
 import com.soywiz.klock.DayOfWeek
-import io.ktor.client.response.HttpResponse
-import io.ktor.utils.io.readRemaining
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -13,26 +15,15 @@ fun <T> T.checkWhenAllHandled() = Unit
 fun getCurrentDayOfWeek(): DayOfWeek =
     DateTime.nowLocal().dayOfWeek
 
-suspend fun HttpResponse.readContent() =
-    content.readRemaining().readText()
-
-fun <T> List<T>.update(t: T, getId: (T) -> Int): List<T> {
-    val result = ArrayList<T>()
-    val id = getId(t)
-    for (elem in this)
-        result.add(
-            if (id != getId(elem)) elem else t
+fun <L, R> List<Either<L, R>>.toEitherList(): Either<L, List<R>> {
+    val result = ArrayList<R>()
+    for (either in this) {
+        either.fold(
+            ifLeft = { return Either.left(it) },
+            ifRight = result::add
         )
-    return result
-}
-
-fun <T> List<T>.delete(t: T, getId: (T) -> Int): List<T> {
-    val result = ArrayList<T>()
-    val id = getId(t)
-    for (elem in this)
-        if (id != getId(elem))
-            result.add(elem)
-    return result
+    }
+    return Either.right(result)
 }
 
 suspend inline fun <T> def(noinline block: suspend CoroutineScope.() -> T): T =

@@ -13,6 +13,8 @@ import com.kubsu.timetable.extensions.addSessionKey
 import com.kubsu.timetable.extensions.jsonContent
 import com.kubsu.timetable.extensions.toJson
 import io.ktor.client.request.post
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.list
 
 class UpdateDataNetworkClientImpl(
     private val networkSender: NetworkSender
@@ -57,14 +59,16 @@ class UpdateDataNetworkClientImpl(
     override suspend fun <T> meta(
         session: SessionDto,
         basename: String,
+        basenameSerializer: KSerializer<T>,
         updatedIds: List<Int>
     ): Either<DataFailure, List<T>> =
         with(networkSender) {
             handle {
-                post<List<T>>("$baseUrl/api/$apiVersion/$basename/meta/") {
+                val response = post<String>("$baseUrl/api/$apiVersion/$basename/meta/") {
                     addSessionKey(session)
                     body = jsonContent("ids" to updatedIds.toJson())
                 }
+                networkSender.json.parse(basenameSerializer.list, response)
             }.mapLeft {
                 if (it is ServerFailure.Response && it.code == 401)
                     DataFailure.NotAuthenticated(it.body)

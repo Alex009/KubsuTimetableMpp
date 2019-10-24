@@ -1,7 +1,6 @@
 package com.kubsu.timetable.domain.interactor.auth
 
 import com.egroden.teaco.Either
-import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SignInFail
 import com.kubsu.timetable.UserInfoFail
@@ -17,5 +16,5 @@ interface AuthGateway {
         password: String
     ): Either<RequestFailure<List<UserInfoFail>>, Unit>
 
-    suspend fun logout(): Either<DataFailure, Unit>
+    suspend fun logout()
 }

@@ -10,6 +10,7 @@ import org.kodein.di.Kodein
 internal val mppCommonKodeinModule = Kodein.Module("mpp_common_module") {
     // presentation
     importAll(
+        appPresentationModule,
         splashPresentationModule,
         settingsPresentationModule,
         signInPresentationModule,

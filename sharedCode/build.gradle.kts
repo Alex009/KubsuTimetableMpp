@@ -44,6 +44,7 @@ kotlin {
 
                 // Db
                 implementation(Libs.com_squareup_sqldelight_runtime)
+                implementation(Libs.com_squareup_sqldelight_coroutines_extensions)
 
                 // Presentation logic
                 implementation(Libs.teaco)

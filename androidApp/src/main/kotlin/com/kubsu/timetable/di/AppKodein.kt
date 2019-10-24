@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import com.kubsu.timetable.base.AppActivity
 import com.kubsu.timetable.di.modules.view.*
+import com.kubsu.timetable.extensions.instanceGeneric
 import com.kubsu.timetable.fragments.bottomnav.BottomNavFragment
 import com.kubsu.timetable.fragments.bottomnav.settings.SettingsFragment
 import com.kubsu.timetable.fragments.bottomnav.subscription.list.SubscriptionListFragment
@@ -43,9 +44,10 @@ fun appKodein(application: Application) = Kodein {
     bind<Application.ActivityLifecycleCallbacks>() with singleton {
         object : Application.ActivityLifecycleCallbacks {
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-                (activity as? AppActivity)
-                    ?.supportFragmentManager
-                    ?.fragmentFactory = instance()
+                (activity as? AppActivity)?.let {
+                    it.supportFragmentManager.fragmentFactory = instance()
+                    it.teaFeature = instanceGeneric()
+                }
             }
 
             override fun onActivityStarted(activity: Activity) = Unit

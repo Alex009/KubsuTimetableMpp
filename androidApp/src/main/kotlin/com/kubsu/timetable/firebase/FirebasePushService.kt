@@ -30,7 +30,7 @@ class FirebasePushService : FirebaseMessagingService(), KodeinAware {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         val dataDiffModel = json.fromJson(
             DataDiffNetworkDto.serializer(),
-            remoteMessage.data.toJson()
+            remoteMessage.data.toJson(json)
         )
         val dataDiffEntity = DataDiffDtoMapper.toEntity(dataDiffModel)
         GlobalScope.launch {

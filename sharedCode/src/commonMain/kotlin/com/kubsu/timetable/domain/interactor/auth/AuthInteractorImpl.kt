@@ -13,7 +13,7 @@ class AuthInteractorImpl(
     private val authGateway: AuthGateway,
     private val userInfoGateway: UserInfoGateway
 ) : AuthInteractor {
-    override suspend fun init(): Either<DataFailure, Unit> = def {
+    override suspend fun updateToken(): Either<DataFailure, Unit> = def {
         val token = userInfoGateway.getCurrentTokenOrNull()
         if (token != null && !token.delivered)
             userInfoGateway.updateToken(token.value)
@@ -39,7 +39,7 @@ class AuthInteractorImpl(
         userInfoGateway.getCurrentUserOrNull() != null
     }
 
-    override suspend fun logout(): Either<DataFailure, Unit> = def {
+    override suspend fun logout() = def {
         authGateway.logout()
     }
 }

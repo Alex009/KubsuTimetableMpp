@@ -22,7 +22,7 @@ class UserInfoGatewayImpl(
     private val sessionStorage: SessionStorage,
     private val tokenStorage: TokenStorage
 ) : UserInfoGateway {
-    override suspend fun getCurrentUserOrNull(): UserEntity? =
+    override fun getCurrentUserOrNull(): UserEntity? =
         userStorage
             .get()
             ?.let(UserDtoMapper::toEntity)
@@ -55,10 +55,10 @@ class UserInfoGatewayImpl(
             Either.right(Unit)
     }
 
-    override suspend fun getCurrentTokenOrNull(): TokenDto? =
+    override fun getCurrentTokenOrNull(): TokenDto? =
         tokenStorage.get()
 
-    override suspend fun updateTimestamp(timestamp: Timestamp): Either<DataFailure, Unit> =
+    override fun updateTimestamp(timestamp: Timestamp): Either<DataFailure, Unit> =
         sessionStorage
             .getEitherFailure()
             .map { session ->

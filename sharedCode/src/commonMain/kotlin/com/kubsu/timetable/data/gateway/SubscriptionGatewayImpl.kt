@@ -21,6 +21,10 @@ import com.kubsu.timetable.domain.entity.timetable.select.GroupEntity
 import com.kubsu.timetable.domain.entity.timetable.select.OccupationEntity
 import com.kubsu.timetable.domain.entity.timetable.select.SubgroupEntity
 import com.kubsu.timetable.domain.interactor.subscription.SubscriptionGateway
+import com.kubsu.timetable.extensions.asFilteredFlow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class SubscriptionGatewayImpl(
     private val subscriptionQueries: SubscriptionQueries,
@@ -70,39 +74,33 @@ class SubscriptionGatewayImpl(
                     }
             }
 
-    override suspend fun getById(id: Int): Either<DataFailure, SubscriptionEntity> {
-        val subscription = subscriptionQueries.selectById(id).executeAsOneOrNull()
+    @UseExperimental(ExperimentalCoroutinesApi::class)
+    override fun getAllSubscriptionsFlow(
+        user: UserEntity
+    ): Flow<Either<DataFailure, List<SubscriptionEntity>>> =
+        subscriptionQueries
+            .selectByUserId(user.id)
+            .asFilteredFlow { it.executeAsList() }
+            .map { subscriptionList ->
+                if (subscriptionList.isNotEmpty())
+                    Either.right(subscriptionList.map(SubscriptionDtoMapper::toEntity))
+                else
+                    getSubscriptionList()
+            }
 
-        return if (subscription != null)
-            Either.right(SubscriptionDtoMapper.toEntity(subscription))
-        else
-            subscriptionNetworkClient
-                .selectSubscriptionById(id)
-                .map {
-                    subscriptionQueries.update(SubscriptionDtoMapper.toDbDto(it))
-                    SubscriptionDtoMapper.toEntity(it)
-                }
-    }
-
-    override suspend fun getAll(user: UserEntity): Either<DataFailure, List<SubscriptionEntity>> {
-        val subscriptionList = subscriptionQueries.selectByUserId(user.id).executeAsList()
-
-        return if (subscriptionList.isNotEmpty())
-            Either.right(subscriptionList.map(SubscriptionDtoMapper::toEntity))
-        else
-            sessionStorage
-                .getEitherFailure()
-                .flatMap { session ->
-                    subscriptionNetworkClient
-                        .selectSubscriptionsForUser(session)
-                        .map { list ->
-                            list.map {
-                                subscriptionQueries.update(SubscriptionDtoMapper.toDbDto(it))
-                                SubscriptionDtoMapper.toEntity(it)
-                            }
+    private suspend fun getSubscriptionList(): Either<DataFailure, List<SubscriptionEntity>> =
+        sessionStorage
+            .getEitherFailure()
+            .flatMap { session ->
+                subscriptionNetworkClient
+                    .selectSubscriptionsForUser(session)
+                    .map { list ->
+                        list.map {
+                            subscriptionQueries.update(SubscriptionDtoMapper.toDbDto(it))
+                            SubscriptionDtoMapper.toEntity(it)
                         }
-                }
-    }
+                    }
+            }
 
     override suspend fun update(
         subscription: SubscriptionEntity

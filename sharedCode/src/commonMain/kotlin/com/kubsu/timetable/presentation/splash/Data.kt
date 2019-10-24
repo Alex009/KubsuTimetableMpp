@@ -10,7 +10,7 @@ sealed class Action {
     internal object ShowTimetableScreen : Action()
     internal object ShowSignInScreen : Action()
 
-    internal class ShowFailure(val dataFailure: DataFailure) : Action()
+    internal class ShowFailure(val failure: DataFailure) : Action()
 }
 
 @SerializeModel

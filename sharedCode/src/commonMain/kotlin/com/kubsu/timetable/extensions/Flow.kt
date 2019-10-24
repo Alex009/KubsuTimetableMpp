@@ -1,35 +1,23 @@
 package com.kubsu.timetable.extensions
 
-import com.egroden.teaco.Either
-import com.egroden.teaco.fold
-import com.egroden.teaco.left
-import com.egroden.teaco.right
+import com.squareup.sqldelight.Query
+import com.squareup.sqldelight.runtime.coroutines.asFlow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 
-fun <T> flowOfIterable(iterable: Iterable<T>): Flow<T> = flow {
-    for (element in iterable)
-        emit(element)
-}
+@UseExperimental(ExperimentalCoroutinesApi::class)
+fun <T : Any, R> Query<T>.asFilteredFlow(getRowType: (Query<T>) -> R): Flow<R> =
+    this
+        .asFlow()
+        .map { getRowType(it) }
+        .distinctUntilChanged()
 
-class StopException : Exception()
-
-suspend inline fun <L, R> Flow<Either<L, R>>.collectRightListOrFirstLeft(): Either<L, List<R>> {
-    val result = ArrayList<R>()
-    var fail: L? = null
-    try {
-        collect {
-            it.fold(
-                ifRight = result::add,
-                ifLeft = { left ->
-                    fail = left
-                    throw StopException()
-                }
-            )
-        }
-    } catch (e: StopException) {
-        // Do nothing
-    }
-    return fail?.let { Either.left(it) } ?: Either.right(result)
-}
+@UseExperimental(ExperimentalCoroutinesApi::class)
+fun <T : Any, R : Any> Query<T>.asFilteredFlowNotNull(getRowType: (Query<T>) -> R?): Flow<R> =
+    this
+        .asFlow()
+        .mapNotNull { getRowType(it) }
+        .distinctUntilChanged()

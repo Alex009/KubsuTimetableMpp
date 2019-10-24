@@ -12,6 +12,8 @@ import com.kubsu.timetable.domain.entity.timetable.select.OccupationEntity
 import com.kubsu.timetable.domain.entity.timetable.select.SubgroupEntity
 import com.kubsu.timetable.domain.interactor.userInfo.UserInfoGateway
 import com.kubsu.timetable.extensions.def
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 class SubscriptionInteractorImpl(
     private val subscriptionGateway: SubscriptionGateway,
@@ -47,20 +49,15 @@ class SubscriptionInteractorImpl(
         subscriptionGateway.create(subgroupId, subscriptionName, isMain)
     }
 
-    override suspend fun getById(id: Int): Either<DataFailure, SubscriptionEntity> = def {
-        subscriptionGateway.getById(id)
-    }
-
-    override suspend fun getAll(): Either<DataFailure, List<SubscriptionEntity>> = def {
-        val user = userInfoGateway.getCurrentUserOrNull()
-
-        if (user != null)
-            subscriptionGateway.getAll(user)
-        else
-            Either.left(
-                DataFailure.NotAuthenticated("SubscriptionInteractor#getAll")
+    override fun getAllSubscriptionsFlow(): Flow<Either<DataFailure, List<SubscriptionEntity>>> =
+        userInfoGateway
+            .getCurrentUserOrNull()
+            ?.let(subscriptionGateway::getAllSubscriptionsFlow)
+            ?: flowOf(
+                Either.left(
+                    DataFailure.NotAuthenticated("SubscriptionInteractor#getAll")
+                )
             )
-    }
 
     override suspend fun update(
         subscription: SubscriptionEntity

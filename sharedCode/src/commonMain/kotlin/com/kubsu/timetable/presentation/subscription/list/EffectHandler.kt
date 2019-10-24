@@ -7,6 +7,7 @@ import com.kubsu.timetable.domain.interactor.subscription.SubscriptionInteractor
 import com.kubsu.timetable.extensions.checkWhenAllHandled
 import com.kubsu.timetable.presentation.timetable.mapper.SubscriptionModelMapper
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 
 class SubscriptionListEffectHandler(
@@ -17,17 +18,19 @@ class SubscriptionListEffectHandler(
         when (sideEffect) {
             SideEffect.LoadSubscriptionList ->
                 subscriptionInteractor
-                    .getAll()
-                    .fold(
-                        ifLeft = { emit(Action.ShowDataFailure(listOf(it))) },
-                        ifRight = {
-                            emit(
-                                Action.SubscriptionListUploaded(
-                                    it.map(SubscriptionModelMapper::toModel)
+                    .getAllSubscriptionsFlow()
+                    .collect { either ->
+                        either.fold(
+                            ifLeft = { emit(Action.ShowDataFailure(listOf(it))) },
+                            ifRight = {
+                                emit(
+                                    Action.SubscriptionListUploaded(
+                                        it.map(SubscriptionModelMapper::toModel)
+                                    )
                                 )
-                            )
-                        }
-                    )
+                            }
+                        )
+                    }
 
             is SideEffect.UpdateSubscription ->
                 subscriptionInteractor
@@ -39,9 +42,7 @@ class SubscriptionListEffectHandler(
                                 ifData = { emit(Action.ShowDataFailure(it)) }
                             )
                         },
-                        ifRight = {
-                            emit(Action.SubscriptionWasUpdated(sideEffect.subscription))
-                        }
+                        ifRight = {}
                     )
 
             is SideEffect.DeleteSubscription ->
@@ -51,7 +52,6 @@ class SubscriptionListEffectHandler(
                         ifLeft = { emit(Action.ShowDataFailure(listOf(it))) },
                         ifRight = {
                             displayedSubscriptionStorage.deleteIfEqual(sideEffect.subscription)
-                            emit(Action.SubscriptionWasDeleted(sideEffect.subscription))
                         }
                     )
 

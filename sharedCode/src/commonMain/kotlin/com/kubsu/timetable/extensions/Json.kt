@@ -32,7 +32,16 @@ fun List<String>.toJson(): JsonArray =
 fun List<Boolean>.toJson(): JsonArray =
     JsonArray(map(::JsonLiteral))
 
-fun Map<String, String>.toJson(): JsonObject =
+fun Map<String, String>.toJson(json: Json): JsonObject =
     JsonObject(
-        map { (key, value) -> key to value.toJson() }.toMap()
+        map { (key, value) ->
+            key to json.parseJson(value)
+        }.toMap()
     )
+
+fun String.toBooleanOrNull(): Boolean? =
+    when (toLowerCase()) {
+        "true" -> true
+        "false" -> false
+        else -> null
+    }

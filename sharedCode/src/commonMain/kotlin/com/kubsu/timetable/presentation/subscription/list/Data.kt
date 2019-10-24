@@ -25,14 +25,6 @@ sealed class Action {
         val subscriptionList: List<SubscriptionModel>
     ) : Action()
 
-    internal class SubscriptionWasUpdated(
-        val subscription: SubscriptionModel
-    ) : Action()
-
-    internal class SubscriptionWasDeleted(
-        val subscription: SubscriptionModel
-    ) : Action()
-
     internal class ShowSubscriptionFailure(
         val failureList: List<SubscriptionFail>
     ) : Action()

@@ -1,33 +1,22 @@
 package com.kubsu.timetable.domain.interactor.timetable
 
 import com.egroden.teaco.Either
-import com.egroden.teaco.map
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.domain.entity.timetable.data.SubscriptionEntity
 import com.kubsu.timetable.domain.entity.timetable.data.TimetableEntity
 import com.kubsu.timetable.domain.entity.timetable.data.UniversityInfoEntity
-import com.kubsu.timetable.extensions.def
+import kotlinx.coroutines.flow.Flow
 
 class TimetableInteractorImpl(
     private val timetableGateway: TimetableGateway
 ) : TimetableInteractor {
-    override suspend fun getUniversityData(
+    override fun getUniversityData(
         timetable: TimetableEntity
-    ): Either<DataFailure, UniversityInfoEntity> = def {
+    ): Flow<Either<DataFailure, UniversityInfoEntity>> =
         timetableGateway.getUniversityData(timetable.facultyId)
-    }
 
-    override suspend fun isRelevantForThisWeek(
-        timetable: TimetableEntity
-    ): Either<DataFailure, Boolean> = def {
-        timetableGateway
-            .getUniversityData(timetable.facultyId)
-            .map { timetable.typeOfWeek == it.typeOfWeek }
-    }
-
-    override suspend fun getAllTimetables(
+    override fun getAllTimetables(
         subscription: SubscriptionEntity
-    ): Either<DataFailure, List<TimetableEntity>> = def {
-        timetableGateway.getAll(subscription.subgroupId)
-    }
+    ): Flow<Either<DataFailure, List<TimetableEntity>>> =
+        timetableGateway.getAllTimetablesFlow(subscription.subgroupId)
 }

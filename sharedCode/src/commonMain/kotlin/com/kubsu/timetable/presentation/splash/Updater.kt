@@ -26,7 +26,7 @@ val splashUpdater: Updater<State, Action, Subscription, SideEffect> = { state, a
         is Action.ShowFailure ->
             UpdateResponse(
                 state,
-                subscription = Subscription.ShowFailure(action.dataFailure)
+                subscription = Subscription.ShowFailure(action.failure)
             )
     }
 }

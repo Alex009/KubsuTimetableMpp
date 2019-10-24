@@ -23,7 +23,7 @@ import kotlinx.serialization.json.Json
 
 class NetworkSenderImpl(
     private val engine: HttpClientEngine,
-    private val json: Json
+    override val json: Json
 ) : NetworkSender {
     override val apiVersion = "v1"
     override val baseUrl = "https://kubsu-timetable.info"

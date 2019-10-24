@@ -5,6 +5,7 @@ import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.data.network.dto.diff.DiffResponse
 import com.kubsu.timetable.data.network.dto.diff.SyncResponse
 import com.kubsu.timetable.data.storage.user.session.SessionDto
+import kotlinx.serialization.KSerializer
 
 interface UpdateDataNetworkClient {
     suspend fun diff(session: SessionDto): Either<DataFailure, DiffResponse>
@@ -18,6 +19,7 @@ interface UpdateDataNetworkClient {
     suspend fun <T> meta(
         session: SessionDto,
         basename: String,
+        basenameSerializer: KSerializer<T>,
         updatedIds: List<Int>
     ): Either<DataFailure, List<T>>
 }

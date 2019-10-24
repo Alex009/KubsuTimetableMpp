@@ -5,10 +5,11 @@ import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.domain.entity.Basename
 import com.kubsu.timetable.domain.entity.Timestamp
 import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
+import kotlinx.coroutines.flow.Flow
 
 interface SyncMixinGateway {
     suspend fun registerDataDiff(entity: DataDiffEntity)
-    suspend fun getAvailableDiffList(userId: Int): List<DataDiffEntity>
+    fun getAvailableDiffListFlowForCurrentUser(): Flow<List<DataDiffEntity>>
     suspend fun delete(list: List<DataDiffEntity>)
     suspend fun diff(): Either<DataFailure, Pair<Timestamp, List<Basename>>>
 
