@@ -1,4 +1,4 @@
-package di
+package platform.di
 
 import org.kodein.di.Copy
 import org.kodein.di.Kodein

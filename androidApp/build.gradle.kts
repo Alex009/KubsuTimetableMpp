@@ -17,18 +17,14 @@ android {
         val applicationName = "timetable"
         applicationId = "com.kubsu.$applicationName"
 
-        minSdkVersion(16)
+        minSdkVersion(21)
         targetSdkVersion(29)
 
-        versionName = "0.1.3"
-        versionCode = 4
+        versionName = "0.1.4"
+        versionCode = 5
 
         base.archivesBaseName = "${applicationName}_$versionName"
         testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
-
-        vectorDrawables {
-            useSupportLibrary = true
-        }
     }
 
     signingConfigs {

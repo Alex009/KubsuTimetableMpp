@@ -1,20 +1,17 @@
 CREATE TABLE dataDiffDb(
-id INTEGER as Int NOT NULL PRIMARY KEY,
+id INTEGER as Int NOT NULL PRIMARY KEY AUTOINCREMENT,
 basename TEXT NOT NULL,
 userId INTEGER as Int NOT NULL
 );
 
 update:
-INSERT OR REPLACE INTO dataDiffDb(id, basename, userId) VALUES (?,?,?);
-
-count:
-SELECT COUNT(*) FROM dataDiffDb;
+INSERT OR REPLACE INTO dataDiffDb(basename, userId) VALUES (?,?);
 
 selectAll:
 SELECT * FROM dataDiffDb;
 
-select:
-SELECT * FROM dataDiffDb WHERE basename = ? AND userId = ?;
+selectId:
+SELECT (id) FROM dataDiffDb WHERE basename = ? AND userId = ?;
 
 selectByUserId:
 SELECT * FROM dataDiffDb WHERE userId = ?;

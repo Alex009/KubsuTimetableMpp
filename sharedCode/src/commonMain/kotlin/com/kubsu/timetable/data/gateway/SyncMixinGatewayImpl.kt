@@ -41,18 +41,24 @@ class SyncMixinGatewayImpl(
     private val sessionStorage: SessionStorage
 ) : SyncMixinGateway {
     override suspend fun registerDataDiff(entity: DataDiffEntity) {
-        val id = dataDiffQueries.count().executeAsOne().toInt()
-
-        dataDiffQueries.update(
-            id = id,
-            basename = BasenameDtoMapper.value(entity.basename),
-            userId = entity.userId
-        )
-
+        val id = getIdForDataDiff(entity)
         for (updatedId in entity.updatedIds)
             updatedEntityQueries.update(id, updatedId)
         for (deletedId in entity.deletedIds)
             deletedEntityQueries.update(id, deletedId)
+    }
+
+    private fun getIdForDataDiff(dataDiff: DataDiffEntity): Int {
+        val basenameStr = BasenameDtoMapper.value(dataDiff.basename)
+        return dataDiffQueries
+            .selectId(basenameStr, dataDiff.userId)
+            .executeAsOneOrNull()
+            ?: run {
+                dataDiffQueries.update(basenameStr, dataDiff.userId)
+                dataDiffQueries
+                    .selectId(basenameStr, dataDiff.userId)
+                    .executeAsOne()
+            }
     }
 
     @UseExperimental(FlowPreview::class, ExperimentalCoroutinesApi::class)
@@ -68,12 +74,12 @@ class SyncMixinGatewayImpl(
                 Basename
                     .list
                     .flatMap { basename ->
-                        getIdsListFlow(userId, basename, dataDiffList)
+                        getIdsList(userId, basename, dataDiffList)
                     }
             }
 
     @UseExperimental(ExperimentalCoroutinesApi::class)
-    private fun getIdsListFlow(
+    private fun getIdsList(
         userId: Int,
         basename: Basename,
         dataDiffList: List<DataDiffDb>
@@ -99,9 +105,8 @@ class SyncMixinGatewayImpl(
 
             val basenameStringify = BasenameDtoMapper.value(diff.basename)
             val diffId = dataDiffQueries
-                .select(basenameStringify, diff.userId)
+                .selectId(basenameStringify, diff.userId)
                 .executeAsOne()
-                .id
             deletedEntityQueries.deleteByDataDiffId(diffId)
             updatedEntityQueries.deleteByDataDiffId(diffId)
             dataDiffQueries.delete(basenameStringify, diff.userId)

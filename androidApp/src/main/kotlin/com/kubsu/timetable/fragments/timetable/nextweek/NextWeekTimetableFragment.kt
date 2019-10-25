@@ -30,11 +30,11 @@ class NextWeekTimetableFragment : BaseFragment(R.layout.timetable_fragment) {
             adapter = timetableAdapter
         }
 
-        val timetableInfoList = args.timetable.infoList
-        val listIsNotEmpty = timetableInfoList.isNotEmpty()
+        val timetableInfoList = args.timetable?.infoList ?: emptyList()
+        val listIsEmpty = timetableInfoList.isEmpty()
 
-        view.empty_list_layout.isVisible = !listIsNotEmpty
-        view.timetable_recycler_view.isVisible = listIsNotEmpty
+        view.empty_list_layout.isVisible = listIsEmpty
+        view.timetable_recycler_view.isVisible = !listIsEmpty
 
         timetableAdapter.setData(timetableInfoList)
     }

@@ -1,8 +1,6 @@
 package com.kubsu.timetable.domain.interactor.auth
 
 import com.egroden.teaco.Either
-import com.egroden.teaco.right
-import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SignInFail
 import com.kubsu.timetable.UserInfoFail
@@ -13,14 +11,6 @@ class AuthInteractorImpl(
     private val authGateway: AuthGateway,
     private val userInfoGateway: UserInfoGateway
 ) : AuthInteractor {
-    override suspend fun updateToken(): Either<DataFailure, Unit> = def {
-        val token = userInfoGateway.getCurrentTokenOrNull()
-        if (token != null && !token.delivered)
-            userInfoGateway.updateToken(token.value)
-        else
-            Either.right(Unit)
-    }
-
     override suspend fun signIn(
         email: String,
         password: String

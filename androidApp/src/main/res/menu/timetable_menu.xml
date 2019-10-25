@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/next_week_timetable"
+        android:icon="@drawable/ic_navigate_next_24dp"
+        android:title="@string/show_timetable_for_next_week" />
+</menu>

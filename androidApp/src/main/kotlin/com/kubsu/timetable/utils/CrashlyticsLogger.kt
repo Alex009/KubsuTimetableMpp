@@ -3,7 +3,7 @@ package com.kubsu.timetable.utils
 import android.util.Log
 import com.crashlytics.android.Crashlytics
 
-interface Logger {
+interface CrashlyticsLogger {
     val className: String
         get() = javaClass.simpleName
 

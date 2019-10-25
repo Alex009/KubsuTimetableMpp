@@ -6,11 +6,9 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHost
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
-import com.kubsu.timetable.BottomNavGraphDirections
 import com.kubsu.timetable.R
 import com.kubsu.timetable.base.BaseFragment
 import com.kubsu.timetable.data.storage.displayed.subscription.DisplayedSubscriptionStorage
-import com.kubsu.timetable.utils.safeNavigate
 import com.kubsu.timetable.utils.selectedItem
 import kotlinx.android.synthetic.main.bottom_nav_fragment.view.*
 
@@ -23,13 +21,19 @@ class BottomNavFragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with(view.bottom_navigation_view) {
-            setupWithNavController(navController)
+        view
+            .bottom_navigation_view
+            .setupWithNavController(navController)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        view?.bottom_navigation_view?.run {
             if (
                 selectedItem.itemId == R.id.timetableFragment
                 && displayedSubscriptionStorage.get() == null
             )
-                safeNavigate(BottomNavGraphDirections.actionGlobalSubscriptionListFragment())
+                selectedItemId = R.id.subscriptionListFragment
         }
     }
 }

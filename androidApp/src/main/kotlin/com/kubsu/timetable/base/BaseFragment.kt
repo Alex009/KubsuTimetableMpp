@@ -12,12 +12,12 @@ import com.kubsu.timetable.extensions.checkWhenAllHandled
 import com.kubsu.timetable.firebase.NotAuthenticatedException
 import com.kubsu.timetable.firebase.ParsingException
 import com.kubsu.timetable.firebase.UnknownResponseException
-import com.kubsu.timetable.utils.Logger
+import com.kubsu.timetable.utils.CrashlyticsLogger
 import com.kubsu.timetable.utils.safeNavigate
 import com.kubsu.timetable.utils.safePopBackStack
 import com.kubsu.timetable.utils.ui.materialAlert
 
-abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Logger {
+abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), CrashlyticsLogger {
     open fun popBackStack(): Boolean = safePopBackStack()
 
     override fun onCreate(savedInstanceState: Bundle?) {

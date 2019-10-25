@@ -1,6 +1,7 @@
 package com.kubsu.timetable.domain.interactor.userInfo
 
 import com.egroden.teaco.Either
+import com.egroden.teaco.right
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.UserInfoFail
@@ -14,8 +15,16 @@ class UserInteractorImpl(
         gateway.getCurrentUserOrNull()
     }
 
-    override suspend fun updateToken(token: String): Either<DataFailure, Unit> = def {
+    override suspend fun newToken(token: String): Either<DataFailure, Unit> = def {
         gateway.updateToken(token)
+    }
+
+    override suspend fun updateToken(): Either<DataFailure, Unit> = def {
+        val token = gateway.getCurrentTokenOrNull()
+        if (token != null && !token.delivered)
+            gateway.updateToken(token.value)
+        else
+            Either.right(Unit)
     }
 
     override suspend fun update(

@@ -9,13 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.NavHost
 import androidx.navigation.findNavController
-import com.egroden.teaco.*
 import com.kubsu.timetable.R
-import com.kubsu.timetable.presentation.app.Action
-import com.kubsu.timetable.presentation.app.SideEffect
-import com.kubsu.timetable.presentation.app.State
-import com.kubsu.timetable.presentation.app.Subscription
-import com.kubsu.timetable.utils.Logger
+import com.kubsu.timetable.utils.CrashlyticsLogger
 import com.kubsu.timetable.utils.MaterialActionDialogCreator
 import com.kubsu.timetable.utils.closeApp
 import com.kubsu.timetable.utils.getCompatColor
@@ -29,14 +24,8 @@ import com.thelittlefireman.appkillermanager.managers.DevicesManager
 import com.thelittlefireman.appkillermanager.models.KillerManagerActionType
 import kotlinx.android.synthetic.main.activity_main.*
 
-class AppActivity : AppCompatActivity(), NavHost, Logger {
+class AppActivity : AppCompatActivity(), NavHost, CrashlyticsLogger {
     override fun getNavController(): NavController = findNavController(R.id.nav_host_fragment)
-
-    lateinit var teaFeature: TeaFeature<Action, SideEffect, State, Subscription>
-
-    private val connector: Lazy<AndroidConnector<Action, SideEffect, State, Subscription>> by lazy {
-        androidConnectors(teaFeature) { bindAction(Action.Start) }
-    }
 
     private val alertCreator: MaterialActionDialogCreator?
     init {
@@ -98,12 +87,7 @@ class AppActivity : AppCompatActivity(), NavHost, Logger {
                 R.string.notification_message
             )
         }
-
-        connector.value.connect(::render, ::render, lifecycle)
     }
-
-    private fun render(state: State) = Unit
-    private fun render(subscription: Subscription) = Unit
 
     private fun onFailure(failure: Failure) =
         when (failure) {

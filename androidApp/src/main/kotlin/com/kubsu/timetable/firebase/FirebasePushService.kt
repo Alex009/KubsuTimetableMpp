@@ -16,6 +16,8 @@ import com.kubsu.timetable.base.AppActivity
 import com.kubsu.timetable.data.mapper.diff.DataDiffDtoMapper
 import com.kubsu.timetable.data.network.dto.diff.DataDiffNetworkDto
 import com.kubsu.timetable.di.appKodein
+import com.kubsu.timetable.domain.entity.Basename
+import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
 import com.kubsu.timetable.domain.interactor.sync.SyncMixinInteractor
 import com.kubsu.timetable.domain.interactor.userInfo.UserInteractor
 import com.kubsu.timetable.extensions.toJson
@@ -35,15 +37,21 @@ class FirebasePushService : FirebaseMessagingService(), KodeinAware {
         val dataDiffEntity = DataDiffDtoMapper.toEntity(dataDiffModel)
         GlobalScope.launch {
             mixinInteractor.registerDataDiff(dataDiffEntity)
-            if (userInteractor.getCurrentUserOrNull()?.id == dataDiffEntity.userId)
+            if (
+                userInteractor.getCurrentUserOrNull()?.id == dataDiffEntity.userId
+                && isMustDisplayInNotification(dataDiffEntity)
+            )
                 showNotification(notificationId = dataDiffEntity.hashCode())
         }
     }
 
+    private fun isMustDisplayInNotification(dataDiff: DataDiffEntity) =
+        dataDiff.basename in listOf(Basename.Class, Basename.Lecturer)
+
     override fun onNewToken(token: String) {
         super.onNewToken(token)
         GlobalScope.launch {
-            userInteractor.updateToken(token)
+            userInteractor.newToken(token)
         }
     }
 
@@ -54,8 +62,7 @@ class FirebasePushService : FirebaseMessagingService(), KodeinAware {
         val channelId = getString(R.string.default_notification_channel_id)
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle("Title")
-            .setContentText("Посмотрите, пришло новое расписание")
+            .setContentText(getString(R.string.check_new_timetable))
             .setAutoCancel(true)
             .setPriority(NotificationManagerCompat.IMPORTANCE_HIGH)
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)

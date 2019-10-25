@@ -7,7 +7,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import com.kubsu.timetable.base.AppActivity
 import com.kubsu.timetable.di.modules.view.*
-import com.kubsu.timetable.extensions.instanceGeneric
 import com.kubsu.timetable.fragments.bottomnav.BottomNavFragment
 import com.kubsu.timetable.fragments.bottomnav.settings.SettingsFragment
 import com.kubsu.timetable.fragments.bottomnav.subscription.list.SubscriptionListFragment
@@ -17,13 +16,13 @@ import com.kubsu.timetable.fragments.signin.SignInFragment
 import com.kubsu.timetable.fragments.splash.SplashFragment
 import com.kubsu.timetable.fragments.subscription.create.CreateSubscriptionFragment
 import com.kubsu.timetable.utils.nameOf
-import di.androidCommonKodein
 import org.kodein.di.Copy
 import org.kodein.di.Kodein
 import org.kodein.di.erased.bind
 import org.kodein.di.erased.instance
 import org.kodein.di.erased.singleton
 import platform.PlatformArgs
+import platform.di.androidCommonKodein
 
 fun appKodein(application: Application) = Kodein {
     extend(androidCommonKodein, copy = Copy.All)
@@ -46,7 +45,6 @@ fun appKodein(application: Application) = Kodein {
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
                 (activity as? AppActivity)?.let {
                     it.supportFragmentManager.fragmentFactory = instance()
-                    it.teaFeature = instanceGeneric()
                 }
             }
 

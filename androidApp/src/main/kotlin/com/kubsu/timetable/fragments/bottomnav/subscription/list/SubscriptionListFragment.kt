@@ -78,9 +78,10 @@ class SubscriptionListFragment(
 
         progressEffect bind { view.progress_bar.visibility(it) }
         subscriptionListEffect bind { subscriptionList ->
-            val listIsNotEmpty = subscriptionList.isNotEmpty()
-            view.empty_list_layout.isVisible = !listIsNotEmpty
-            view.subscription_recycler_view.isVisible = listIsNotEmpty
+            val listIsEmpty = subscriptionList.isEmpty()
+            view.empty_list_layout.isVisible =
+                listIsEmpty && progressEffect.value == Visibility.INVISIBLE
+            view.subscription_recycler_view.isVisible = !listIsEmpty
 
             subscriptionAdapter.setData(subscriptionList)
         }

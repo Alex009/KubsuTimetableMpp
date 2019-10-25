@@ -40,4 +40,6 @@ sealed class Subscription {
     class ShowFailure(val failure: DataFailure) : Subscription()
 }
 
-sealed class Screen
+sealed class Screen {
+    class NextWeekTimetable(val timetable: TimetableModel?) : Screen()
+}

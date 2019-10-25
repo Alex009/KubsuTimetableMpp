@@ -22,7 +22,7 @@ import io.ktor.client.request.post
 import io.ktor.client.response.HttpResponse
 import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.json.Json
-import platform.currentPlatform
+import platform.currentPlatformName
 
 class UserInfoNetworkClientImpl(
     private val networkSender: NetworkSender,
@@ -62,7 +62,7 @@ class UserInfoNetworkClientImpl(
                         "email" to email.toJson(),
                         "password" to password.toJson(),
                         "token" to (token?.value ?: "").toJson(),
-                        "platform" to currentPlatform.toJson()
+                        "" to currentPlatformName.toJson()
                     )
                 }.also(::validate)
             }.mapLeft {
@@ -223,7 +223,7 @@ class UserInfoNetworkClientImpl(
                     addSessionKey(session)
                     body = jsonContent(
                         "token" to token.value.toJson(),
-                        "platform" to currentPlatform.toJson()
+                        "" to currentPlatformName.toJson()
                     )
                 }
             }.mapLeft(::toNetworkFail)

@@ -9,15 +9,19 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 
 @UseExperimental(ExperimentalCoroutinesApi::class)
-fun <T : Any, R> Query<T>.asFilteredFlow(getRowType: (Query<T>) -> R): Flow<R> =
+inline fun <T : Any, R> Query<T>.asFilteredFlow(
+    crossinline getRowType: suspend (Query<T>) -> R
+): Flow<R> =
     this
         .asFlow()
-        .map { getRowType(it) }
+        .map(getRowType)
         .distinctUntilChanged()
 
 @UseExperimental(ExperimentalCoroutinesApi::class)
-fun <T : Any, R : Any> Query<T>.asFilteredFlowNotNull(getRowType: (Query<T>) -> R?): Flow<R> =
+inline fun <T : Any, R : Any> Query<T>.asFilteredFlowNotNull(
+    crossinline getRowType: suspend (Query<T>) -> R?
+): Flow<R> =
     this
         .asFlow()
-        .mapNotNull { getRowType(it) }
+        .mapNotNull(getRowType)
         .distinctUntilChanged()

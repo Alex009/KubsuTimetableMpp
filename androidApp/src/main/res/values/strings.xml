@@ -84,4 +84,6 @@
         <item>Sunday</item>
     </string-array>
     <string name="list_is_empty">List is empty</string>
+    <string name="check_new_timetable">Update came, check!</string>
+    <string name="show_timetable_for_next_week">Show timetable for next  week</string>
 </resources>

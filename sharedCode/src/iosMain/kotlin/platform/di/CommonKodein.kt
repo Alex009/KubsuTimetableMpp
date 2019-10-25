@@ -1,15 +1,16 @@
-package di
+package platform.di
 
+import com.kubsu.timetable.di.mppCommonKodeinModule
 import io.ktor.client.engine.HttpClientEngine
-import io.ktor.client.engine.android.Android
+import io.ktor.client.engine.ios.Ios
 import org.kodein.di.Kodein
 import org.kodein.di.erased.bind
 import org.kodein.di.erased.singleton
 
-val androidCommonKodein = Kodein {
-    import(com.kubsu.timetable.di.mppCommonKodeinModule)
+val iosCommonKodein = Kodein {
+    import(mppCommonKodeinModule)
 
     bind<HttpClientEngine>() with singleton {
-        Android.create {}
+        Ios.create {}
     }
 }

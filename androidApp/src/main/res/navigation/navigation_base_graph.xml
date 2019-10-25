@@ -86,6 +86,7 @@
         tools:layout="@layout/timetable_fragment">
         <argument
             android:name="timetable"
-            app:argType="com.kubsu.timetable.presentation.timetable.model.TimetableModel" />
+            app:argType="com.kubsu.timetable.presentation.timetable.model.TimetableModel"
+            app:nullable="true" />
     </fragment>
 </navigation>

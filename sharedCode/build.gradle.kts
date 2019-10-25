@@ -144,7 +144,7 @@ android {
     compileSdkVersion(29)
 
     defaultConfig {
-        minSdkVersion(16)
+        minSdkVersion(21)
     }
 
     // By default the android gradle plugin expects to find the kotlin source files in
