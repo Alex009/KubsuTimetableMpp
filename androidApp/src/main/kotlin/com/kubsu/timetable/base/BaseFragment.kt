@@ -9,15 +9,12 @@ import com.kubsu.timetable.BaseNavGraphDirections
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.R
 import com.kubsu.timetable.extensions.checkWhenAllHandled
-import com.kubsu.timetable.firebase.NotAuthenticatedException
-import com.kubsu.timetable.firebase.ParsingException
-import com.kubsu.timetable.firebase.UnknownResponseException
-import com.kubsu.timetable.utils.CrashlyticsLogger
+import com.kubsu.timetable.firebase.CrashlyticsLogger
 import com.kubsu.timetable.utils.safeNavigate
 import com.kubsu.timetable.utils.safePopBackStack
 import com.kubsu.timetable.utils.ui.materialAlert
 
-abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), CrashlyticsLogger {
+abstract class BaseFragment(layoutId: Int) : Fragment(layoutId) {
     open fun popBackStack(): Boolean = safePopBackStack()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,53 +39,46 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), CrashlyticsLogg
     }
 
     protected fun notifyUserOfFailure(failure: DataFailure) {
-        val activity = requireActivity()
-        when (failure) {
-            is DataFailure.ConnectionToRepository -> {
-                activity.materialAlert(
-                    message = getString(R.string.error_connecting),
-                    onOkButtonClick = {}
-                )
-            }
-
-            is DataFailure.NotAuthenticated -> {
-                error(
-                    message = failure.debugMessage,
-                    exception = NotAuthenticatedException(failure.debugMessage)
-                )
-                activity.materialAlert(
-                    message = getString(R.string.not_authenticated),
-                    onOkButtonClick = {
-                        safeNavigate(BaseNavGraphDirections.actionGlobalSignInFragment())
-                    }
-                )
-            }
-
-            is DataFailure.ParsingError -> {
-                error(
-                    message = failure.debugMessage,
-                    exception = ParsingException(failure.debugMessage)
-                )
-                activity.materialAlert(
-                    message = getString(R.string.unknown_failure),
-                    onOkButtonClick = {}
-                )
-            }
-
-            is DataFailure.UnknownResponse -> {
-                error(
-                    message = failure.debugMessage,
-                    exception = UnknownResponseException(
-                        code = failure.code,
-                        body = failure.body,
-                        message = failure.debugMessage
+        CrashlyticsLogger.logFailureToCrashlytics(failure, loggerTag)
+        with(requireActivity()) {
+            when (failure) {
+                is DataFailure.ConnectionToRepository ->
+                    materialAlert(
+                        message = getString(R.string.error_connecting),
+                        onOkButtonClick = {}
                     )
-                )
-                activity.materialAlert(
-                    message = getString(R.string.unknown_failure),
-                    onOkButtonClick = {}
-                )
-            }
-        }.checkWhenAllHandled()
+
+                is DataFailure.NotAuthenticated ->
+                    materialAlert(
+                        message = getString(R.string.not_authenticated),
+                        onOkButtonClick = {
+                            safeNavigate(BaseNavGraphDirections.actionGlobalSignInFragment())
+                        }
+                    )
+
+                is DataFailure.ParsingError ->
+                    materialAlert(
+                        message = getString(R.string.unknown_failure),
+                        onOkButtonClick = {}
+                    )
+
+                is DataFailure.UnknownResponse ->
+                    materialAlert(
+                        message = getString(R.string.unknown_failure),
+                        onOkButtonClick = {}
+                    )
+            }.checkWhenAllHandled()
+        }
+    }
+
+    private val loggerTag: String
+        get() = getTag(this::class.java)
+
+    private fun getTag(clazz: Class<*>): String {
+        val tag = clazz.simpleName
+        return if (tag.length <= 23)
+            tag
+        else
+            tag.substring(0, 23)
     }
 }

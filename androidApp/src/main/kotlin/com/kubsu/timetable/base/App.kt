@@ -2,10 +2,12 @@ package com.kubsu.timetable.base
 
 import android.app.Application
 import com.crashlytics.android.Crashlytics
+import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.InformationSynchronizer
 import com.kubsu.timetable.di.appKodein
 import com.kubsu.timetable.domain.interactor.sync.SyncMixinInteractor
 import com.kubsu.timetable.domain.interactor.userInfo.UserInteractor
+import com.kubsu.timetable.firebase.CrashlyticsLogger
 import com.kubsu.timetable.utils.logics.activityLifecycleInjector
 import io.fabric.sdk.android.Fabric
 import org.kodein.di.Kodein
@@ -25,7 +27,8 @@ class App : Application(), KodeinAware {
         InformationSynchronizer(
             userInteractor = userInteractor,
             syncMixinInteractor = syncMixinInteractor,
-            platformArgs = platformArgs
+            platformArgs = platformArgs,
+            onFailure = ::onFailure
         )
     }
 
@@ -38,5 +41,13 @@ class App : Application(), KodeinAware {
         Fabric.with(this, Crashlytics())
 
         informationSynchronizer.awaitConnectionAndSync()
+    }
+
+    private fun onFailure(failure: DataFailure) {
+        if (failure !is DataFailure.NotAuthenticated)
+            CrashlyticsLogger.logFailureToCrashlytics(
+                failure = failure,
+                tag = "InformationSynchronizer"
+            )
     }
 }

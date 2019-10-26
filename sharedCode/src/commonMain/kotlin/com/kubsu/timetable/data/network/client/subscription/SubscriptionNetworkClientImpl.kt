@@ -3,6 +3,7 @@ package com.kubsu.timetable.data.network.client.subscription
 import com.egroden.teaco.Either
 import com.egroden.teaco.mapLeft
 import com.kubsu.timetable.DataFailure
+import com.kubsu.timetable.Failure
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SubscriptionFail
 import com.kubsu.timetable.data.network.client.subscription.incorrectdata.SubscriptionIncorrectData
@@ -40,14 +41,14 @@ class SubscriptionNetworkClientImpl(
                         "is_main" to isMain.toJson()
                     )
                 }
-            }.mapLeft {
-                if (it is ServerFailure.Response && (it.code == 400 || it.code == 401))
-                    if (it.code == 401)
-                        RequestFailure(DataFailure.NotAuthenticated(it.body))
+            }.mapLeft { failure ->
+                if (failure is ServerFailure.Response && failure.code in 400..401)
+                    if (failure.code == 401)
+                        RequestFailure(DataFailure.NotAuthenticated(failure.body))
                     else
-                        parseCreateFail(it)
+                        parseCreateFail(failure)
                 else
-                    RequestFailure(toNetworkFail(it))
+                    RequestFailure(toNetworkFail(failure))
             }
         }
 
@@ -55,27 +56,48 @@ class SubscriptionNetworkClientImpl(
         response: ServerFailure.Response
     ): RequestFailure<List<SubscriptionFail>> {
         val incorrectData = json.parse(SubscriptionIncorrectData.serializer(), response.body)
-        val failList = incorrectData.title.map {
-            when (it) {
-                "max_length" -> SubscriptionFail.TooLongTitle
-                "required" -> SubscriptionFail.RequiredTitle
-                else -> DataFailure.UnknownResponse(response.code, response.body)
-            }
-        }.plus(
-            incorrectData.subgroup.map { DataFailure.UnknownResponse(response.code, response.body) }
-        ).plus(
-            incorrectData.nonFieldFailures.map {
-                when (it) {
-                    "unique" -> SubscriptionFail.SubscriptionAlreadyExists
-                    else -> DataFailure.UnknownResponse(response.code, response.body)
-                }
-            }
-        )
+
+        val titleFailureList = mapTitleFailureList(incorrectData, response)
+        val subgroupFailureList = mapSubgroupFailureList(incorrectData, response)
+        val otherFailureList = mapOtherFailureList(incorrectData, response)
+
+        val failList = titleFailureList + subgroupFailureList + otherFailureList
         return RequestFailure(
             domain = failList.filterIsInstance<SubscriptionFail>(),
             data = failList.filterIsInstance<DataFailure>()
         )
     }
+
+    private fun mapTitleFailureList(
+        incorrectData: SubscriptionIncorrectData,
+        response: ServerFailure.Response
+    ): List<Failure> =
+        incorrectData.title.map { failure ->
+            when (failure) {
+                "max_length" -> SubscriptionFail.TooLongTitle
+                "required" -> SubscriptionFail.RequiredTitle
+                else -> DataFailure.UnknownResponse(response.code, response.body)
+            }
+        }
+
+    private fun mapSubgroupFailureList(
+        incorrectData: SubscriptionIncorrectData,
+        response: ServerFailure.Response
+    ): List<Failure> =
+        incorrectData.subgroup.map {
+            DataFailure.UnknownResponse(response.code, response.body)
+        }
+
+    private fun mapOtherFailureList(
+        incorrectData: SubscriptionIncorrectData,
+        response: ServerFailure.Response
+    ): List<Failure> =
+        incorrectData.nonFieldFailures.map { failure ->
+            when (failure) {
+                "unique" -> SubscriptionFail.SubscriptionAlreadyExists
+                else -> DataFailure.UnknownResponse(response.code, response.body)
+            }
+        }
 
     override suspend fun selectSubscriptionsForUser(
         session: SessionDto

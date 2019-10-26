@@ -8,7 +8,7 @@ import com.kubsu.timetable.UserInfoFail
 import com.kubsu.timetable.data.network.dto.UserData
 import com.kubsu.timetable.data.network.dto.UserNetworkDto
 import com.kubsu.timetable.data.storage.user.session.SessionDto
-import com.kubsu.timetable.data.storage.user.token.TokenDto
+import com.kubsu.timetable.data.storage.user.token.Token
 
 interface UserInfoNetworkClient {
     suspend fun registration(
@@ -19,7 +19,7 @@ interface UserInfoNetworkClient {
     suspend fun signIn(
         email: String,
         password: String,
-        token: TokenDto?
+        token: Token?
     ): Either<RequestFailure<List<SignInFail>>, UserData>
 
     suspend fun update(
@@ -29,7 +29,7 @@ interface UserInfoNetworkClient {
 
     suspend fun updateToken(
         session: SessionDto,
-        token: TokenDto
+        token: Token
     ): Either<DataFailure, Unit>
 
     suspend fun logout(session: SessionDto): Either<DataFailure, Unit>

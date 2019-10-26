@@ -8,9 +8,11 @@ import com.egroden.teaco.TeaFeature
 import com.egroden.teaco.androidConnectors
 import com.egroden.teaco.bindAction
 import com.egroden.teaco.connect
+import com.google.android.material.appbar.MaterialToolbar
 import com.kubsu.timetable.R
 import com.kubsu.timetable.base.BaseFragment
 import com.kubsu.timetable.data.storage.displayed.subscription.DisplayedSubscriptionStorage
+import com.kubsu.timetable.extensions.checkWhenAllHandled
 import com.kubsu.timetable.extensions.getCurrentDayOfWeek
 import com.kubsu.timetable.fragments.bottomnav.BottomNavFragmentDirections
 import com.kubsu.timetable.fragments.bottomnav.timetable.adapter.TimetableAdapter
@@ -18,6 +20,7 @@ import com.kubsu.timetable.presentation.timetable.*
 import com.kubsu.timetable.presentation.timetable.model.TimetableInfoToDisplay
 import com.kubsu.timetable.presentation.timetable.model.TimetableModel
 import com.kubsu.timetable.presentation.timetable.model.TypeOfWeekModel
+import com.kubsu.timetable.presentation.timetable.model.UniversityInfoModel
 import com.kubsu.timetable.utils.*
 import kotlinx.android.synthetic.main.progress_bar.view.*
 import kotlinx.android.synthetic.main.timetable_fragment.view.*
@@ -31,7 +34,9 @@ class TimetableFragment(
     }
 
     private val titleEffect = UiEffect("")
+    private val subtitleEffect = UiEffect("")
     private val progressEffect = UiEffect(Visibility.INVISIBLE)
+    private val universityInfoEffect = UiEffect<UniversityInfoModel?>(null)
     private val currentTimetableEffect = UiEffect<TimetableModel?>(null)
     private val nextWeekTimetableEffect = UiEffect<TimetableModel?>(null)
 
@@ -43,20 +48,6 @@ class TimetableFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        with(view.toolbar) {
-            inflateMenu(R.menu.timetable_menu)
-            setOnMenuItemClickListener {
-                when (it.itemId) {
-                    R.id.next_week_timetable -> {
-                        navigate(Screen.NextWeekTimetable(nextWeekTimetableEffect.value))
-                        true
-                    }
-
-                    else -> false
-                }
-            }
-        }
-
         val timetableAdapter = TimetableAdapter()
         with(view.timetable_recycler_view) {
             setHasFixedSize(true)
@@ -65,7 +56,17 @@ class TimetableFragment(
         }
 
         titleEffect bind view.toolbar::setTitle
+        subtitleEffect bind view.toolbar::setSubtitle
         progressEffect bind { view.progress_bar.visibility(it) }
+        universityInfoEffect bind { universityInfo ->
+            universityInfo?.typeOfWeek?.let {
+                showTimetableMenu(
+                    toolbar = view.toolbar,
+                    typeOfWeek = it,
+                    timetable = nextWeekTimetableEffect.value
+                )
+            }
+        }
         currentTimetableEffect bind { timetableModel ->
             val timetableInfoList = timetableModel?.infoList ?: emptyList()
             val listIsEmpty = timetableInfoList.isEmpty()
@@ -83,8 +84,11 @@ class TimetableFragment(
     override fun onDestroyView() {
         super.onDestroyView()
         titleEffect.unbind()
+        subtitleEffect.unbind()
         progressEffect.unbind()
+        universityInfoEffect.unbind()
         currentTimetableEffect.unbind()
+        nextWeekTimetableEffect.unbind()
     }
 
     private fun render(state: State) {
@@ -92,14 +96,19 @@ class TimetableFragment(
 
         progressEffect.value = if (state.progress) Visibility.VISIBLE else Visibility.INVISIBLE
 
-        val universityInfoModel = state.universityInfoModel
-        val (currentTimetable, nextWeekTimetable) = when (universityInfoModel?.typeOfWeek) {
-            TypeOfWeekModel.Numerator -> state.numeratorTimetable to state.denominatorTimetable
-            TypeOfWeekModel.Denominator -> state.denominatorTimetable to state.numeratorTimetable
-            null -> null to null
-        }
-        currentTimetableEffect.value = currentTimetable
-        nextWeekTimetableEffect.value = nextWeekTimetable
+        when (state.universityInfoModel?.typeOfWeek) {
+            TypeOfWeekModel.Numerator -> {
+                subtitleEffect.value = getString(R.string.numerator)
+                currentTimetableEffect.value = state.numeratorTimetable
+                nextWeekTimetableEffect.value = state.denominatorTimetable
+            }
+            TypeOfWeekModel.Denominator -> {
+                subtitleEffect.value = getString(R.string.denominator)
+                currentTimetableEffect.value = state.denominatorTimetable
+                nextWeekTimetableEffect.value = state.numeratorTimetable
+            }
+            null -> null
+        }.checkWhenAllHandled()
     }
 
     private fun render(subscription: Subscription) =
@@ -108,12 +117,33 @@ class TimetableFragment(
             is Subscription.ShowFailure -> notifyUserOfFailure(subscription.failure)
         }
 
+    private fun showTimetableMenu(
+        toolbar: MaterialToolbar,
+        typeOfWeek: TypeOfWeekModel,
+        timetable: TimetableModel?
+    ) {
+        toolbar.inflateMenu(R.menu.timetable_menu)
+        toolbar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.next_week_timetable -> {
+                    navigate(Screen.NextWeekTimetable(typeOfWeek, timetable))
+                    true
+                }
+
+                else -> false
+            }
+        }
+    }
+
     private fun navigate(screen: Screen) =
         when (screen) {
             is Screen.NextWeekTimetable ->
                 safeNavigate(
                     BottomNavFragmentDirections
-                        .actionBottomNavFragmentToNextWeekTimetableFragment(screen.timetable)
+                        .actionBottomNavFragmentToNextWeekTimetableFragment(
+                            typeOfWeek = screen.typeOfWeek,
+                            timetable = screen.timetable
+                        )
                 )
         }
 

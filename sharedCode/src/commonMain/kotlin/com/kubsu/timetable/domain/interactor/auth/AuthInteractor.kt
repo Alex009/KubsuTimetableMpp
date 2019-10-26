@@ -16,7 +16,5 @@ interface AuthInteractor {
         password: String
     ): Either<RequestFailure<List<UserInfoFail>>, Unit>
 
-    suspend fun isUserAuthenticated(): Boolean
-
     suspend fun logout()
 }

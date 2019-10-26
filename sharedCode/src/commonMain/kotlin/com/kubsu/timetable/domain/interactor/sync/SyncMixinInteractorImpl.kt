@@ -56,7 +56,7 @@ class SyncMixinInteractorImpl(
                 async {
                     mixinGateway.updateData(
                         basename = basename,
-                        availableDiff = diffList.first { it.basename == basename }
+                        availableDiff = diffList.firstOrNull { it.basename == basename }
                     )
                 }
             }

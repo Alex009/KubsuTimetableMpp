@@ -15,6 +15,7 @@ import com.kubsu.timetable.R
 import com.kubsu.timetable.base.AppActivity
 import com.kubsu.timetable.data.mapper.diff.DataDiffDtoMapper
 import com.kubsu.timetable.data.network.dto.diff.DataDiffNetworkDto
+import com.kubsu.timetable.data.storage.user.token.UndeliveredToken
 import com.kubsu.timetable.di.appKodein
 import com.kubsu.timetable.domain.entity.Basename
 import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
@@ -51,7 +52,7 @@ class FirebasePushService : FirebaseMessagingService(), KodeinAware {
     override fun onNewToken(token: String) {
         super.onNewToken(token)
         GlobalScope.launch {
-            userInteractor.newToken(token)
+            userInteractor.newToken(UndeliveredToken(token))
         }
     }
 

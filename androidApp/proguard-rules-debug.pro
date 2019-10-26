@@ -1,4 +1,7 @@
--printmapping mapping.txt
+-keepattributes *Annotation*
+-keepattributes SourceFile,LineNumberTable
+-keep class * extends java.lang.Exception
+-keep class * extends kotlin.Throwable
 
 # Crashlitics
 -keep class com.crashlytics.** { *; }

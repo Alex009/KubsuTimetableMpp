@@ -30,8 +30,8 @@
     <string name="go_to_denominator">Перейти к знаменателю</string>
     <string name="main">Основные</string>
     <string name="secondary">Вторичные</string>
-    <string name="now_the_numerator">Сейчас числитель</string>
-    <string name="now_the_denominator">Сейчас знаменатель</string>
+    <string name="numerator">Числитель</string>
+    <string name="denominator">Знаменатель</string>
     <string name="classroom_with_parameter">Кабинет: %1$s</string>
     <string name="lecture">Лекция</string>
     <string name="seminar">Практика</string>

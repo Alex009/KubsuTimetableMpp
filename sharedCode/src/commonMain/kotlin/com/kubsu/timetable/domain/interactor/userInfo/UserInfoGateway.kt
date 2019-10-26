@@ -4,7 +4,8 @@ import com.egroden.teaco.Either
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.UserInfoFail
-import com.kubsu.timetable.data.storage.user.token.TokenDto
+import com.kubsu.timetable.data.storage.user.token.Token
+import com.kubsu.timetable.data.storage.user.token.UndeliveredToken
 import com.kubsu.timetable.domain.entity.Timestamp
 import com.kubsu.timetable.domain.entity.UserEntity
 
@@ -13,9 +14,9 @@ interface UserInfoGateway {
 
     suspend fun updateUserInfo(user: UserEntity): Either<RequestFailure<List<UserInfoFail>>, Unit>
 
-    suspend fun updateToken(token: String): Either<DataFailure, Unit>
+    suspend fun updateToken(token: UndeliveredToken): Either<DataFailure, Unit>
 
-    fun getCurrentTokenOrNull(): TokenDto?
+    fun getCurrentTokenOrNull(): Token?
 
     fun updateTimestamp(timestamp: Timestamp): Either<DataFailure, Unit>
 }

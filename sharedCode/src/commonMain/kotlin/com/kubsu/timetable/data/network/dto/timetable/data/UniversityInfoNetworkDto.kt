@@ -1,15 +1,20 @@
 package com.kubsu.timetable.data.network.dto.timetable.data
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import com.kubsu.timetable.data.network.dto.diff.FantasticFour
 
-@Serializable
+/**
+ * It does not have its serialization, because the server developer was
+ * too lazy and wrote a universal method of transfer [FantasticFour]
+ * (hoping that in the future not only university info will be added).
+ */
 class UniversityInfoNetworkDto(
     val id: Int,
-
-    @SerialName("faculty_id")
     val facultyId: Int,
-
-    @SerialName("type_of_week")
     val typeOfWeek: Int
-)
+) {
+    constructor(fantasticFour: FantasticFour) : this(
+        id = fantasticFour.id,
+        facultyId = fantasticFour.objectId,
+        typeOfWeek = fantasticFour.data.getValue("current_type_of_week").int
+    )
+}

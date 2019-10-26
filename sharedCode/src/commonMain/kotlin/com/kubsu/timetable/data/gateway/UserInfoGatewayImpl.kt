@@ -10,8 +10,10 @@ import com.kubsu.timetable.data.storage.user.info.UserStorage
 import com.kubsu.timetable.data.storage.user.session.SessionDto
 import com.kubsu.timetable.data.storage.user.session.SessionStorage
 import com.kubsu.timetable.data.storage.user.session.getEitherFailure
-import com.kubsu.timetable.data.storage.user.token.TokenDto
+import com.kubsu.timetable.data.storage.user.token.DeliveredToken
+import com.kubsu.timetable.data.storage.user.token.Token
 import com.kubsu.timetable.data.storage.user.token.TokenStorage
+import com.kubsu.timetable.data.storage.user.token.UndeliveredToken
 import com.kubsu.timetable.domain.entity.Timestamp
 import com.kubsu.timetable.domain.entity.UserEntity
 import com.kubsu.timetable.domain.interactor.userInfo.UserInfoGateway
@@ -41,21 +43,20 @@ class UserInfoGatewayImpl(
                     }
             }
 
-    override suspend fun updateToken(token: String): Either<DataFailure, Unit> {
-        val newToken = TokenDto(token, delivered = false)
-        tokenStorage.set(newToken)
+    override suspend fun updateToken(token: UndeliveredToken): Either<DataFailure, Unit> {
+        tokenStorage.set(token)
         val currentSession = sessionStorage.get()
         return if (currentSession != null)
             networkClient
-                .updateToken(currentSession, newToken)
+                .updateToken(currentSession, token)
                 .map {
-                    tokenStorage.set(newToken.copy(delivered = true))
+                    tokenStorage.set(DeliveredToken(token.value))
                 }
         else
             Either.right(Unit)
     }
 
-    override fun getCurrentTokenOrNull(): TokenDto? =
+    override fun getCurrentTokenOrNull(): Token? =
         tokenStorage.get()
 
     override fun updateTimestamp(timestamp: Timestamp): Either<DataFailure, Unit> =
@@ -63,10 +64,7 @@ class UserInfoGatewayImpl(
             .getEitherFailure()
             .map { session ->
                 sessionStorage.set(
-                    SessionDto(
-                        id = session.id,
-                        timestamp = timestamp
-                    )
+                    SessionDto(id = session.id, timestamp = timestamp)
                 )
             }
 }

@@ -13,6 +13,8 @@ import com.kubsu.timetable.data.mapper.UserDtoMapper
 import com.kubsu.timetable.data.network.client.user.UserInfoNetworkClient
 import com.kubsu.timetable.data.storage.user.info.UserStorage
 import com.kubsu.timetable.data.storage.user.session.SessionStorage
+import com.kubsu.timetable.data.storage.user.token.DeliveredToken
+import com.kubsu.timetable.data.storage.user.token.Token
 import com.kubsu.timetable.data.storage.user.token.TokenStorage
 import com.kubsu.timetable.domain.interactor.auth.AuthGateway
 import kotlinx.coroutines.GlobalScope
@@ -34,17 +36,16 @@ class AuthGatewayImpl(
 ) : AuthGateway {
     override suspend fun signIn(
         email: String,
-        password: String
-    ): Either<RequestFailure<List<SignInFail>>, Unit> {
-        val currentToken = tokenStorage.get()
-        return networkClient
-            .signIn(email, password, currentToken)
+        password: String,
+        token: Token?
+    ): Either<RequestFailure<List<SignInFail>>, Unit> =
+        networkClient
+            .signIn(email, password, token)
             .map {
                 userStorage.set(UserDtoMapper.toStorageDto(it.user))
                 sessionStorage.set(it.session)
-                tokenStorage.set(currentToken?.copy(delivered = true))
+                tokenStorage.set(token?.value?.let(::DeliveredToken))
             }
-    }
 
     override suspend fun registrationUser(
         email: String,

@@ -85,6 +85,9 @@
         android:label="next_week_timetable_fragment"
         tools:layout="@layout/timetable_fragment">
         <argument
+            android:name="typeOfWeek"
+            app:argType="com.kubsu.timetable.presentation.timetable.model.TypeOfWeekModel" />
+        <argument
             android:name="timetable"
             app:argType="com.kubsu.timetable.presentation.timetable.model.TimetableModel"
             app:nullable="true" />

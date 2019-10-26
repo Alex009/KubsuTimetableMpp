@@ -85,10 +85,10 @@ class SubscriptionGatewayImpl(
                 if (subscriptionList.isNotEmpty())
                     Either.right(subscriptionList.map(SubscriptionDtoMapper::toEntity))
                 else
-                    getSubscriptionList()
+                    selectSubscriptionListFromNetwork()
             }
 
-    private suspend fun getSubscriptionList(): Either<DataFailure, List<SubscriptionEntity>> =
+    private suspend fun selectSubscriptionListFromNetwork(): Either<DataFailure, List<SubscriptionEntity>> =
         sessionStorage
             .getEitherFailure()
             .flatMap { session ->

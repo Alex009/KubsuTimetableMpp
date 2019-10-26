@@ -3,6 +3,7 @@ package com.kubsu.timetable.presentation.timetable
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.presentation.timetable.model.SubscriptionModel
 import com.kubsu.timetable.presentation.timetable.model.TimetableModel
+import com.kubsu.timetable.presentation.timetable.model.TypeOfWeekModel
 import com.kubsu.timetable.presentation.timetable.model.UniversityInfoModel
 import platform.SerializableModel
 import platform.SerializeModel
@@ -41,5 +42,8 @@ sealed class Subscription {
 }
 
 sealed class Screen {
-    class NextWeekTimetable(val timetable: TimetableModel?) : Screen()
+    class NextWeekTimetable(
+        val typeOfWeek: TypeOfWeekModel,
+        val timetable: TimetableModel?
+    ) : Screen()
 }

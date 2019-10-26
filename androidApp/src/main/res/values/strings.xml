@@ -29,8 +29,8 @@
     <string name="go_to_denominator">Go to denominator</string>
     <string name="main">Main</string>
     <string name="secondary">Secondary</string>
-    <string name="now_the_numerator">Now the numerator</string>
-    <string name="now_the_denominator">Now the denominator</string>
+    <string name="numerator">Numerator</string>
+    <string name="denominator">Denominator</string>
     <string name="classroom_with_parameter">Classroom: %1$s</string>
     <string name="lecture">Lecture</string>
     <string name="seminar">Seminar</string>

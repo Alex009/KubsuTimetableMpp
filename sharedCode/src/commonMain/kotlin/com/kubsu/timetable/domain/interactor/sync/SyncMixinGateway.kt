@@ -15,7 +15,7 @@ interface SyncMixinGateway {
 
     suspend fun updateData(
         basename: Basename,
-        availableDiff: DataDiffEntity
+        availableDiff: DataDiffEntity?
     ): Either<DataFailure, Unit>
 
     suspend fun meta(

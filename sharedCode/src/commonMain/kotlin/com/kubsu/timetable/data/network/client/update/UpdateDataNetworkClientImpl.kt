@@ -24,7 +24,9 @@ class UpdateDataNetworkClientImpl(
             handle {
                 post<DiffResponse>("$baseUrl/api/$apiVersion/university/diff/") {
                     addSessionKey(session)
-                    body = jsonContent("timestamp" to session.timestamp.value.toJson())
+                    body = jsonContent(
+                        "timestamp" to session.timestamp.value.toJson()
+                    )
                 }
             }.mapLeft {
                 if (it is ServerFailure.Response && it.code == 401)
@@ -66,7 +68,9 @@ class UpdateDataNetworkClientImpl(
             handle {
                 val response = post<String>("$baseUrl/api/$apiVersion/$basename/meta/") {
                     addSessionKey(session)
-                    body = jsonContent("ids" to updatedIds.toJson())
+                    body = jsonContent(
+                        "ids" to updatedIds.toJson()
+                    )
                 }
                 networkSender.json.parse(basenameSerializer.list, response)
             }.mapLeft {

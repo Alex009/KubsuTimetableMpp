@@ -57,19 +57,9 @@ class UniversityDataNetworkClientImpl(
                 get<FantasticFour>(
                     "$baseUrl/api/$apiVersion/faculties/$facultyId/info"
                 )
-            }
-                .bimap(
-                    leftOperation = ::toNetworkFail,
-                    rightOperation = {
-                        UniversityInfoNetworkDto(
-                            id = it.id,
-                            facultyId = it.objectId,
-                            typeOfWeek = it
-                                .data
-                                .getValue("current_type_of_week")
-                                .int
-                        )
-                    }
-                )
+            }.bimap(
+                leftOperation = ::toNetworkFail,
+                rightOperation = ::UniversityInfoNetworkDto
+            )
         }
 }

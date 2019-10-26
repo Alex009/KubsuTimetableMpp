@@ -7,16 +7,19 @@ class TokenStorageImpl(
     settingsFactory: Settings.Factory
 ) : TokenStorage,
     BaseStorage(settingsFactory.create("current_token_kubsu_timetable")) {
-    override fun set(token: TokenDto?) {
+    override fun set(token: Token?) {
         set(tokenPropName, token?.value)
-        set(deliveredPropName, token?.delivered)
+        set(deliveredPropName, token is DeliveredToken)
     }
 
-    override fun get(): TokenDto? {
+    override fun get(): Token? {
         val token = getString(tokenPropName)
         val delivered = getBoolean(deliveredPropName, false)
         return if (token != null)
-            TokenDto(token, delivered)
+            if (delivered)
+                DeliveredToken(token)
+            else
+                UndeliveredToken(token)
         else
             null
     }

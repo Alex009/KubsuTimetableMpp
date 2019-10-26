@@ -23,8 +23,8 @@
 # Save from obfuscation
 -keepattributes *Annotation*
 -keepattributes SourceFile,LineNumberTable
--keep public class * extends java.lang.Exception
--keep public class * extends kotlin.Throwable
+-keep class * extends java.lang.Exception
+-keep class * extends kotlin.Throwable
 
 # Crashlitics
 -keep class com.crashlytics.** { *; }

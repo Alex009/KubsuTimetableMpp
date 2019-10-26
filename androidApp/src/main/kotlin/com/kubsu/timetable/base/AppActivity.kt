@@ -10,7 +10,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHost
 import androidx.navigation.findNavController
 import com.kubsu.timetable.R
-import com.kubsu.timetable.utils.CrashlyticsLogger
+import com.kubsu.timetable.firebase.CrashlyticsLogger
 import com.kubsu.timetable.utils.MaterialActionDialogCreator
 import com.kubsu.timetable.utils.closeApp
 import com.kubsu.timetable.utils.getCompatColor
@@ -24,7 +24,7 @@ import com.thelittlefireman.appkillermanager.managers.DevicesManager
 import com.thelittlefireman.appkillermanager.models.KillerManagerActionType
 import kotlinx.android.synthetic.main.activity_main.*
 
-class AppActivity : AppCompatActivity(), NavHost, CrashlyticsLogger {
+class AppActivity : AppCompatActivity(), NavHost {
     override fun getNavController(): NavController = findNavController(R.id.nav_host_fragment)
 
     private val alertCreator: MaterialActionDialogCreator?
@@ -92,7 +92,7 @@ class AppActivity : AppCompatActivity(), NavHost, CrashlyticsLogger {
     private fun onFailure(failure: Failure) =
         when (failure) {
             is InternalFail -> {
-                error(
+                CrashlyticsLogger.error(
                     tag = failure.tag,
                     exception = failure.exception,
                     message = failure.message
@@ -102,9 +102,10 @@ class AppActivity : AppCompatActivity(), NavHost, CrashlyticsLogger {
             is UnknownDeviceFail -> Unit
 
             is IntentFailure ->
-                error(
+                CrashlyticsLogger.error(
                     exception = handleIntentFail(failure),
-                    message = ""
+                    message = "IntentFailure",
+                    tag = "AppActivity"
                 )
         }
 

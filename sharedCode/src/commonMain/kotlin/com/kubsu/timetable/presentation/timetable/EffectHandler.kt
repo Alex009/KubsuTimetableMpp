@@ -10,14 +10,14 @@ import com.kubsu.timetable.extensions.checkWhenAllHandled
 import com.kubsu.timetable.presentation.timetable.mapper.SubscriptionModelMapper
 import com.kubsu.timetable.presentation.timetable.mapper.TimetableModelMapper
 import com.kubsu.timetable.presentation.timetable.mapper.UniversityInfoModelMapper
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.flow.*
 
 class TimetableEffectHandler(
     private val timetableInteractor: TimetableInteractor
 ) : EffectHandler<SideEffect, Action> {
+    @UseExperimental(InternalCoroutinesApi::class, FlowPreview::class)
     override fun invoke(sideEffect: SideEffect): Flow<Action> = flow {
         when (sideEffect) {
             is SideEffect.LoadCurrentTimetable ->
@@ -25,30 +25,28 @@ class TimetableEffectHandler(
                     .getAllTimetables(
                         SubscriptionModelMapper.toEntity(sideEffect.subscription)
                     )
-                    .collect { either ->
+                    .flatMapConcat { either ->
                         either.fold(
-                            ifLeft = { emit(Action.ShowFailure(it)) },
-                            ifRight = { showTimetableList(it) }
+                            ifLeft = { flowOf(Action.ShowFailure(it)) },
+                            ifRight = ::toActionFlow
                         )
                     }
+                    .collect(this)
         }.checkWhenAllHandled()
     }
 
-    private suspend fun FlowCollector<Action>.showTimetableList(
-        timetableList: List<TimetableEntity>
-    ) {
+    private fun toActionFlow(timetableList: List<TimetableEntity>): Flow<Action> =
         if (timetableList.isNotEmpty())
             timetableInteractor
                 .getUniversityData(timetableList.first())
-                .collect { either ->
-                    emit(
-                        either.fold(
-                            ifLeft = Action::ShowFailure,
-                            ifRight = { createActionShowTimetable(it, timetableList) }
-                        )
+                .map { either ->
+                    either.fold(
+                        ifLeft = Action::ShowFailure,
+                        ifRight = { createActionShowTimetable(it, timetableList) }
                     )
                 }
-    }
+        else
+            flowOf()
 
     private fun createActionShowTimetable(
         universityInfo: UniversityInfoEntity,
