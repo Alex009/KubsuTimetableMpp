@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.egroden.teaco.TeaFeature
+import com.egroden.teaco.Feature
 import com.egroden.teaco.androidConnectors
 import com.egroden.teaco.bindAction
 import com.egroden.teaco.connect
@@ -26,10 +26,10 @@ import kotlinx.android.synthetic.main.progress_bar.view.*
 import kotlinx.android.synthetic.main.timetable_fragment.view.*
 
 class TimetableFragment(
-    teaFeature: TeaFeature<Action, SideEffect, State, Subscription>,
+    featureFactory: (oldState: State?) -> Feature<Action, SideEffect, State, Subscription>,
     private val displayedSubscriptionStorage: DisplayedSubscriptionStorage
 ) : BaseFragment(R.layout.timetable_fragment) {
-    private val connector by androidConnectors(teaFeature) {
+    private val connector by androidConnectors(featureFactory) {
         bindAction(Action.UpdateData(displayedSubscriptionStorage.get()))
     }
 
@@ -114,7 +114,6 @@ class TimetableFragment(
     private fun render(subscription: Subscription) =
         when (subscription) {
             is Subscription.Navigate -> navigate(subscription.screen)
-            is Subscription.ShowFailure -> notifyUserOfFailure(subscription.failure)
         }
 
     private fun showTimetableMenu(

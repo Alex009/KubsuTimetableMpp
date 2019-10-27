@@ -19,7 +19,7 @@ import com.kubsu.timetable.domain.entity.Basename
 import com.kubsu.timetable.domain.entity.Timestamp
 import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
 import com.kubsu.timetable.domain.interactor.sync.SyncMixinGateway
-import com.kubsu.timetable.extensions.asFilteredFlow
+import com.kubsu.timetable.extensions.getContentFlow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
@@ -67,7 +67,7 @@ class SyncMixinGatewayImpl(
     override fun getAvailableDiffListFlowForCurrentUser(): Flow<List<DataDiffEntity>> =
         dataDiffQueries
             .selectAll()
-            .asFilteredFlow { query -> query.executeAsList() }
+            .getContentFlow { query -> query.executeAsList() }
             .mapNotNull { dataDiffList ->
                 val userId = userStorage.get()?.id ?: return@mapNotNull null
                 dataDiffList to userId

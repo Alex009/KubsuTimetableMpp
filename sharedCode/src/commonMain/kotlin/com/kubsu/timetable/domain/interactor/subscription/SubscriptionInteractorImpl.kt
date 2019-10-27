@@ -2,6 +2,8 @@ package com.kubsu.timetable.domain.interactor.subscription
 
 import com.egroden.teaco.Either
 import com.egroden.teaco.left
+import com.egroden.teaco.map
+import com.egroden.teaco.right
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SubscriptionFail
@@ -10,14 +12,15 @@ import com.kubsu.timetable.domain.entity.timetable.select.FacultyEntity
 import com.kubsu.timetable.domain.entity.timetable.select.GroupEntity
 import com.kubsu.timetable.domain.entity.timetable.select.OccupationEntity
 import com.kubsu.timetable.domain.entity.timetable.select.SubgroupEntity
+import com.kubsu.timetable.domain.interactor.timetable.AppInfoGateway
 import com.kubsu.timetable.domain.interactor.userInfo.UserInfoGateway
 import com.kubsu.timetable.extensions.def
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 
 class SubscriptionInteractorImpl(
     private val subscriptionGateway: SubscriptionGateway,
-    private val userInfoGateway: UserInfoGateway
+    private val userInfoGateway: UserInfoGateway,
+    private val appInfoGateway: AppInfoGateway
 ) : SubscriptionInteractor {
     override suspend fun selectFacultyList(): Either<DataFailure, List<FacultyEntity>> = def {
         subscriptionGateway.selectFacultyList()
@@ -46,17 +49,22 @@ class SubscriptionInteractorImpl(
         subscriptionName: String,
         isMain: Boolean
     ): Either<RequestFailure<List<SubscriptionFail>>, SubscriptionEntity> = def {
-        subscriptionGateway.create(subgroupId, subscriptionName, isMain)
+        subscriptionGateway
+            .create(subgroupId, subscriptionName, isMain)
+            .map {
+                appInfoGateway.updateInfo(it.userId)
+                return@map it
+            }
     }
 
-    override fun getAllSubscriptionsFlow(): Flow<Either<DataFailure, List<SubscriptionEntity>>> =
+    override fun getAllSubscriptionsFlow(): Either<DataFailure, Flow<List<SubscriptionEntity>>> =
         userInfoGateway
             .getCurrentUserOrNull()
-            ?.let(subscriptionGateway::getAllSubscriptionsFlow)
-            ?: flowOf(
-                Either.left(
-                    DataFailure.NotAuthenticated("SubscriptionInteractor#getAll")
-                )
+            ?.let {
+                Either.right(subscriptionGateway.getAllSubscriptionsFlow(it))
+            }
+            ?: Either.left(
+                DataFailure.NotAuthenticated("SubscriptionInteractor#getAll")
             )
 
     override suspend fun update(

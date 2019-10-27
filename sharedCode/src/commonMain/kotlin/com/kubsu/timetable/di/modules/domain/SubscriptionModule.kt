@@ -12,7 +12,7 @@ import org.kodein.di.erased.singleton
 
 internal val subscriptionDomainModule = Kodein.Module("subscription_domain") {
     bind<SubscriptionInteractor>() with singleton {
-        SubscriptionInteractorImpl(instance(), instance())
+        SubscriptionInteractorImpl(instance(), instance(), instance())
     }
     bind<SubscriptionGateway>() with singleton {
         val db = instance<MyDatabase>()

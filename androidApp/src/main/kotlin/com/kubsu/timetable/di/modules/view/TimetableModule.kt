@@ -10,7 +10,7 @@ import org.kodein.di.erased.provider
 val timetableViewModule = Kodein.Module("timetable_view_module") {
     bind() from provider {
         TimetableFragment(
-            teaFeature = instanceGeneric(),
+            featureFactory = ::instanceGeneric,
             displayedSubscriptionStorage = instance()
         )
     }

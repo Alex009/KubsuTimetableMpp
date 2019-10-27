@@ -78,7 +78,9 @@
     </fragment>
     <action
         android:id="@+id/action_global_signInFragment"
-        app:destination="@id/signInFragment" />
+        app:destination="@id/signInFragment"
+        app:popUpTo="@id/base_nav_graph"
+        app:popUpToInclusive="true" />
     <fragment
         android:id="@+id/nextWeekTimetableFragment"
         android:name="com.kubsu.timetable.fragments.timetable.nextweek.NextWeekTimetableFragment"

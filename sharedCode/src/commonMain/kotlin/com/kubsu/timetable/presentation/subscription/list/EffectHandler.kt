@@ -19,18 +19,18 @@ class SubscriptionListEffectHandler(
             SideEffect.LoadSubscriptionList ->
                 subscriptionInteractor
                     .getAllSubscriptionsFlow()
-                    .collect { either ->
-                        either.fold(
-                            ifLeft = { emit(Action.ShowDataFailure(listOf(it))) },
-                            ifRight = {
+                    .fold(
+                        ifLeft = { emit(Action.ShowDataFailure(listOf(it))) },
+                        ifRight = { flow ->
+                            flow.collect {
                                 emit(
                                     Action.SubscriptionListUploaded(
                                         it.map(SubscriptionModelMapper::toModel)
                                     )
                                 )
                             }
-                        )
-                    }
+                        }
+                    )
 
             is SideEffect.UpdateSubscription ->
                 subscriptionInteractor

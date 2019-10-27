@@ -8,6 +8,6 @@ import org.kodein.di.erased.provider
 
 val splashViewModule = Kodein.Module("splash_view_module") {
     bind() from provider {
-        SplashFragment(teaFeature = instanceGeneric())
+        SplashFragment(featureFactory = ::instanceGeneric)
     }
 }

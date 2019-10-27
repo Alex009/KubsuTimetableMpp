@@ -8,8 +8,6 @@ import org.kodein.di.erased.provider
 
 val settingsViewModule = Kodein.Module("settings_view_module") {
     bind() from provider {
-        SettingsFragment(
-            teaFeature = instanceGeneric()
-        )
+        SettingsFragment(featureFactory = ::instanceGeneric)
     }
 }

@@ -2,7 +2,7 @@ package com.kubsu.timetable.fragments.signin
 
 import android.os.Bundle
 import android.view.View
-import com.egroden.teaco.TeaFeature
+import com.egroden.teaco.Feature
 import com.egroden.teaco.androidConnectors
 import com.egroden.teaco.bindAction
 import com.egroden.teaco.connect
@@ -16,9 +16,9 @@ import kotlinx.android.synthetic.main.progress_bar.view.*
 import kotlinx.android.synthetic.main.sign_in_fragment.view.*
 
 class SignInFragment(
-    teaFeature: TeaFeature<Action, SideEffect, State, Subscription>
+    featureFactory: (oldState: State?) -> Feature<Action, SideEffect, State, Subscription>
 ) : BaseFragment(R.layout.sign_in_fragment) {
-    private val connector by androidConnectors(teaFeature)
+    private val connector by androidConnectors(featureFactory)
 
     private val progressEffect = UiEffect(Visibility.INVISIBLE)
     private val emailErrorEffect = UiEffect(0)

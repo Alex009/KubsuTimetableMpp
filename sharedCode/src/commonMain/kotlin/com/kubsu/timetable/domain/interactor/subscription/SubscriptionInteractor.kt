@@ -26,7 +26,7 @@ interface SubscriptionInteractor {
         isMain: Boolean
     ): Either<RequestFailure<List<SubscriptionFail>>, SubscriptionEntity>
 
-    fun getAllSubscriptionsFlow(): Flow<Either<DataFailure, List<SubscriptionEntity>>>
+    fun getAllSubscriptionsFlow(): Either<DataFailure, Flow<List<SubscriptionEntity>>>
 
     suspend fun update(
         subscription: SubscriptionEntity

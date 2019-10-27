@@ -16,11 +16,6 @@ val timetableUpdater: Updater<State, Action, Subscription, SideEffect> = { state
                 else
                     emptySet()
             )
-        is Action.ShowFailure ->
-            UpdateResponse(
-                state = state.copy(progress = false),
-                subscription = Subscription.ShowFailure(action.failure)
-            )
 
         is Action.ShowTimetable ->
             UpdateResponse(

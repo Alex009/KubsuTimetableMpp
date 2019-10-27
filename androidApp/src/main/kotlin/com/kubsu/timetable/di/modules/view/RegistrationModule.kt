@@ -8,6 +8,6 @@ import org.kodein.di.erased.provider
 
 val registrationViewModule = Kodein.Module("registration_view_module") {
     bind() from provider {
-        RegistrationFragment(teaFeature = instanceGeneric())
+        RegistrationFragment(featureFactory = ::instanceGeneric)
     }
 }

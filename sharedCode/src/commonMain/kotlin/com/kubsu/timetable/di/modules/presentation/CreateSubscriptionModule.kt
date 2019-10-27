@@ -1,17 +1,18 @@
 package com.kubsu.timetable.di.modules.presentation
 
+import com.egroden.teaco.Feature
 import com.egroden.teaco.TeaFeature
 import com.kubsu.timetable.extensions.bindGeneric
 import com.kubsu.timetable.presentation.subscription.create.*
 import org.kodein.di.Kodein
+import org.kodein.di.erased.factory
 import org.kodein.di.erased.instance
-import org.kodein.di.erased.singleton
 
 internal val createSubscriptionPresentationModule =
     Kodein.Module("create_subscription_presentation") {
-        bindGeneric<TeaFeature<Action, SideEffect, State, Subscription>>() with singleton {
+        bindGeneric<Feature<Action, SideEffect, State, Subscription>>() with factory { defaultState: State? ->
             TeaFeature(
-                initialState = State(
+                initialState = defaultState ?: State(
                     progress = false,
                     facultyList = emptyList(),
                     occupationList = emptyList(),

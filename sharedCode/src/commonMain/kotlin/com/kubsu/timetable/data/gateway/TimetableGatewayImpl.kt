@@ -1,155 +1,85 @@
 package com.kubsu.timetable.data.gateway
 
-import com.egroden.teaco.*
-import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.data.db.timetable.*
 import com.kubsu.timetable.data.mapper.timetable.data.*
-import com.kubsu.timetable.data.network.client.timetable.TimetableNetworkClient
-import com.kubsu.timetable.data.network.client.university.UniversityDataNetworkClient
 import com.kubsu.timetable.data.network.dto.timetable.data.ClassNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.data.TimetableNetworkDto
 import com.kubsu.timetable.domain.entity.timetable.data.*
 import com.kubsu.timetable.domain.interactor.timetable.TimetableGateway
-import com.kubsu.timetable.extensions.asFilteredFlow
-import com.kubsu.timetable.extensions.toEitherList
+import com.kubsu.timetable.extensions.getContentFlow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.map
 
 class TimetableGatewayImpl(
     private val timetableQueries: TimetableQueries,
     private val classQueries: ClassQueries,
     private val classTimeQueries: ClassTimeQueries,
     private val lecturerQueries: LecturerQueries,
-    private val universityInfoQueries: UniversityInfoQueries,
-    private val timetableNetworkClient: TimetableNetworkClient,
-    private val universityDataNetworkClient: UniversityDataNetworkClient
+    private val universityInfoQueries: UniversityInfoQueries
 ) : TimetableGateway {
-    @UseExperimental(ExperimentalCoroutinesApi::class)
-    override fun getUniversityData(facultyId: Int): Flow<Either<DataFailure, UniversityInfoEntity>> =
+    override fun getUniversityData(facultyId: Int): Flow<UniversityInfoEntity> =
         universityInfoQueries
             .selectByFacultyId(facultyId)
-            .asFilteredFlow { query -> query.executeAsOneOrNull() }
-            .map { universityDbDto ->
-                if (universityDbDto != null)
-                    Either.right(UniversityInfoDtoMapper.toEntity(universityDbDto))
-                else
-                    universityDataNetworkClient
-                        .selectUniversityInfo(facultyId)
-                        .map { networkDto ->
-                            universityInfoQueries.update(UniversityInfoDtoMapper.toDbDto(networkDto))
-                            UniversityInfoDtoMapper.toEntity(networkDto)
-                        }
-            }
+            .getContentFlow { query -> query.executeAsOne() }
+            .map { UniversityInfoDtoMapper.toEntity(it) }
 
-    @UseExperimental(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    @UseExperimental(FlowPreview::class)
     override fun getAllTimetablesFlow(
         subgroupId: Int
-    ): Flow<Either<DataFailure, List<TimetableEntity>>> =
+    ): Flow<List<TimetableEntity>> =
         timetableQueries
             .selectBySubgroupId(subgroupId)
-            .asFilteredFlow { query -> query.executeAsList() }
-            .flatMapConcat { timetableDbList ->
-                if (timetableDbList.isNotEmpty())
-                    timetableDbList
-                        .map(TimetableDtoMapper::toNetworkDto)
-                        .toTimetableEntityList()
-                else
-                    timetableNetworkClient
-                        .selectTimetableList(subgroupId)
-                        .fold(
-                            ifLeft = { flowOf(Either.left(it)) },
-                            ifRight = { list ->
-                                list
-                                    .map(TimetableDtoMapper::toDbDto)
-                                    .forEach(timetableQueries::update)
-
-                                list.toTimetableEntityList()
-                            }
-                        )
-            }
+            .getContentFlow { query -> query.executeAsList() }
+            .map { it.map(TimetableDtoMapper::toNetworkDto) }
+            .flatMapMerge { toTimetableEntityList(it) }
 
     @UseExperimental(ExperimentalCoroutinesApi::class)
-    private fun List<TimetableNetworkDto>.toTimetableEntityList(): Flow<Either<DataFailure, List<TimetableEntity>>> {
-        val flows = map { timetable ->
-            selectClassList(timetable.id).map { either ->
-                either.map { TimetableDtoMapper.toEntity(timetable, it) }
+    private fun toTimetableEntityList(
+        timetableList: List<TimetableNetworkDto>
+    ): Flow<List<TimetableEntity>> {
+        val flows = timetableList.map { timetable ->
+            selectClassList(timetable.id).map {
+                TimetableDtoMapper.toEntity(timetable, it)
             }
         }
-        return combine(flows, transform = { it.toList().toEitherList() })
+        return combine(flows, transform = { it.toList() })
     }
 
-    @UseExperimental(FlowPreview::class, ExperimentalCoroutinesApi::class)
-    private fun selectClassList(timetableId: Int): Flow<Either<DataFailure, List<ClassEntity>>> =
-        classQueries
-            .selectByTimetableId(timetableId)
-            .asFilteredFlow { query -> query.executeAsList() }
-            .flatMapConcat { classDbList ->
-                if (classDbList.isNotEmpty())
-                    classDbList
-                        .map(ClassDtoMapper::toNetworkDto)
-                        .toClassEntityListFlow()
-                else
-                    timetableNetworkClient
-                        .selectClassesByTimetableId(timetableId)
-                        .fold(
-                            ifLeft = { flowOf(Either.left(it)) },
-                            ifRight = { list ->
-                                list
-                                    .map(ClassDtoMapper::toDbDto)
-                                    .forEach(classQueries::update)
-
-                                list.toClassEntityListFlow()
-                            }
-                        )
-            }
+    @UseExperimental(FlowPreview::class)
+    private fun selectClassList(
+        timetableId: Int
+    ): Flow<List<ClassEntity>> =
+        classQueries.selectByTimetableId(timetableId)
+            .getContentFlow { it.executeAsList() }
+            .map { it.map(ClassDtoMapper::toNetworkDto) }
+            .flatMapMerge { toClassEntityListFlow(it) }
 
     @UseExperimental(ExperimentalCoroutinesApi::class)
-    private fun List<ClassNetworkDto>.toClassEntityListFlow(): Flow<Either<DataFailure, List<ClassEntity>>> {
-        val flows = map { clazz ->
+    private fun toClassEntityListFlow(
+        classList: List<ClassNetworkDto>
+    ): Flow<List<ClassEntity>> {
+        val flows = classList.map { clazz ->
             selectClassTimeFlow(clazz.classTimeId)
-                .combine(selectLecturerFlow(clazz.lecturerId)) { classTimeEither, lecturerEither ->
-                    classTimeEither.flatMap { classTime ->
-                        lecturerEither.map { lecturer ->
-                            ClassDtoMapper.toEntity(clazz, classTime, lecturer)
-                        }
-                    }
+                .combine(selectLecturerFlow(clazz.lecturerId)) { classTime, lecturer ->
+                    ClassDtoMapper.toEntity(clazz, classTime, lecturer)
                 }
         }
-        return combine(flows, transform = { it.toList().toEitherList() })
+        return combine(flows) { it.toList() }
     }
 
-    @UseExperimental(ExperimentalCoroutinesApi::class)
-    private fun selectClassTimeFlow(id: Int): Flow<Either<DataFailure, ClassTimeEntity>> =
+    private fun selectClassTimeFlow(id: Int): Flow<ClassTimeEntity> =
         classTimeQueries
             .selectById(id)
-            .asFilteredFlow { query -> query.executeAsOneOrNull() }
-            .map { classTime ->
-                if (classTime != null)
-                    Either.right(ClassTimeDtoMapper.toEntity(classTime))
-                else
-                    timetableNetworkClient
-                        .selectClassTimeById(id)
-                        .map {
-                            classTimeQueries.update(ClassTimeDtoMapper.toDbDto(it))
-                            ClassTimeDtoMapper.toEntity(it)
-                        }
-            }
+            .getContentFlow { it.executeAsOne() }
+            .map { ClassTimeDtoMapper.toEntity(it) }
 
-    @UseExperimental(ExperimentalCoroutinesApi::class)
-    private fun selectLecturerFlow(id: Int): Flow<Either<DataFailure, LecturerEntity>> =
+    private fun selectLecturerFlow(id: Int): Flow<LecturerEntity> =
         lecturerQueries
             .selectById(id)
-            .asFilteredFlow { query -> query.executeAsOneOrNull() }
-            .map { lecturer ->
-                if (lecturer != null)
-                    Either.right(LecturerDtoMapper.toEntity(lecturer))
-                else
-                    timetableNetworkClient
-                        .selectLecturerById(id)
-                        .map {
-                            lecturerQueries.update(LecturerDtoMapper.toDbDto(it))
-                            LecturerDtoMapper.toEntity(it)
-                        }
-            }
+            .getContentFlow { it.executeAsOne() }
+            .map { LecturerDtoMapper.toEntity(it) }
 }

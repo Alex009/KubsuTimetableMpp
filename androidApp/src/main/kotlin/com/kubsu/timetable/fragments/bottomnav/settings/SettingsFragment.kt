@@ -5,7 +5,7 @@ import android.view.View
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
-import com.egroden.teaco.TeaFeature
+import com.egroden.teaco.Feature
 import com.egroden.teaco.androidConnectors
 import com.egroden.teaco.bindAction
 import com.egroden.teaco.connect
@@ -17,9 +17,9 @@ import com.kubsu.timetable.utils.safeNavigate
 import com.kubsu.timetable.utils.ui.materialAlert
 
 class SettingsFragment(
-    teaFeature: TeaFeature<Action, SideEffect, State, Subscription>
+    featureFactory: (oldState: State?) -> Feature<Action, SideEffect, State, Subscription>
 ) : PreferenceFragmentCompat() {
-    private val connector by androidConnectors(teaFeature)
+    private val connector by androidConnectors(featureFactory)
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings, rootKey)

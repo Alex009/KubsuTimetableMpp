@@ -8,6 +8,6 @@ import org.kodein.di.erased.provider
 
 val createSubscriptionViewModule = Kodein.Module("create_subscription_view_module") {
     bind() from provider {
-        CreateSubscriptionFragment(teaFeature = instanceGeneric())
+        CreateSubscriptionFragment(featureFactory = ::instanceGeneric)
     }
 }

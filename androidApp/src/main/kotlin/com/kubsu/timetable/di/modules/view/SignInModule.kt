@@ -8,6 +8,6 @@ import org.kodein.di.erased.provider
 
 val signInViewModule = Kodein.Module("sign_in_view_module") {
     bind() from provider {
-        SignInFragment(teaFeature = instanceGeneric())
+        SignInFragment(featureFactory = ::instanceGeneric)
     }
 }

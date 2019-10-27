@@ -1,7 +1,6 @@
 package com.kubsu.timetable.presentation.timetable
 
 import com.egroden.teaco.EffectHandler
-import com.egroden.teaco.fold
 import com.kubsu.timetable.domain.entity.timetable.data.TimetableEntity
 import com.kubsu.timetable.domain.entity.timetable.data.TypeOfWeek
 import com.kubsu.timetable.domain.entity.timetable.data.UniversityInfoEntity
@@ -17,7 +16,7 @@ import kotlinx.coroutines.flow.*
 class TimetableEffectHandler(
     private val timetableInteractor: TimetableInteractor
 ) : EffectHandler<SideEffect, Action> {
-    @UseExperimental(InternalCoroutinesApi::class, FlowPreview::class)
+    @UseExperimental(FlowPreview::class, InternalCoroutinesApi::class)
     override fun invoke(sideEffect: SideEffect): Flow<Action> = flow {
         when (sideEffect) {
             is SideEffect.LoadCurrentTimetable ->
@@ -25,12 +24,7 @@ class TimetableEffectHandler(
                     .getAllTimetables(
                         SubscriptionModelMapper.toEntity(sideEffect.subscription)
                     )
-                    .flatMapConcat { either ->
-                        either.fold(
-                            ifLeft = { flowOf(Action.ShowFailure(it)) },
-                            ifRight = ::toActionFlow
-                        )
-                    }
+                    .flatMapMerge { toActionFlow(it) }
                     .collect(this)
         }.checkWhenAllHandled()
     }
@@ -39,11 +33,8 @@ class TimetableEffectHandler(
         if (timetableList.isNotEmpty())
             timetableInteractor
                 .getUniversityData(timetableList.first())
-                .map { either ->
-                    either.fold(
-                        ifLeft = Action::ShowFailure,
-                        ifRight = { createActionShowTimetable(it, timetableList) }
-                    )
+                .map {
+                    createActionShowTimetable(it, timetableList)
                 }
         else
             flowOf()

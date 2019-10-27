@@ -20,3 +20,6 @@ inline fun <reified T : Any> Kodein.Builder.bindGeneric(): Kodein.Builder.TypeBi
 
 inline fun <reified T : Any> DKodeinAware.instanceGeneric(): T =
     dkodein.Instance(erased(), nameWithGenerics<T>())
+
+inline fun <reified A, reified T : Any> DKodeinAware.instanceGeneric(arg: A) =
+    dkodein.Instance<A, T>(erased(), erased(), nameWithGenerics<T>(), arg)

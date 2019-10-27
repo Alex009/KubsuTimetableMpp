@@ -6,7 +6,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.TextView
-import com.egroden.teaco.TeaFeature
+import com.egroden.teaco.Feature
 import com.egroden.teaco.androidConnectors
 import com.egroden.teaco.bindAction
 import com.egroden.teaco.connect
@@ -24,9 +24,9 @@ import kotlinx.android.synthetic.main.create_subscription_fragment.view.*
 import kotlinx.android.synthetic.main.progress_bar.view.*
 
 class CreateSubscriptionFragment(
-    teaFeature: TeaFeature<Action, SideEffect, State, Subscription>
+    featureFactory: (oldState: State?) -> Feature<Action, SideEffect, State, Subscription>
 ) : BaseFragment(R.layout.create_subscription_fragment) {
-    private val connector by androidConnectors(teaFeature) { bindAction(Action.LoadFacultyList) }
+    private val connector by androidConnectors(featureFactory) { bindAction(Action.LoadFacultyList) }
 
     private val progressEffect = UiEffect(Visibility.INVISIBLE)
 

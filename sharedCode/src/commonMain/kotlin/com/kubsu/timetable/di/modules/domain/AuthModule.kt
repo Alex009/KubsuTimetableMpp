@@ -11,22 +11,19 @@ import org.kodein.di.erased.instance
 import org.kodein.di.erased.singleton
 
 internal val authDomainModule = Kodein.Module("auth_domain") {
-    bind<AuthInteractor>() with singleton { AuthInteractorImpl(instance(), instance()) }
+    bind<AuthInteractor>() with singleton {
+        AuthInteractorImpl(instance(), instance(), instance())
+    }
     bind<AuthGateway>() with singleton {
         val db = instance<MyDatabase>()
         AuthGatewayImpl(
-            classQueries = db.classQueries,
-            classTimeQueries = db.classTimeQueries,
-            lecturerQueries = db.lecturerQueries,
-            subscriptionQueries = db.subscriptionQueries,
-            timetableQueries = db.timetableQueries,
             dataDiffQueries = db.dataDiffQueries,
             updatedEntityQueries = db.updatedEntityQueries,
             deletedEntityQueries = db.deletedEntityQueries,
-            networkClient = instance(),
             userStorage = instance(),
             sessionStorage = instance(),
-            tokenStorage = instance()
+            tokenStorage = instance(),
+            userInfoNetworkClient = instance()
         )
     }
 }

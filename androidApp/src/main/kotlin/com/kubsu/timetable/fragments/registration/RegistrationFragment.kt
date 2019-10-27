@@ -2,7 +2,7 @@ package com.kubsu.timetable.fragments.registration
 
 import android.os.Bundle
 import android.view.View
-import com.egroden.teaco.TeaFeature
+import com.egroden.teaco.Feature
 import com.egroden.teaco.androidConnectors
 import com.egroden.teaco.bindAction
 import com.egroden.teaco.connect
@@ -17,9 +17,9 @@ import kotlinx.android.synthetic.main.progress_bar.view.*
 import kotlinx.android.synthetic.main.registration_fragment.view.*
 
 class RegistrationFragment(
-    teaFeature: TeaFeature<Action, SideEffect, State, Subscription>
+    featureFactory: (oldState: State?) -> Feature<Action, SideEffect, State, Subscription>
 ) : BaseFragment(R.layout.registration_fragment) {
-    private val connector by androidConnectors(teaFeature)
+    private val connector by androidConnectors(featureFactory)
 
     private val progressEffect = UiEffect(Visibility.INVISIBLE)
     private val emailErrorEffect = UiEffect(0)
