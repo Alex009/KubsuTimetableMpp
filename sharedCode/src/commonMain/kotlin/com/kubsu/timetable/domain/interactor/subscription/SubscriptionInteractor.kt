@@ -20,7 +20,7 @@ interface SubscriptionInteractor {
 
     suspend fun selectSubgroupList(group: GroupEntity): Either<DataFailure, List<SubgroupEntity>>
 
-    suspend fun create(
+    suspend fun createSubscriptionTransaction(
         subgroupId: Int,
         subscriptionName: String,
         isMain: Boolean

@@ -5,16 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:baselineAligned="false"
-    android:paddingStart="10dp"
-    android:paddingEnd="10dp"
-    android:paddingTop="10dp">
+    android:orientation="horizontal">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        card_view:cardCornerRadius="10dp"
-        card_view:cardElevation="2dp"
-        card_view:contentPadding="10dp">
+        android:layout_margin="7dp"
+        card_view:cardCornerRadius="5dp"
+        card_view:cardElevation="3dp"
+        card_view:contentPadding="5dp">
 
         <LinearLayout
             android:layout_width="wrap_content"

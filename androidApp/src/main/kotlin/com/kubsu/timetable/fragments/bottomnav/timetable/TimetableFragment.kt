@@ -107,7 +107,10 @@ class TimetableFragment(
                 currentTimetableEffect.value = state.denominatorTimetable
                 nextWeekTimetableEffect.value = state.numeratorTimetable
             }
-            null -> null
+            null -> {
+                currentTimetableEffect.value = null
+                nextWeekTimetableEffect.value = null
+            }
         }.checkWhenAllHandled()
     }
 

@@ -38,7 +38,7 @@
     <string name="class_time_with_parameters" translatable="false">%1$s - %2$s</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
-    <string name="lecturer_info_with_parameters" translatable="false">%1$s. %2$s. %3$s</string>
+    <string name="lecturer_full_name" translatable="false">%1$s %2$s %3$s</string>
     <string name="create_main_subscription">Create main subscription</string>
     <string name="create_secondary_subscription">Create secondary subscription</string>
     <string name="not_authenticated">You are not authenticated</string>

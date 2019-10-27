@@ -35,10 +35,10 @@ sealed class TimetableViewHolder(
 
             val lecturer = `class`.lecturer
             lecturer_text_view.text = String.format(
-                itemView.context.getString(R.string.lecturer_info_with_parameters),
-                lecturer.name.first(),
-                lecturer.patronymic.first(),
-                lecturer.surname
+                itemView.context.getString(R.string.lecturer_full_name),
+                lecturer.surname,
+                lecturer.name,
+                lecturer.patronymic
             )
 
             val classTime = `class`.classTime

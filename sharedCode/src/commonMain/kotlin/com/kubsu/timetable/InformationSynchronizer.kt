@@ -19,13 +19,12 @@ class InformationSynchronizer(
 ) {
     private var syncJob: Job? = null
 
-    fun awaitConnectionAndSync() {
+    fun awaitConnectionAndSync() =
         whenNetworkConnectionBeActive(
             platformArgs = platformArgs,
             onActive = ::startSynchronization,
             onInactive = ::closeSync
         )
-    }
 
     private fun startSynchronization() {
         syncJob?.cancel()

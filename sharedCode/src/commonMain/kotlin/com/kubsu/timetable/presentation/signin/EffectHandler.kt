@@ -14,7 +14,7 @@ class SignInEffectHandler(
         when (sideEffect) {
             is SideEffect.Authenticate ->
                 authInteractor
-                    .signIn(sideEffect.email, sideEffect.password)
+                    .signInTransaction(sideEffect.email, sideEffect.password)
                     .fold(
                         ifLeft = { requestFailure ->
                             requestFailure.handle(

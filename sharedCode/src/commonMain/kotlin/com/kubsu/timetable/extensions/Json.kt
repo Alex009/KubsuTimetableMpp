@@ -38,10 +38,3 @@ fun Map<String, String>.toJson(json: Json): JsonObject =
             key to json.parseJson(value)
         }.toMap()
     )
-
-fun String.toBooleanOrNull(): Boolean? =
-    when (toLowerCase()) {
-        "true" -> true
-        "false" -> false
-        else -> null
-    }

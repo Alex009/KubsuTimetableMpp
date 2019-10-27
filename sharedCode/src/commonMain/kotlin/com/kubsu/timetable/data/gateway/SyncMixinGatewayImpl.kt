@@ -20,8 +20,6 @@ import com.kubsu.timetable.domain.entity.Timestamp
 import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
 import com.kubsu.timetable.domain.interactor.sync.SyncMixinGateway
 import com.kubsu.timetable.extensions.getContentFlow
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
@@ -41,29 +39,24 @@ class SyncMixinGatewayImpl(
     private val sessionStorage: SessionStorage
 ) : SyncMixinGateway {
     override suspend fun registerDataDiff(entity: DataDiffEntity) {
-        val id = getIdForDataDiff(entity)
+        val id = createAndGetId(
+            basename = BasenameDtoMapper.value(entity.basename),
+            userId = entity.userId
+        )
         for (updatedId in entity.updatedIds)
-            updatedEntityQueries.update(id, updatedId)
+            updatedEntityQueries.insert(id, updatedId)
         for (deletedId in entity.deletedIds)
-            deletedEntityQueries.update(id, deletedId)
-    }
-
-    private fun getIdForDataDiff(dataDiff: DataDiffEntity): Int {
-        val basenameStr = BasenameDtoMapper.value(dataDiff.basename)
-        return dataDiffQueries
-            .selectId(basenameStr, dataDiff.userId)
-            .executeAsOneOrNull()
-            ?: createAndGetId(basenameStr, dataDiff.userId)
+            deletedEntityQueries.insert(id, deletedId)
     }
 
     private fun createAndGetId(basename: String, userId: Int): Int {
-        dataDiffQueries.update(basename, userId)
+        dataDiffQueries.insert(basename, userId)
         return dataDiffQueries
-            .selectId(basename, userId)
-            .executeAsOne()
+            .selectIds(basename, userId)
+            .executeAsList()
+            .last()
     }
 
-    @UseExperimental(FlowPreview::class, ExperimentalCoroutinesApi::class)
     override fun getAvailableDiffListFlowForCurrentUser(): Flow<List<DataDiffEntity>> =
         dataDiffQueries
             .selectAll()
@@ -73,31 +66,30 @@ class SyncMixinGatewayImpl(
                 dataDiffList to userId
             }
             .map { (dataDiffList, userId) ->
-                Basename
-                    .list
-                    .flatMap { basename ->
-                        getIdsList(userId, basename, dataDiffList)
+                dataDiffList
+                    .filter { it.userId == userId }
+                    .groupBy { BasenameDtoMapper.toEntity(it.basename) }
+                    .map { (basename, dbDiffList) ->
+                        getDataDiff(userId, basename, dbDiffList)
                     }
+                    .filterNot { it.updatedIds.isEmpty() && it.deletedIds.isEmpty() }
             }
 
-    @UseExperimental(ExperimentalCoroutinesApi::class)
-    private fun getIdsList(
+    private fun getDataDiff(
         userId: Int,
         basename: Basename,
         dataDiffList: List<DataDiffDb>
-    ): List<DataDiffEntity> {
-        val basenameStringify = BasenameDtoMapper.value(basename)
-        return dataDiffList
-            .filter { it.basename == basenameStringify }
-            .map { dataDiff ->
-                DataDiffDtoMapper.toEntity(
-                    userId = userId,
-                    basename = basename,
-                    updated = selectUpdatedEntityList(dataDiff.id),
-                    deleted = selectDeletedEntityList(dataDiff.id)
-                )
-            }
-    }
+    ): DataDiffEntity =
+        DataDiffDtoMapper.toEntity(
+            userId = userId,
+            basename = basename,
+            updated = dataDiffList
+                .map { dataDiff -> selectUpdatedEntityList(dataDiff.id) }
+                .flatten(),
+            deleted = dataDiffList
+                .map { dataDiff -> selectDeletedEntityList(dataDiff.id) }
+                .flatten()
+        )
 
     private fun selectUpdatedEntityList(dataDiffId: Int): List<UpdatedEntityDb> =
         updatedEntityQueries
@@ -112,14 +104,14 @@ class SyncMixinGatewayImpl(
     override suspend fun delete(list: List<DataDiffEntity>) {
         for (diff in list) {
             deleteBasenameData(diff.basename, diff.deletedIds)
-
-            val basenameStringify = BasenameDtoMapper.value(diff.basename)
-            val diffId = dataDiffQueries
-                .selectId(basenameStringify, diff.userId)
-                .executeAsOne()
-            deletedEntityQueries.deleteByDataDiffId(diffId)
-            updatedEntityQueries.deleteByDataDiffId(diffId)
-            dataDiffQueries.delete(basenameStringify, diff.userId)
+            dataDiffQueries
+                .selectIds(BasenameDtoMapper.value(diff.basename), diff.userId)
+                .executeAsList()
+                .forEach { diffId ->
+                    deletedEntityQueries.deleteByDataDiffId(diffId)
+                    updatedEntityQueries.deleteByDataDiffId(diffId)
+                    dataDiffQueries.deleteById(diffId)
+                }
         }
     }
 

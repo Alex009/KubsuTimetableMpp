@@ -8,11 +8,7 @@ import com.kubsu.timetable.domain.entity.timetable.data.*
 import com.kubsu.timetable.domain.interactor.timetable.TimetableGateway
 import com.kubsu.timetable.extensions.getContentFlow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapMerge
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 
 class TimetableGatewayImpl(
     private val timetableQueries: TimetableQueries,
@@ -27,7 +23,7 @@ class TimetableGatewayImpl(
             .getContentFlow { query -> query.executeAsOne() }
             .map { UniversityInfoDtoMapper.toEntity(it) }
 
-    @UseExperimental(FlowPreview::class)
+    @UseExperimental(ExperimentalCoroutinesApi::class)
     override fun getAllTimetablesFlow(
         subgroupId: Int
     ): Flow<List<TimetableEntity>> =
@@ -35,7 +31,7 @@ class TimetableGatewayImpl(
             .selectBySubgroupId(subgroupId)
             .getContentFlow { query -> query.executeAsList() }
             .map { it.map(TimetableDtoMapper::toNetworkDto) }
-            .flatMapMerge { toTimetableEntityList(it) }
+            .flatMapLatest { toTimetableEntityList(it) }
 
     @UseExperimental(ExperimentalCoroutinesApi::class)
     private fun toTimetableEntityList(
@@ -46,17 +42,21 @@ class TimetableGatewayImpl(
                 TimetableDtoMapper.toEntity(timetable, it)
             }
         }
-        return combine(flows, transform = { it.toList() })
+        return if (flows.isNotEmpty())
+            combine(flows, transform = { it.toList() })
+        else
+            flowOf(emptyList())
     }
 
-    @UseExperimental(FlowPreview::class)
+    @UseExperimental(ExperimentalCoroutinesApi::class)
     private fun selectClassList(
         timetableId: Int
     ): Flow<List<ClassEntity>> =
-        classQueries.selectByTimetableId(timetableId)
+        classQueries
+            .selectByTimetableId(timetableId)
             .getContentFlow { it.executeAsList() }
             .map { it.map(ClassDtoMapper::toNetworkDto) }
-            .flatMapMerge { toClassEntityListFlow(it) }
+            .flatMapLatest { toClassEntityListFlow(it) }
 
     @UseExperimental(ExperimentalCoroutinesApi::class)
     private fun toClassEntityListFlow(
@@ -68,7 +68,10 @@ class TimetableGatewayImpl(
                     ClassDtoMapper.toEntity(clazz, classTime, lecturer)
                 }
         }
-        return combine(flows) { it.toList() }
+        return if (flows.isNotEmpty())
+            combine(flows) { it.toList() }
+        else
+            flowOf(emptyList())
     }
 
     private fun selectClassTimeFlow(id: Int): Flow<ClassTimeEntity> =

@@ -15,7 +15,7 @@ class AuthInteractorImpl(
     private val userInfoGateway: UserInfoGateway,
     private val appInfoGateway: AppInfoGateway
 ) : AuthInteractor {
-    override suspend fun signIn(
+    override suspend fun signInTransaction(
         email: String,
         password: String
     ): Either<RequestFailure<List<SignInFail>>, Unit> = def {
@@ -25,7 +25,11 @@ class AuthInteractorImpl(
             .flatMap { user ->
                 appInfoGateway
                     .updateInfo(user.id)
-                    .mapLeft { RequestFailure<List<SignInFail>>(it) }
+                    .mapLeft {
+                        // Cancel transaction
+                        authGateway.logout() // drop nested failure
+                        RequestFailure<List<SignInFail>>(it)
+                    }
             }
     }
 

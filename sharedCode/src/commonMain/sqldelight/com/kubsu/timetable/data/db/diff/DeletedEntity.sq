@@ -4,8 +4,8 @@ dataDiffId INTEGER as Int NOT NULL,
 deletedId INTEGER as Int NOT NULL
 );
 
-update:
-INSERT OR REPLACE INTO deletedEntityDb(dataDiffId, deletedId) VALUES (?, ?);
+insert:
+INSERT INTO deletedEntityDb(dataDiffId, deletedId) VALUES (?, ?);
 
 selectAll:
 SELECT * FROM deletedEntityDb;

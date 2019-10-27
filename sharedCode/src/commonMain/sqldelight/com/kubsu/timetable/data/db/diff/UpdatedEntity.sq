@@ -4,8 +4,8 @@ dataDiffId INTEGER as Int NOT NULL,
 updatedId INTEGER as Int NOT NULL
 );
 
-update:
-INSERT OR REPLACE INTO updatedEntityDb(dataDiffId, updatedId) VALUES (?,?);
+insert:
+INSERT INTO updatedEntityDb(dataDiffId, updatedId) VALUES (?,?);
 
 selectAll:
 SELECT * FROM updatedEntityDb;

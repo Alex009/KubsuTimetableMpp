@@ -83,7 +83,7 @@ class CreateSubscriptionEffectHandler(
 
             is SideEffect.CreateSubscription ->
                 interactor
-                    .create(
+                    .createSubscriptionTransaction(
                         subgroupId = sideEffect.subgroup.id,
                         subscriptionName = sideEffect.subscriptionName,
                         isMain = sideEffect.isMain

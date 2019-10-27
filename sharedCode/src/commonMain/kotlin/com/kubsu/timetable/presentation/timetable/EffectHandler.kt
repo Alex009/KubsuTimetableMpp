@@ -9,14 +9,14 @@ import com.kubsu.timetable.extensions.checkWhenAllHandled
 import com.kubsu.timetable.presentation.timetable.mapper.SubscriptionModelMapper
 import com.kubsu.timetable.presentation.timetable.mapper.TimetableModelMapper
 import com.kubsu.timetable.presentation.timetable.mapper.UniversityInfoModelMapper
-import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.*
 
 class TimetableEffectHandler(
     private val timetableInteractor: TimetableInteractor
 ) : EffectHandler<SideEffect, Action> {
-    @UseExperimental(FlowPreview::class, InternalCoroutinesApi::class)
+    @UseExperimental(InternalCoroutinesApi::class, ExperimentalCoroutinesApi::class)
     override fun invoke(sideEffect: SideEffect): Flow<Action> = flow {
         when (sideEffect) {
             is SideEffect.LoadCurrentTimetable ->
@@ -24,7 +24,7 @@ class TimetableEffectHandler(
                     .getAllTimetables(
                         SubscriptionModelMapper.toEntity(sideEffect.subscription)
                     )
-                    .flatMapMerge { toActionFlow(it) }
+                    .flatMapLatest { toActionFlow(it) }
                     .collect(this)
         }.checkWhenAllHandled()
     }
@@ -37,7 +37,13 @@ class TimetableEffectHandler(
                     createActionShowTimetable(it, timetableList)
                 }
         else
-            flowOf()
+            flowOf(
+                Action.ShowTimetable(
+                    universityInfoModel = null,
+                    numeratorTimetable = null,
+                    denominatorTimetable = null
+                )
+            )
 
     private fun createActionShowTimetable(
         universityInfo: UniversityInfoEntity,
