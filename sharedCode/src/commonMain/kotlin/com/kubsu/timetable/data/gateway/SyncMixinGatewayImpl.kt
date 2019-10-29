@@ -14,13 +14,12 @@ import com.kubsu.timetable.data.network.client.update.UpdateDataNetworkClient
 import com.kubsu.timetable.data.network.dto.diff.FantasticFour
 import com.kubsu.timetable.data.network.dto.timetable.data.*
 import com.kubsu.timetable.data.storage.user.info.UserStorage
-import com.kubsu.timetable.data.storage.user.session.SessionStorage
-import com.kubsu.timetable.data.storage.user.session.getEitherFailure
 import com.kubsu.timetable.domain.entity.Basename
 import com.kubsu.timetable.domain.entity.Timestamp
 import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
 import com.kubsu.timetable.domain.interactor.sync.SyncMixinGateway
-import com.kubsu.timetable.extensions.getContentFlow
+import com.squareup.sqldelight.runtime.coroutines.asFlow
+import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
@@ -36,8 +35,7 @@ class SyncMixinGatewayImpl(
     private val updatedEntityQueries: UpdatedEntityQueries,
     private val deletedEntityQueries: DeletedEntityQueries,
     private val networkClient: UpdateDataNetworkClient,
-    private val userStorage: UserStorage,
-    private val sessionStorage: SessionStorage
+    private val userStorage: UserStorage
 ) : SyncMixinGateway {
     override suspend fun registerDataDiff(entity: DataDiffEntity) {
         val id = createAndGetId(
@@ -61,7 +59,8 @@ class SyncMixinGatewayImpl(
     override fun getAvailableDiffListFlowForCurrentUser(): Flow<List<DataDiffEntity>> =
         dataDiffQueries
             .selectAll()
-            .getContentFlow { query -> query.executeAsList() }
+            .asFlow()
+            .mapToList()
             .mapNotNull { dataDiffList ->
                 val userId = userStorage.get()?.id ?: return@mapNotNull null
                 dataDiffList to userId
@@ -130,17 +129,13 @@ class SyncMixinGatewayImpl(
     }
 
     override suspend fun diff(): Either<DataFailure, Pair<Timestamp, List<Basename>>> =
-        sessionStorage
-            .getEitherFailure()
-            .flatMap { session ->
-                networkClient
-                    .diff(session)
-                    .map { diffResponse ->
-                        val basenameList = diffResponse
-                            .basenameList
-                            .map(BasenameDtoMapper::toEntity)
-                        Timestamp(diffResponse.timestamp) to basenameList
-                    }
+        networkClient
+            .diff()
+            .map { diffResponse ->
+                val basenameList = diffResponse
+                    .basenameList
+                    .map(BasenameDtoMapper::toEntity)
+                Timestamp(diffResponse.timestamp) to basenameList
             }
 
     override suspend fun updateData(
@@ -148,19 +143,14 @@ class SyncMixinGatewayImpl(
         availableDiff: DataDiffEntity?
     ): Either<DataFailure, Unit> {
         val existsIds = availableDiff?.let { it.updatedIds + it.deletedIds } ?: emptyList()
-        return sessionStorage
-            .getEitherFailure()
-            .flatMap { session ->
-                networkClient
-                    .sync(
-                        session = session,
-                        basename = BasenameDtoMapper.value(basename),
-                        existsIds = existsIds
-                    )
-                    .flatMap { (updatedIds, deletedIds) ->
-                        deleteBasenameData(basename, deletedIds)
-                        meta(basename, updatedIds)
-                    }
+        return networkClient
+            .sync(
+                basename = BasenameDtoMapper.value(basename),
+                existsIds = existsIds
+            )
+            .flatMap { (updatedIds, deletedIds) ->
+                deleteBasenameData(basename, deletedIds)
+                meta(basename, updatedIds)
             }
     }
 
@@ -169,18 +159,13 @@ class SyncMixinGatewayImpl(
         updatedIds: List<Int>
     ): Either<DataFailure, Unit> =
         if (updatedIds.isNotEmpty())
-            sessionStorage
-                .getEitherFailure()
-                .flatMap { session ->
-                    networkClient
-                        .meta(
-                            session = session,
-                            basename = BasenameDtoMapper.value(basename),
-                            basenameSerializer = getSerializer(basename),
-                            updatedIds = updatedIds
-                        )
-                        .handle(basename)
-                }
+            networkClient
+                .meta(
+                    basename = BasenameDtoMapper.value(basename),
+                    basenameSerializer = getSerializer(basename),
+                    updatedIds = updatedIds
+                )
+                .handle(basename)
         else
             Either.right(Unit)
 

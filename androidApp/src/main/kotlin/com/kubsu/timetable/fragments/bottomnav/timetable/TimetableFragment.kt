@@ -13,11 +13,10 @@ import com.kubsu.timetable.R
 import com.kubsu.timetable.base.BaseFragment
 import com.kubsu.timetable.data.storage.displayed.subscription.DisplayedSubscriptionStorage
 import com.kubsu.timetable.extensions.checkWhenAllHandled
-import com.kubsu.timetable.extensions.getCurrentDayOfWeek
+import com.kubsu.timetable.extensions.indexOfNearestDayOrNull
 import com.kubsu.timetable.fragments.bottomnav.BottomNavFragmentDirections
 import com.kubsu.timetable.fragments.bottomnav.timetable.adapter.TimetableAdapter
 import com.kubsu.timetable.presentation.timetable.*
-import com.kubsu.timetable.presentation.timetable.model.TimetableInfoToDisplay
 import com.kubsu.timetable.presentation.timetable.model.TimetableModel
 import com.kubsu.timetable.presentation.timetable.model.TypeOfWeekModel
 import com.kubsu.timetable.presentation.timetable.model.UniversityInfoModel
@@ -49,9 +48,10 @@ class TimetableFragment(
         super.onViewCreated(view, savedInstanceState)
 
         val timetableAdapter = TimetableAdapter()
+        val linearLayoutManager = LinearLayoutManager(view.context)
         with(view.timetable_recycler_view) {
             setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(view.context)
+            layoutManager = linearLayoutManager
             adapter = timetableAdapter
         }
 
@@ -76,8 +76,8 @@ class TimetableFragment(
 
             timetableAdapter.setData(timetableInfoList)
             timetableInfoList
-                .indexOfCurrentDayOrNull()
-                ?.let(view.timetable_recycler_view::smoothScrollToPosition)
+                .indexOfNearestDayOrNull()
+                ?.let(linearLayoutManager::scrollToPosition)
         }
     }
 
@@ -148,11 +148,4 @@ class TimetableFragment(
                         )
                 )
         }
-
-    private fun List<TimetableInfoToDisplay>.indexOfCurrentDayOrNull(): Int? {
-        val currentDay = getCurrentDayOfWeek()
-        return indexOfFirst {
-            (it as? TimetableInfoToDisplay.Day)?.dayOfWeek == currentDay
-        }.takeIf { it > -1 }
-    }
 }

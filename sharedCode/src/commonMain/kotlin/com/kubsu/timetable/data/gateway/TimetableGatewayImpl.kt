@@ -6,7 +6,9 @@ import com.kubsu.timetable.data.network.dto.timetable.data.ClassNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.data.TimetableNetworkDto
 import com.kubsu.timetable.domain.entity.timetable.data.*
 import com.kubsu.timetable.domain.interactor.timetable.TimetableGateway
-import com.kubsu.timetable.extensions.getContentFlow
+import com.squareup.sqldelight.runtime.coroutines.asFlow
+import com.squareup.sqldelight.runtime.coroutines.mapToList
+import com.squareup.sqldelight.runtime.coroutines.mapToOne
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 
@@ -20,7 +22,8 @@ class TimetableGatewayImpl(
     override fun getUniversityData(facultyId: Int): Flow<UniversityInfoEntity> =
         universityInfoQueries
             .selectByFacultyId(facultyId)
-            .getContentFlow { query -> query.executeAsOne() }
+            .asFlow()
+            .mapToOne()
             .map { UniversityInfoDtoMapper.toEntity(it) }
 
     @UseExperimental(ExperimentalCoroutinesApi::class)
@@ -29,7 +32,8 @@ class TimetableGatewayImpl(
     ): Flow<List<TimetableEntity>> =
         timetableQueries
             .selectBySubgroupId(subgroupId)
-            .getContentFlow { query -> query.executeAsList() }
+            .asFlow()
+            .mapToList()
             .map { it.map(TimetableDtoMapper::toNetworkDto) }
             .flatMapLatest { toTimetableEntityList(it) }
 
@@ -54,7 +58,8 @@ class TimetableGatewayImpl(
     ): Flow<List<ClassEntity>> =
         classQueries
             .selectByTimetableId(timetableId)
-            .getContentFlow { it.executeAsList() }
+            .asFlow()
+            .mapToList()
             .map { it.map(ClassDtoMapper::toNetworkDto) }
             .flatMapLatest { toClassEntityListFlow(it) }
 
@@ -77,12 +82,14 @@ class TimetableGatewayImpl(
     private fun selectClassTimeFlow(id: Int): Flow<ClassTimeEntity> =
         classTimeQueries
             .selectById(id)
-            .getContentFlow { it.executeAsOne() }
+            .asFlow()
+            .mapToOne()
             .map { ClassTimeDtoMapper.toEntity(it) }
 
     private fun selectLecturerFlow(id: Int): Flow<LecturerEntity> =
         lecturerQueries
             .selectById(id)
-            .getContentFlow { it.executeAsOne() }
+            .asFlow()
+            .mapToOne()
             .map { LecturerDtoMapper.toEntity(it) }
 }

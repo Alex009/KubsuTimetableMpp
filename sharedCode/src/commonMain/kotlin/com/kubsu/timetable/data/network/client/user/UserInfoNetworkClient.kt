@@ -5,9 +5,7 @@ import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SignInFail
 import com.kubsu.timetable.UserInfoFail
-import com.kubsu.timetable.data.network.dto.UserData
 import com.kubsu.timetable.data.network.dto.UserNetworkDto
-import com.kubsu.timetable.data.storage.user.session.SessionDto
 import com.kubsu.timetable.data.storage.user.token.Token
 
 interface UserInfoNetworkClient {
@@ -20,17 +18,15 @@ interface UserInfoNetworkClient {
         email: String,
         password: String,
         token: Token?
-    ): Either<RequestFailure<List<SignInFail>>, UserData>
+    ): Either<RequestFailure<List<SignInFail>>, UserNetworkDto>
 
     suspend fun update(
-        session: SessionDto,
         user: UserNetworkDto
     ): Either<RequestFailure<List<UserInfoFail>>, Unit>
 
     suspend fun updateToken(
-        session: SessionDto,
         token: Token
     ): Either<DataFailure, Unit>
 
-    suspend fun logout(session: SessionDto): Either<DataFailure, Unit>
+    suspend fun logout(): Either<DataFailure, Unit>
 }

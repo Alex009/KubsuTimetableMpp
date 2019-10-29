@@ -2,6 +2,7 @@ package com.kubsu.timetable.data.network.sender
 
 import com.egroden.teaco.Either
 import com.kubsu.timetable.data.network.sender.failure.ServerFailure
+import com.kubsu.timetable.data.storage.user.session.Session
 import io.ktor.client.HttpClient
 import io.ktor.client.features.ResponseException
 import io.ktor.client.response.HttpResponse
@@ -12,7 +13,7 @@ interface NetworkSender {
     val baseUrl: String
     val json: Json
 
-    suspend fun <R> handle(createRequest: suspend HttpClient.() -> R): Either<ServerFailure, R>
+    suspend fun <R> handle(createRequest: suspend HttpClient.(Session?) -> R): Either<ServerFailure, R>
 
     /**
      * @throws ResponseException if response code is not 2**.

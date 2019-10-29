@@ -17,10 +17,9 @@ import com.kubsu.timetable.data.mapper.diff.DataDiffDtoMapper
 import com.kubsu.timetable.data.network.dto.diff.DataDiffNetworkDto
 import com.kubsu.timetable.data.storage.user.token.UndeliveredToken
 import com.kubsu.timetable.di.appKodein
-import com.kubsu.timetable.domain.entity.Basename
-import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
 import com.kubsu.timetable.domain.interactor.sync.SyncMixinInteractor
 import com.kubsu.timetable.domain.interactor.userInfo.UserInteractor
+import com.kubsu.timetable.extensions.isMustDisplayInNotification
 import com.kubsu.timetable.extensions.toJson
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -45,9 +44,6 @@ class FirebasePushService : FirebaseMessagingService(), KodeinAware {
                 showNotification(notificationId = dataDiffEntity.hashCode())
         }
     }
-
-    private fun isMustDisplayInNotification(dataDiff: DataDiffEntity) =
-        dataDiff.basename in listOf(Basename.Class, Basename.Lecturer)
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)

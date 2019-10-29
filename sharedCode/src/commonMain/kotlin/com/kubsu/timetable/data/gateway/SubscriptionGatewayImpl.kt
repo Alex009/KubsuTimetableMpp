@@ -1,6 +1,9 @@
 package com.kubsu.timetable.data.gateway
 
-import com.egroden.teaco.*
+import com.egroden.teaco.Either
+import com.egroden.teaco.bimap
+import com.egroden.teaco.flatMap
+import com.egroden.teaco.map
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SubscriptionFail
@@ -12,8 +15,6 @@ import com.kubsu.timetable.data.mapper.timetable.select.OccupationDtoMapper
 import com.kubsu.timetable.data.mapper.timetable.select.SubgroupDtoMapper
 import com.kubsu.timetable.data.network.client.subscription.SubscriptionNetworkClient
 import com.kubsu.timetable.data.network.client.university.UniversityDataNetworkClient
-import com.kubsu.timetable.data.storage.user.session.SessionStorage
-import com.kubsu.timetable.data.storage.user.session.getEitherFailure
 import com.kubsu.timetable.domain.entity.UserEntity
 import com.kubsu.timetable.domain.entity.timetable.data.SubscriptionEntity
 import com.kubsu.timetable.domain.entity.timetable.select.FacultyEntity
@@ -21,15 +22,15 @@ import com.kubsu.timetable.domain.entity.timetable.select.GroupEntity
 import com.kubsu.timetable.domain.entity.timetable.select.OccupationEntity
 import com.kubsu.timetable.domain.entity.timetable.select.SubgroupEntity
 import com.kubsu.timetable.domain.interactor.subscription.SubscriptionGateway
-import com.kubsu.timetable.extensions.getContentFlow
+import com.squareup.sqldelight.runtime.coroutines.asFlow
+import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class SubscriptionGatewayImpl(
     private val subscriptionQueries: SubscriptionQueries,
     private val universityDataNetworkClient: UniversityDataNetworkClient,
-    private val subscriptionNetworkClient: SubscriptionNetworkClient,
-    private val sessionStorage: SessionStorage
+    private val subscriptionNetworkClient: SubscriptionNetworkClient
 ) : SubscriptionGateway {
     override suspend fun selectFacultyList(): Either<DataFailure, List<FacultyEntity>> =
         universityDataNetworkClient
@@ -57,33 +58,27 @@ class SubscriptionGatewayImpl(
         isMain: Boolean,
         withTransaction: suspend (SubscriptionEntity) -> Either<DataFailure, Unit>
     ): Either<RequestFailure<List<SubscriptionFail>>, SubscriptionEntity> =
-        sessionStorage
-            .getEitherFailure()
-            .mapLeft { RequestFailure<List<SubscriptionFail>>(it) }
-            .flatMap { session ->
-                subscriptionNetworkClient
-                    .createSubscription(
-                        session = session,
-                        subgroupId = subgroupId,
-                        subscriptionName = subscriptionName,
-                        isMain = isMain
-                    )
-                    .flatMap { networkDto ->
-                        val subscription = SubscriptionDtoMapper.toEntity(networkDto)
-                        withTransaction(subscription).bimap(
-                            leftOperation = {
-                                RequestFailure<List<SubscriptionFail>>(it)
-                            },
-                            rightOperation = {
-                                subscriptionQueries.update(
-                                    SubscriptionDtoMapper.toDbDto(
-                                        subscription
-                                    )
-                                )
-                                return@bimap subscription
-                            }
+        subscriptionNetworkClient
+            .createSubscription(
+                subgroupId = subgroupId,
+                subscriptionName = subscriptionName,
+                isMain = isMain
+            )
+            .flatMap { networkDto ->
+                val subscription = SubscriptionDtoMapper.toEntity(networkDto)
+                withTransaction(subscription).bimap(
+                    leftOperation = {
+                        RequestFailure<List<SubscriptionFail>>(it)
+                    },
+                    rightOperation = {
+                        subscriptionQueries.update(
+                            SubscriptionDtoMapper.toDbDto(
+                                subscription
+                            )
                         )
+                        return@bimap subscription
                     }
+                )
             }
 
     override fun getAllSubscriptionsFlow(
@@ -91,31 +86,23 @@ class SubscriptionGatewayImpl(
     ): Flow<List<SubscriptionEntity>> =
         subscriptionQueries
             .selectByUserId(user.id)
-            .getContentFlow { it.executeAsList() }
+            .asFlow()
+            .mapToList()
             .map { it.map(SubscriptionDtoMapper::toEntity) }
 
     override suspend fun update(
         subscription: SubscriptionEntity
     ): Either<RequestFailure<List<SubscriptionFail>>, Unit> =
-        sessionStorage
-            .getEitherFailure()
-            .mapLeft { RequestFailure<List<SubscriptionFail>>(it) }
-            .flatMap { session ->
-                subscriptionNetworkClient
-                    .update(session, SubscriptionDtoMapper.toNetworkDto(subscription))
-                    .map {
-                        subscriptionQueries.update(SubscriptionDtoMapper.toDbDto(subscription))
-                    }
+        subscriptionNetworkClient
+            .update(SubscriptionDtoMapper.toNetworkDto(subscription))
+            .map {
+                subscriptionQueries.update(SubscriptionDtoMapper.toDbDto(subscription))
             }
 
     override suspend fun deleteById(id: Int): Either<DataFailure, Unit> =
-        sessionStorage
-            .getEitherFailure()
-            .flatMap { session ->
-                subscriptionNetworkClient
-                    .deleteSubscription(session, id)
-                    .map {
-                        subscriptionQueries.deleteById(id)
-                    }
+        subscriptionNetworkClient
+            .deleteSubscription(id)
+            .map {
+                subscriptionQueries.deleteById(id)
             }
 }

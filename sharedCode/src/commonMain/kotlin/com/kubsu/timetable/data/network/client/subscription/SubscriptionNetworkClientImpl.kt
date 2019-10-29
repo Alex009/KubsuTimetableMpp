@@ -11,7 +11,6 @@ import com.kubsu.timetable.data.network.dto.timetable.data.SubscriptionNetworkDt
 import com.kubsu.timetable.data.network.sender.NetworkSender
 import com.kubsu.timetable.data.network.sender.failure.ServerFailure
 import com.kubsu.timetable.data.network.sender.failure.toNetworkFail
-import com.kubsu.timetable.data.storage.user.session.SessionDto
 import com.kubsu.timetable.extensions.addSessionKey
 import com.kubsu.timetable.extensions.jsonContent
 import com.kubsu.timetable.extensions.toJson
@@ -19,14 +18,11 @@ import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.patch
 import io.ktor.client.request.post
-import kotlinx.serialization.json.Json
 
 class SubscriptionNetworkClientImpl(
-    private val networkSender: NetworkSender,
-    private val json: Json
+    private val networkSender: NetworkSender
 ) : SubscriptionNetworkClient {
     override suspend fun createSubscription(
-        session: SessionDto,
         subgroupId: Int,
         subscriptionName: String,
         isMain: Boolean
@@ -34,7 +30,7 @@ class SubscriptionNetworkClientImpl(
         with(networkSender) {
             handle {
                 post<SubscriptionNetworkDto>("$baseUrl/api/$apiVersion/subscriptions/") {
-                    addSessionKey(session)
+                    addSessionKey(it)
                     body = jsonContent(
                         "subgroup" to subgroupId.toJson(),
                         "title" to subscriptionName.toJson(),
@@ -55,7 +51,8 @@ class SubscriptionNetworkClientImpl(
     private fun parseCreateFail(
         response: ServerFailure.Response
     ): RequestFailure<List<SubscriptionFail>> {
-        val incorrectData = json.parse(SubscriptionIncorrectData.serializer(), response.body)
+        val incorrectData =
+            networkSender.json.parse(SubscriptionIncorrectData.serializer(), response.body)
 
         val titleFailureList = mapTitleFailureList(incorrectData, response)
         val subgroupFailureList = mapSubgroupFailureList(incorrectData, response)
@@ -99,13 +96,11 @@ class SubscriptionNetworkClientImpl(
             }
         }
 
-    override suspend fun selectSubscriptionsForUser(
-        session: SessionDto
-    ): Either<DataFailure, List<SubscriptionNetworkDto>> =
+    override suspend fun selectSubscriptionsForUser(): Either<DataFailure, List<SubscriptionNetworkDto>> =
         with(networkSender) {
             handle {
                 get<List<SubscriptionNetworkDto>>("$baseUrl/api/$apiVersion/subscriptions/") {
-                    addSessionKey(session)
+                    addSessionKey(it)
                 }
             }.mapLeft {
                 if (it is ServerFailure.Response && it.code == 401)
@@ -128,13 +123,12 @@ class SubscriptionNetworkClientImpl(
         }
 
     override suspend fun update(
-        session: SessionDto,
         subscription: SubscriptionNetworkDto
     ): Either<RequestFailure<List<SubscriptionFail>>, Unit> =
         with(networkSender) {
             handle {
                 patch<Unit>("$baseUrl/api/$apiVersion/subscriptions/${subscription.id}/") {
-                    addSessionKey(session)
+                    addSessionKey(it)
                     body = jsonContent(
                         "subgroup" to subscription.subgroup.toJson(),
                         "name" to subscription.title.toJson(),
@@ -152,14 +146,11 @@ class SubscriptionNetworkClientImpl(
             }
         }
 
-    override suspend fun deleteSubscription(
-        session: SessionDto,
-        id: Int
-    ): Either<DataFailure, Unit> =
+    override suspend fun deleteSubscription(id: Int): Either<DataFailure, Unit> =
         with(networkSender) {
             handle {
                 delete<Unit>("$baseUrl/api/$apiVersion/subscriptions/$id/") {
-                    addSessionKey(session)
+                    addSessionKey(it)
                 }
             }.mapLeft {
                 if (it is ServerFailure.Response && it.code == 401)

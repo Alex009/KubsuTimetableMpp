@@ -13,8 +13,6 @@ import com.kubsu.timetable.data.network.client.university.UniversityDataNetworkC
 import com.kubsu.timetable.data.network.dto.timetable.data.ClassNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.data.SubscriptionNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.data.TimetableNetworkDto
-import com.kubsu.timetable.data.storage.user.session.SessionStorage
-import com.kubsu.timetable.data.storage.user.session.getEitherFailure
 import com.kubsu.timetable.domain.interactor.timetable.AppInfoGateway
 import com.kubsu.timetable.extensions.toEitherList
 
@@ -27,8 +25,7 @@ class AppInfoGatewayImpl(
     private val universityInfoQueries: UniversityInfoQueries,
     private val subscriptionNetworkClient: SubscriptionNetworkClient,
     private val timetableNetworkClient: TimetableNetworkClient,
-    private val universityDataNetworkClient: UniversityDataNetworkClient,
-    private val sessionStorage: SessionStorage
+    private val universityDataNetworkClient: UniversityDataNetworkClient
 ) : AppInfoGateway {
     override suspend fun updateInfo(userId: Int): Either<DataFailure, Unit> {
         val currentList = subscriptionQueries
@@ -36,14 +33,10 @@ class AppInfoGatewayImpl(
             .executeAsList()
             .map(SubscriptionDtoMapper::toNetworkDto)
         return if (currentList.isEmpty())
-            sessionStorage
-                .getEitherFailure()
-                .flatMap { session ->
-                    subscriptionNetworkClient
-                        .selectSubscriptionsForUser(session)
-                        .flatMap {
-                            checkSubscriptionDependencies(it).map { Unit }
-                        }
+            subscriptionNetworkClient
+                .selectSubscriptionsForUser()
+                .flatMap {
+                    checkSubscriptionDependencies(it).map { Unit }
                 }
         else
             checkSubscriptionDependencies(currentList).map { Unit }

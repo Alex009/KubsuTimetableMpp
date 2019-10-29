@@ -4,6 +4,8 @@ import com.egroden.teaco.Either
 import com.egroden.teaco.left
 import com.egroden.teaco.right
 import com.kubsu.timetable.data.network.sender.failure.ServerFailure
+import com.kubsu.timetable.data.storage.user.session.Session
+import com.kubsu.timetable.data.storage.user.session.SessionStorage
 import com.kubsu.timetable.extensions.readContent
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -23,14 +25,15 @@ import kotlinx.serialization.json.Json
 
 class NetworkSenderImpl(
     private val engine: HttpClientEngine,
+    private val sessionStorage: SessionStorage,
     override val json: Json
 ) : NetworkSender {
     override val apiVersion = "v1"
     override val baseUrl = "https://kubsu-timetable.ru"
 
-    override suspend fun <R> handle(createRequest: suspend HttpClient.() -> R): Either<ServerFailure, R> =
+    override suspend fun <R> handle(createRequest: suspend HttpClient.(Session?) -> R): Either<ServerFailure, R> =
         try {
-            Either.right(httpClient.createRequest())
+            Either.right(httpClient.createRequest(sessionStorage.get()))
         } catch (e: SerializationException) {
             Either.left(
                 ServerFailure.Parsing(e.toString())
@@ -48,12 +51,12 @@ class NetworkSenderImpl(
             Either.left(ServerFailure.Connection(e.message))
         }
 
-    override fun validate(response: HttpResponse) {
-        if (response.status.value >= 300) throw ResponseException(response)
-    }
-
     private val httpClient: HttpClient by lazy {
         HttpClient(engine, createConfig())
+    }
+
+    override fun validate(response: HttpResponse) {
+        if (response.status.value >= 300) throw ResponseException(response)
     }
 
     private fun createConfig() =

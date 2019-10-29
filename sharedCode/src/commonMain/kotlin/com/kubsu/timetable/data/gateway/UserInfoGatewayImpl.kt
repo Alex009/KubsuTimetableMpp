@@ -1,13 +1,15 @@
 package com.kubsu.timetable.data.gateway
 
-import com.egroden.teaco.*
+import com.egroden.teaco.Either
+import com.egroden.teaco.map
+import com.egroden.teaco.right
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.UserInfoFail
 import com.kubsu.timetable.data.mapper.UserDtoMapper
 import com.kubsu.timetable.data.network.client.user.UserInfoNetworkClient
 import com.kubsu.timetable.data.storage.user.info.UserStorage
-import com.kubsu.timetable.data.storage.user.session.SessionDto
+import com.kubsu.timetable.data.storage.user.session.Session
 import com.kubsu.timetable.data.storage.user.session.SessionStorage
 import com.kubsu.timetable.data.storage.user.session.getEitherFailure
 import com.kubsu.timetable.data.storage.user.token.DeliveredToken
@@ -32,15 +34,10 @@ class UserInfoGatewayImpl(
     override suspend fun updateUserInfo(
         user: UserEntity
     ): Either<RequestFailure<List<UserInfoFail>>, Unit> =
-        sessionStorage
-            .getEitherFailure()
-            .mapLeft { RequestFailure<List<UserInfoFail>>(it) }
-            .flatMap { session ->
-                networkClient
-                    .update(session, UserDtoMapper.toNetworkDto(user))
-                    .map {
-                        userStorage.set(UserDtoMapper.toStorageDto(user))
-                    }
+        networkClient
+            .update(UserDtoMapper.toNetworkDto(user))
+            .map {
+                userStorage.set(UserDtoMapper.toStorageDto(user))
             }
 
     override suspend fun updateToken(token: UndeliveredToken): Either<DataFailure, Unit> {
@@ -48,7 +45,7 @@ class UserInfoGatewayImpl(
         val currentSession = sessionStorage.get()
         return if (currentSession != null)
             networkClient
-                .updateToken(currentSession, token)
+                .updateToken(token)
                 .map {
                     tokenStorage.set(DeliveredToken(token.value))
                 }
@@ -64,7 +61,7 @@ class UserInfoGatewayImpl(
             .getEitherFailure()
             .map { session ->
                 sessionStorage.set(
-                    SessionDto(id = session.id, timestamp = timestamp)
+                    Session(id = session.id, timestamp = timestamp)
                 )
             }
 }

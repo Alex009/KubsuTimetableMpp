@@ -25,12 +25,12 @@ internal val networkModule = Kodein.Module("network") {
     bind() from singleton { Json(JsonConfiguration.Default.copy(strictMode = false)) }
 
     bind<NetworkSender>() with singleton {
-        NetworkSenderImpl(instance(), instance())
+        NetworkSenderImpl(instance(), instance(), instance())
     }
 
     // subscription
     bind<SubscriptionNetworkClient>() with singleton {
-        SubscriptionNetworkClientImpl(instance(), instance())
+        SubscriptionNetworkClientImpl(instance())
     }
     bind<UniversityDataNetworkClient>() with singleton {
         UniversityDataNetworkClientImpl(instance())

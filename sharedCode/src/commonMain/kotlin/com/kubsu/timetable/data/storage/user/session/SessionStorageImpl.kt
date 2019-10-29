@@ -8,16 +8,16 @@ class SessionStorageImpl(
     settingsFactory: Settings.Factory
 ) : SessionStorage,
     BaseStorage(settingsFactory.create("session_kubsu_timetable")) {
-    override fun set(session: SessionDto?) {
+    override fun set(session: Session?) {
         set(timestampPropName, session?.timestamp?.value)
         set(sessionIdPropName, session?.id)
     }
 
-    override fun get(): SessionDto? {
+    override fun get(): Session? {
         val timestamp = getLong(timestampPropName)
         val sessionId = getString(sessionIdPropName)
         return if (timestamp != null && sessionId != null)
-            SessionDto(
+            Session(
                 id = sessionId,
                 timestamp = Timestamp(timestamp)
             )

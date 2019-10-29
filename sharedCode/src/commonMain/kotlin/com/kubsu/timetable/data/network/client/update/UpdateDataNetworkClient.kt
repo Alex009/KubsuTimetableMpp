@@ -4,20 +4,17 @@ import com.egroden.teaco.Either
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.data.network.dto.diff.DiffResponse
 import com.kubsu.timetable.data.network.dto.diff.SyncResponse
-import com.kubsu.timetable.data.storage.user.session.SessionDto
 import kotlinx.serialization.KSerializer
 
 interface UpdateDataNetworkClient {
-    suspend fun diff(session: SessionDto): Either<DataFailure, DiffResponse>
+    suspend fun diff(): Either<DataFailure, DiffResponse>
 
     suspend fun sync(
-        session: SessionDto,
         basename: String,
         existsIds: List<Int>
     ): Either<DataFailure, SyncResponse>
 
     suspend fun <T> meta(
-        session: SessionDto,
         basename: String,
         basenameSerializer: KSerializer<T>,
         updatedIds: List<Int>

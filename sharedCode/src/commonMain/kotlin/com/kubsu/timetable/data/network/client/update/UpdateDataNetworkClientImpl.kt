@@ -8,7 +8,6 @@ import com.kubsu.timetable.data.network.dto.diff.SyncResponse
 import com.kubsu.timetable.data.network.sender.NetworkSender
 import com.kubsu.timetable.data.network.sender.failure.ServerFailure
 import com.kubsu.timetable.data.network.sender.failure.toNetworkFail
-import com.kubsu.timetable.data.storage.user.session.SessionDto
 import com.kubsu.timetable.extensions.addSessionKey
 import com.kubsu.timetable.extensions.jsonContent
 import com.kubsu.timetable.extensions.toJson
@@ -19,13 +18,13 @@ import kotlinx.serialization.list
 class UpdateDataNetworkClientImpl(
     private val networkSender: NetworkSender
 ) : UpdateDataNetworkClient {
-    override suspend fun diff(session: SessionDto): Either<DataFailure, DiffResponse> =
+    override suspend fun diff(): Either<DataFailure, DiffResponse> =
         with(networkSender) {
             handle {
                 post<DiffResponse>("$baseUrl/api/$apiVersion/university/diff/") {
-                    addSessionKey(session)
+                    addSessionKey(it)
                     body = jsonContent(
-                        "timestamp" to session.timestamp.value.toJson()
+                        "timestamp" to (it?.timestamp?.value ?: 0).toJson()
                     )
                 }
             }.mapLeft {
@@ -37,16 +36,15 @@ class UpdateDataNetworkClientImpl(
         }
 
     override suspend fun sync(
-        session: SessionDto,
         basename: String,
         existsIds: List<Int>
     ): Either<DataFailure, SyncResponse> =
         with(networkSender) {
             handle {
                 post<SyncResponse>("$baseUrl/api/$apiVersion/$basename/sync/") {
-                    addSessionKey(session)
+                    addSessionKey(it)
                     body = jsonContent(
-                        "timestamp" to session.timestamp.value.toJson(),
+                        "timestamp" to (it?.timestamp?.value ?: 0).toJson(),
                         "already_handled" to existsIds.toJson()
                     )
                 }
@@ -59,7 +57,6 @@ class UpdateDataNetworkClientImpl(
         }
 
     override suspend fun <T> meta(
-        session: SessionDto,
         basename: String,
         basenameSerializer: KSerializer<T>,
         updatedIds: List<Int>
@@ -67,7 +64,7 @@ class UpdateDataNetworkClientImpl(
         with(networkSender) {
             handle {
                 val response = post<String>("$baseUrl/api/$apiVersion/$basename/meta/") {
-                    addSessionKey(session)
+                    addSessionKey(it)
                     body = jsonContent(
                         "ids" to updatedIds.toJson()
                     )

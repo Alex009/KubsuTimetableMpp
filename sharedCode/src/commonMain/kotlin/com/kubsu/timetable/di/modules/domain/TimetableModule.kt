@@ -35,7 +35,6 @@ internal val timetableDomainModule = Kodein.Module("timetable_domain") {
             subscriptionQueries = db.subscriptionQueries,
             timetableQueries = db.timetableQueries,
             universityInfoQueries = db.universityInfoQueries,
-            sessionStorage = instance(),
             universityDataNetworkClient = instance(),
             subscriptionNetworkClient = instance(),
             timetableNetworkClient = instance()

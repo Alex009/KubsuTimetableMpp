@@ -39,13 +39,14 @@ class AuthGatewayImpl(
     ): Either<RequestFailure<List<SignInFail>>, UserEntity> =
         userInfoNetworkClient
             .signIn(email, password, token)
-            .flatMap { userData ->
-                val user = UserDtoMapper.toEntity(userData.user)
+            .flatMap { networkDto ->
+                val user = UserDtoMapper.toEntity(networkDto)
                 withTransaction(user).bimap(
-                    leftOperation = { RequestFailure<List<SignInFail>>(it) },
+                    leftOperation = {
+                        RequestFailure<List<SignInFail>>(it)
+                    },
                     rightOperation = {
                         userStorage.set(UserDtoMapper.toStorageDto(user))
-                        sessionStorage.set(userData.session)
                         tokenStorage.set(token?.value?.let(::DeliveredToken))
                         return@bimap user
                     }
@@ -63,7 +64,7 @@ class AuthGatewayImpl(
         sessionStorage.get()?.let {
             sessionStorage.set(null)
             GlobalScope.launch {
-                userInfoNetworkClient.logout(it)
+                userInfoNetworkClient.logout()
             }
         }
     }
