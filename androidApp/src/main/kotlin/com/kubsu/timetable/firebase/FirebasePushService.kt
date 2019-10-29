@@ -12,11 +12,11 @@ import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.kubsu.timetable.R
+import com.kubsu.timetable.base.App
 import com.kubsu.timetable.base.AppActivity
 import com.kubsu.timetable.data.mapper.diff.DataDiffDtoMapper
 import com.kubsu.timetable.data.network.dto.diff.DataDiffNetworkDto
 import com.kubsu.timetable.data.storage.user.token.UndeliveredToken
-import com.kubsu.timetable.di.appKodein
 import com.kubsu.timetable.domain.interactor.sync.SyncMixinInteractor
 import com.kubsu.timetable.domain.interactor.userInfo.UserInteractor
 import com.kubsu.timetable.extensions.isMustDisplayInNotification
@@ -88,7 +88,7 @@ class FirebasePushService : FirebaseMessagingService(), KodeinAware {
             )
     }
 
-    override val kodein: Kodein by lazy { appKodein(application) }
+    override val kodein: Kodein by lazy { (application as App).kodein }
 
     private val userInteractor: UserInteractor
         get() {
