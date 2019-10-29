@@ -9,14 +9,18 @@
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
-        android:theme="@style/ToolbarTheme"
-        app:navigationIcon="@drawable/ic_arrow_back_24dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:title="@string/create_subscription"
-        android:minHeight="?attr/actionBarSize" />
+        android:theme="@style/ToolbarTheme"
+        app:navigationIcon="@drawable/ic_arrow_back_24dp"
+        app:title="@string/create_subscription" />
 
     <include layout="@layout/progress_bar" />
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
     <EditText
         android:id="@+id/subscription_title"

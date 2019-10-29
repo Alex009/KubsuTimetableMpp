@@ -1,6 +1,8 @@
 package com.kubsu.timetable.domain.interactor.subscription
 
-import com.egroden.teaco.*
+import com.egroden.teaco.Either
+import com.egroden.teaco.left
+import com.egroden.teaco.right
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SubscriptionFail
@@ -47,19 +49,12 @@ class SubscriptionInteractorImpl(
         isMain: Boolean
     ): Either<RequestFailure<List<SubscriptionFail>>, SubscriptionEntity> = def {
         subscriptionGateway
-            .create(subgroupId, subscriptionName, isMain)
-            .flatMap { subscription ->
-                appInfoGateway
-                    .updateInfo(subscription.userId)
-                    .bimap(
-                        leftOperation = {
-                            // Cancel transaction
-                            subscriptionGateway.deleteById(subscription.id) // drop nested failure
-                            RequestFailure<List<SubscriptionFail>>(it)
-                        },
-                        rightOperation = { subscription }
-                    )
-            }
+            .createSubscriptionTransaction(
+                subgroupId = subgroupId,
+                subscriptionName = subscriptionName,
+                isMain = isMain,
+                withTransaction = { appInfoGateway.updateInfo(it.userId) }
+            )
     }
 
     override fun getAllSubscriptionsFlow(): Either<DataFailure, Flow<List<SubscriptionEntity>>> =

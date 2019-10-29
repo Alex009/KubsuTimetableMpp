@@ -1,7 +1,9 @@
 package com.kubsu.timetable.data.gateway
 
 import com.egroden.teaco.Either
-import com.egroden.teaco.map
+import com.egroden.teaco.bimap
+import com.egroden.teaco.flatMap
+import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SignInFail
 import com.kubsu.timetable.UserInfoFail
@@ -29,18 +31,25 @@ class AuthGatewayImpl(
     private val tokenStorage: TokenStorage,
     private val userInfoNetworkClient: UserInfoNetworkClient
 ) : AuthGateway {
-    override suspend fun signIn(
+    override suspend fun signInTransaction(
         email: String,
         password: String,
-        token: Token?
+        token: Token?,
+        withTransaction: suspend (UserEntity) -> Either<DataFailure, Unit>
     ): Either<RequestFailure<List<SignInFail>>, UserEntity> =
         userInfoNetworkClient
             .signIn(email, password, token)
-            .map {
-                userStorage.set(UserDtoMapper.toStorageDto(it.user))
-                sessionStorage.set(it.session)
-                tokenStorage.set(token?.value?.let(::DeliveredToken))
-                UserDtoMapper.toEntity(it.user)
+            .flatMap { userData ->
+                val user = UserDtoMapper.toEntity(userData.user)
+                withTransaction(user).bimap(
+                    leftOperation = { RequestFailure<List<SignInFail>>(it) },
+                    rightOperation = {
+                        userStorage.set(UserDtoMapper.toStorageDto(user))
+                        sessionStorage.set(userData.session)
+                        tokenStorage.set(token?.value?.let(::DeliveredToken))
+                        return@bimap user
+                    }
+                )
             }
 
     override suspend fun registrationUser(

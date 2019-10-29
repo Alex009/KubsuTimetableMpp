@@ -1,9 +1,6 @@
 package com.kubsu.timetable.data.gateway
 
-import com.egroden.teaco.Either
-import com.egroden.teaco.flatMap
-import com.egroden.teaco.map
-import com.egroden.teaco.mapLeft
+import com.egroden.teaco.*
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SubscriptionFail
@@ -54,10 +51,11 @@ class SubscriptionGatewayImpl(
             .selectSubgroupList(groupId)
             .map { list -> list.map { SubgroupDtoMapper.toEntity(it, groupId) } }
 
-    override suspend fun create(
+    override suspend fun createSubscriptionTransaction(
         subgroupId: Int,
         subscriptionName: String,
-        isMain: Boolean
+        isMain: Boolean,
+        withTransaction: suspend (SubscriptionEntity) -> Either<DataFailure, Unit>
     ): Either<RequestFailure<List<SubscriptionFail>>, SubscriptionEntity> =
         sessionStorage
             .getEitherFailure()
@@ -70,10 +68,21 @@ class SubscriptionGatewayImpl(
                         subscriptionName = subscriptionName,
                         isMain = isMain
                     )
-                    .map { subscription ->
-                        subscription.user
-                        subscriptionQueries.update(SubscriptionDtoMapper.toDbDto(subscription))
-                        SubscriptionDtoMapper.toEntity(subscription)
+                    .flatMap { networkDto ->
+                        val subscription = SubscriptionDtoMapper.toEntity(networkDto)
+                        withTransaction(subscription).bimap(
+                            leftOperation = {
+                                RequestFailure<List<SubscriptionFail>>(it)
+                            },
+                            rightOperation = {
+                                subscriptionQueries.update(
+                                    SubscriptionDtoMapper.toDbDto(
+                                        subscription
+                                    )
+                                )
+                                return@bimap subscription
+                            }
+                        )
                     }
             }
 

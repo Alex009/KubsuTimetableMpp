@@ -107,6 +107,21 @@ class CreateSubscriptionFragment(
     ) {
         val arrayAdapter = createArrayAdapter()
         adapter = arrayAdapter
+        onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            private var check = 0 // fix spinner onItemSelected called automatically
+
+            override fun onNothingSelected(parent: AdapterView<*>?) = Unit
+
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                if (++check > 1)
+                    onItemSelected(if (position != 0) position - 1 else null)
+            }
+        }
         listEffect bind { list ->
             arrayAdapter.run {
                 clear()
@@ -115,18 +130,6 @@ class CreateSubscriptionFragment(
             }
         }
         chooseEffect bind { showErrorMessage(errorRes) }
-        onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) =
-                onItemSelected(null)
-
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) =
-                onItemSelected(if (position != 0) position - 1 else null)
-        }
     }
 
     private fun View.createArrayAdapter(): ArrayAdapter<String> =

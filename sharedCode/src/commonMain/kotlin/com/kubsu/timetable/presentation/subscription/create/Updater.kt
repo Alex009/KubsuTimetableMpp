@@ -20,7 +20,6 @@ val createSubscriptionUpdater: Updater<State, Action, Subscription, SideEffect> 
             val faculty = action.id?.let(state.facultyList::get)
             UpdateResponse(
                 state = state.copy(
-                    selectedFaculty = faculty,
                     occupationList = emptyList(),
                     groupList = emptyList(),
                     subgroupList = emptyList(),
@@ -30,6 +29,7 @@ val createSubscriptionUpdater: Updater<State, Action, Subscription, SideEffect> 
                         selectedGroup = null,
                         selectedSubgroup = null
                     ),
+                    selectedFaculty = faculty,
                     selectedOccupation = null,
                     selectedGroup = null,
                     selectedSubgroup = null,
@@ -46,7 +46,6 @@ val createSubscriptionUpdater: Updater<State, Action, Subscription, SideEffect> 
             val occupation = action.id?.let(state.occupationList::get)
             UpdateResponse(
                 state = state.copy(
-                    selectedOccupation = occupation,
                     groupList = emptyList(),
                     subgroupList = emptyList(),
                     nameHint = getHintOrNull(
@@ -55,6 +54,7 @@ val createSubscriptionUpdater: Updater<State, Action, Subscription, SideEffect> 
                         selectedGroup = null,
                         selectedSubgroup = null
                     ),
+                    selectedOccupation = occupation,
                     selectedGroup = null,
                     selectedSubgroup = null,
                     progress = true
@@ -70,7 +70,6 @@ val createSubscriptionUpdater: Updater<State, Action, Subscription, SideEffect> 
             val group = action.id?.let(state.groupList::get)
             UpdateResponse(
                 state = state.copy(
-                    selectedGroup = group,
                     subgroupList = emptyList(),
                     nameHint = getHintOrNull(
                         selectedFaculty = state.selectedFaculty,
@@ -78,6 +77,7 @@ val createSubscriptionUpdater: Updater<State, Action, Subscription, SideEffect> 
                         selectedGroup = group,
                         selectedSubgroup = null
                     ),
+                    selectedGroup = group,
                     selectedSubgroup = null,
                     progress = true
                 ),

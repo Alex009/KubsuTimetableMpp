@@ -1,11 +1,10 @@
 package com.kubsu.timetable.domain.interactor.auth
 
 import com.egroden.teaco.Either
-import com.egroden.teaco.flatMap
-import com.egroden.teaco.mapLeft
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SignInFail
 import com.kubsu.timetable.UserInfoFail
+import com.kubsu.timetable.domain.entity.UserEntity
 import com.kubsu.timetable.domain.interactor.timetable.AppInfoGateway
 import com.kubsu.timetable.domain.interactor.userInfo.UserInfoGateway
 import com.kubsu.timetable.extensions.def
@@ -18,19 +17,15 @@ class AuthInteractorImpl(
     override suspend fun signInTransaction(
         email: String,
         password: String
-    ): Either<RequestFailure<List<SignInFail>>, Unit> = def {
+    ): Either<RequestFailure<List<SignInFail>>, UserEntity> = def {
         val token = userInfoGateway.getCurrentTokenOrNull()
         authGateway
-            .signIn(email, password, token)
-            .flatMap { user ->
-                appInfoGateway
-                    .updateInfo(user.id)
-                    .mapLeft {
-                        // Cancel transaction
-                        authGateway.logout() // drop nested failure
-                        RequestFailure<List<SignInFail>>(it)
-                    }
-            }
+            .signInTransaction(
+                email = email,
+                password = password,
+                token = token,
+                withTransaction = { appInfoGateway.updateInfo(it.id) }
+            )
     }
 
     override suspend fun registrationUser(

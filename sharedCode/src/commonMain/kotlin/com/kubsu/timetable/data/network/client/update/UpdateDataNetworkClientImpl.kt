@@ -47,7 +47,7 @@ class UpdateDataNetworkClientImpl(
                     addSessionKey(session)
                     body = jsonContent(
                         "timestamp" to session.timestamp.value.toJson(),
-                        "existing_ids" to existsIds.toJson()
+                        "already_handled" to existsIds.toJson()
                     )
                 }
             }.mapLeft {

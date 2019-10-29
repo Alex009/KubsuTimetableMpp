@@ -18,10 +18,11 @@ interface SubscriptionGateway {
     suspend fun selectGroupList(occupationId: Int): Either<DataFailure, List<GroupEntity>>
     suspend fun selectSubgroupList(groupId: Int): Either<DataFailure, List<SubgroupEntity>>
 
-    suspend fun create(
+    suspend fun createSubscriptionTransaction(
         subgroupId: Int,
         subscriptionName: String,
-        isMain: Boolean
+        isMain: Boolean,
+        withTransaction: suspend (SubscriptionEntity) -> Either<DataFailure, Unit>
     ): Either<RequestFailure<List<SubscriptionFail>>, SubscriptionEntity>
 
     fun getAllSubscriptionsFlow(user: UserEntity): Flow<List<SubscriptionEntity>>

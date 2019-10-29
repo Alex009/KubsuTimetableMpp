@@ -85,4 +85,5 @@
     <string name="list_is_empty">Список пуст</string>
     <string name="check_new_timetable">Пришло обновление, проверьте!</string>
     <string name="show_timetable_for_next_week">"Показать расписание на следующую неделю "</string>
+    <string name="process_may_take_some_time">Процесс может занять некоторое время. Пожалуйста, не закрывайте приложение.</string>
 </resources>

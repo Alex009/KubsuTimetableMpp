@@ -3,6 +3,7 @@ package com.kubsu.timetable.data.gateway
 import com.egroden.teaco.Either
 import com.egroden.teaco.flatMap
 import com.egroden.teaco.map
+import com.egroden.teaco.right
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.data.db.diff.*
 import com.kubsu.timetable.data.db.timetable.*
@@ -116,14 +117,16 @@ class SyncMixinGatewayImpl(
     }
 
     private fun deleteBasenameData(basename: Basename, deletedIds: List<Int>) {
-        val deleteById = when (basename) {
-            Basename.Subscription -> subscriptionQueries::deleteById
-            Basename.Timetable -> timetableQueries::deleteById
-            Basename.Lecturer -> lecturerQueries::deleteById
-            Basename.Class -> classQueries::deleteById
-            Basename.UniversityInfo -> universityInfoQueries::deleteById
+        if (deletedIds.isNotEmpty()) {
+            val deleteById = when (basename) {
+                Basename.Subscription -> subscriptionQueries::deleteById
+                Basename.Timetable -> timetableQueries::deleteById
+                Basename.Lecturer -> lecturerQueries::deleteById
+                Basename.Class -> classQueries::deleteById
+                Basename.UniversityInfo -> universityInfoQueries::deleteById
+            }
+            for (id in deletedIds) deleteById(id)
         }
-        for (id in deletedIds) deleteById(id)
     }
 
     override suspend fun diff(): Either<DataFailure, Pair<Timestamp, List<Basename>>> =
@@ -165,18 +168,21 @@ class SyncMixinGatewayImpl(
         basename: Basename,
         updatedIds: List<Int>
     ): Either<DataFailure, Unit> =
-        sessionStorage
-            .getEitherFailure()
-            .flatMap { session ->
-                networkClient
-                    .meta(
-                        session = session,
-                        basename = BasenameDtoMapper.value(basename),
-                        basenameSerializer = getSerializer(basename),
-                        updatedIds = updatedIds
-                    )
-                    .handle(basename)
-            }
+        if (updatedIds.isNotEmpty())
+            sessionStorage
+                .getEitherFailure()
+                .flatMap { session ->
+                    networkClient
+                        .meta(
+                            session = session,
+                            basename = BasenameDtoMapper.value(basename),
+                            basenameSerializer = getSerializer(basename),
+                            updatedIds = updatedIds
+                        )
+                        .handle(basename)
+                }
+        else
+            Either.right(Unit)
 
     private fun getSerializer(basename: Basename): KSerializer<*> =
         when (basename) {
