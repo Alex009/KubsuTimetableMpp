@@ -33,7 +33,7 @@ val createSubscriptionUpdater: Updater<State, Action, Subscription, SideEffect> 
                     selectedOccupation = null,
                     selectedGroup = null,
                     selectedSubgroup = null,
-                    progress = true
+                    progress = faculty != null
                 ),
                 sideEffects = if (faculty != null)
                     setOf(SideEffect.SelectOccupationList(faculty))
@@ -57,7 +57,7 @@ val createSubscriptionUpdater: Updater<State, Action, Subscription, SideEffect> 
                     selectedOccupation = occupation,
                     selectedGroup = null,
                     selectedSubgroup = null,
-                    progress = true
+                    progress = occupation != null
                 ),
                 sideEffects = if (occupation != null)
                     setOf(SideEffect.SelectGroupList(occupation))
@@ -79,7 +79,7 @@ val createSubscriptionUpdater: Updater<State, Action, Subscription, SideEffect> 
                     ),
                     selectedGroup = group,
                     selectedSubgroup = null,
-                    progress = true
+                    progress = group != null
                 ),
                 sideEffects = if (group != null)
                     setOf(SideEffect.SelectSubgroupList(group))

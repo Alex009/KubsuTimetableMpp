@@ -1,10 +1,11 @@
 package com.kubsu.timetable.extensions
 
 import com.kubsu.timetable.presentation.timetable.model.TimetableInfoToDisplay
+import com.soywiz.klock.DateTime
 import com.soywiz.klock.DayOfWeek
 
 fun getCurrentDayOfWeek(): DayOfWeek =
-    DayOfWeek.Tuesday
+    DateTime.nowLocal().dayOfWeek
 
 fun List<TimetableInfoToDisplay>.indexOfNearestDayOrNull(): Int? {
     val currentDay = getCurrentDayOfWeek()

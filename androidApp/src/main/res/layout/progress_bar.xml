@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.ContentLoadingProgressBar xmlns:android="http://schemas.android.com/apk/res/android"
-    style="?android:attr/progressBarStyleHorizontal"
+    style="@android:style/Widget.Material.Light.ProgressBar.Horizontal"
     android:id="@+id/progress_bar"
     android:layout_width="match_parent"
     android:layout_height="10dp"
     android:indeterminate="true"
     android:indeterminateOnly="true"
-    android:visibility="invisible" />
+    android:scaleY="2" />

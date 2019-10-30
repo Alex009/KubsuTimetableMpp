@@ -21,7 +21,7 @@ class RegistrationFragment(
 ) : BaseFragment(R.layout.registration_fragment) {
     private val connector by androidConnectors(featureFactory)
 
-    private val progressEffect = UiEffect(Visibility.INVISIBLE)
+    private val progressEffect = UiEffect(false)
     private val emailErrorEffect = UiEffect(0)
     private val passwordErrorEffect = UiEffect(0)
     private val passwordsVaryEffects = UiEffect(Unit)
@@ -53,7 +53,11 @@ class RegistrationFragment(
             }
         }
 
-        progressEffect bind { view.progress_bar.visibility(it) }
+        progressEffect bind {
+            with(view.progress_bar) {
+                if (it) show() else hide()
+            }
+        }
         emailErrorEffect bind view.email_edit_text::showErrorMessage
         passwordErrorEffect bind view.password_edit_text::showErrorMessage
         passwordsVaryEffects bind {
@@ -71,7 +75,7 @@ class RegistrationFragment(
     }
 
     private fun render(state: State) {
-        progressEffect.value = if (state.progress) Visibility.VISIBLE else Visibility.INVISIBLE
+        progressEffect.value = state.progress
     }
 
     private fun render(subscription: Subscription) =

@@ -28,7 +28,7 @@ class CreateSubscriptionFragment(
 ) : BaseFragment(R.layout.create_subscription_fragment) {
     private val connector by androidConnectors(featureFactory) { bindAction(Action.LoadFacultyList) }
 
-    private val progressEffect = UiEffect(Visibility.INVISIBLE)
+    private val progressEffect = UiEffect(false)
 
     private val facultyListEffect = UiEffect<List<FacultyModel>>(emptyList())
     private val occupationListEffect = UiEffect<List<OccupationModel>>(emptyList())
@@ -55,7 +55,11 @@ class CreateSubscriptionFragment(
             popBackStack()
         }
 
-        progressEffect bind { view.progress_bar.visibility(it) }
+        progressEffect bind {
+            with(view.progress_bar) {
+                if (it) show() else hide()
+            }
+        }
         titleTextEffect bind view.subscription_title::setHint
         titleErrorEffect bind (view.subscription_title as TextView)::showErrorMessage
 
@@ -156,7 +160,7 @@ class CreateSubscriptionFragment(
     }
 
     private fun render(state: State) {
-        progressEffect.value = if (state.progress) Visibility.VISIBLE else Visibility.INVISIBLE
+        progressEffect.value = state.progress
         facultyListEffect.value = state.facultyList
         occupationListEffect.value = state.occupationList
         groupListEffect.value = state.groupList

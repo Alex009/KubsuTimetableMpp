@@ -3,7 +3,6 @@ package com.kubsu.timetable.utils
 import android.app.Activity
 import android.content.Context
 import android.view.MenuItem
-import android.view.View
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -17,15 +16,6 @@ fun Context.getCompatColor(resId: Int) =
 
 val BottomNavigationView.selectedItem: MenuItem
     get() = menu.findItem(selectedItemId)
-
-fun View.visibility(visibility: Visibility) =
-    setVisibility(visibility.value)
-
-enum class Visibility(val value: Int) {
-    VISIBLE(View.VISIBLE),
-    INVISIBLE(View.INVISIBLE),
-    GONE(View.GONE)
-}
 
 fun TextView.showErrorMessage(messageRes: Int) {
     error = null

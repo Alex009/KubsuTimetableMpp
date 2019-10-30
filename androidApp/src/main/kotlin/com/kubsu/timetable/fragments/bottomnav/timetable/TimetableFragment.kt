@@ -20,7 +20,10 @@ import com.kubsu.timetable.presentation.timetable.*
 import com.kubsu.timetable.presentation.timetable.model.TimetableModel
 import com.kubsu.timetable.presentation.timetable.model.TypeOfWeekModel
 import com.kubsu.timetable.presentation.timetable.model.UniversityInfoModel
-import com.kubsu.timetable.utils.*
+import com.kubsu.timetable.utils.UiEffect
+import com.kubsu.timetable.utils.bind
+import com.kubsu.timetable.utils.safeNavigate
+import com.kubsu.timetable.utils.unbind
 import kotlinx.android.synthetic.main.progress_bar.view.*
 import kotlinx.android.synthetic.main.timetable_fragment.view.*
 
@@ -34,7 +37,7 @@ class TimetableFragment(
 
     private val titleEffect = UiEffect("")
     private val subtitleEffect = UiEffect("")
-    private val progressEffect = UiEffect(Visibility.INVISIBLE)
+    private val progressEffect = UiEffect(false)
     private val universityInfoEffect = UiEffect<UniversityInfoModel?>(null)
     private val currentTimetableEffect = UiEffect<TimetableModel?>(null)
     private val nextWeekTimetableEffect = UiEffect<TimetableModel?>(null)
@@ -57,7 +60,11 @@ class TimetableFragment(
 
         titleEffect bind view.toolbar::setTitle
         subtitleEffect bind view.toolbar::setSubtitle
-        progressEffect bind { view.progress_bar.visibility(it) }
+        progressEffect bind {
+            with(view.progress_bar) {
+                if (it) show() else hide()
+            }
+        }
         universityInfoEffect bind { universityInfo ->
             universityInfo?.typeOfWeek?.let {
                 showTimetableMenu(
@@ -70,8 +77,7 @@ class TimetableFragment(
         currentTimetableEffect bind { timetableModel ->
             val timetableInfoList = timetableModel?.infoList ?: emptyList()
             val listIsEmpty = timetableInfoList.isEmpty()
-            view.empty_list_layout.isVisible =
-                listIsEmpty && progressEffect.value == Visibility.INVISIBLE
+            view.empty_list_layout.isVisible = listIsEmpty && !progressEffect.value
             view.timetable_recycler_view.isVisible = !listIsEmpty
 
             timetableAdapter.setData(timetableInfoList)
@@ -94,7 +100,7 @@ class TimetableFragment(
     private fun render(state: State) {
         titleEffect.value = state.currentSubscription?.title ?: ""
 
-        progressEffect.value = if (state.progress) Visibility.VISIBLE else Visibility.INVISIBLE
+        progressEffect.value = state.progress
 
         when (state.universityInfoModel?.typeOfWeek) {
             TypeOfWeekModel.Numerator -> {

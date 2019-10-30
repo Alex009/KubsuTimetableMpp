@@ -14,9 +14,12 @@ import com.kubsu.timetable.fragments.bottomnav.BottomNavFragmentDirections
 import com.kubsu.timetable.fragments.bottomnav.subscription.list.adapter.SubscriptionAdapter
 import com.kubsu.timetable.presentation.subscription.list.*
 import com.kubsu.timetable.presentation.timetable.model.SubscriptionModel
-import com.kubsu.timetable.utils.*
+import com.kubsu.timetable.utils.UiEffect
+import com.kubsu.timetable.utils.bind
+import com.kubsu.timetable.utils.safeNavigate
 import com.kubsu.timetable.utils.ui.materialAlert
 import com.kubsu.timetable.utils.ui.sheetMenu
+import com.kubsu.timetable.utils.unbind
 import kotlinx.android.synthetic.main.add_floating_action_button.view.*
 import kotlinx.android.synthetic.main.progress_bar.view.*
 import kotlinx.android.synthetic.main.subscription_list_fragment.view.*
@@ -26,7 +29,7 @@ class SubscriptionListFragment(
 ) : BaseFragment(R.layout.subscription_list_fragment) {
     private val connector by androidConnectors(featureFactory) { bindAction(Action.UpdateData) }
 
-    private val progressEffect = UiEffect(Visibility.INVISIBLE)
+    private val progressEffect = UiEffect(false)
     private val subscriptionListEffect = UiEffect(emptyList<SubscriptionModel>())
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,11 +79,14 @@ class SubscriptionListFragment(
             connector bindAction Action.CreateSubscription
         }
 
-        progressEffect bind { view.progress_bar.visibility(it) }
+        progressEffect bind {
+            with(view.progress_bar) {
+                if (it) show() else hide()
+            }
+        }
         subscriptionListEffect bind { subscriptionList ->
             val listIsEmpty = subscriptionList.isEmpty()
-            view.empty_list_layout.isVisible =
-                listIsEmpty && progressEffect.value == Visibility.INVISIBLE
+            view.empty_list_layout.isVisible = listIsEmpty && !progressEffect.value
             view.subscription_recycler_view.isVisible = !listIsEmpty
 
             subscriptionAdapter.setData(subscriptionList)
@@ -94,7 +100,7 @@ class SubscriptionListFragment(
     }
 
     private fun render(state: State) {
-        progressEffect.value = if (state.progress) Visibility.VISIBLE else Visibility.INVISIBLE
+        progressEffect.value = state.progress
         subscriptionListEffect.value = state.subscriptionList
     }
 
