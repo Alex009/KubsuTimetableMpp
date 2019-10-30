@@ -8,7 +8,8 @@ import platform.SerializeModel
 sealed class Action {
     class Registration(
         val email: String,
-        val password: String
+        val password: String,
+        val repeatedPassword: String
     ) : Action()
 
     internal object ShowResult : Action()
@@ -38,6 +39,8 @@ sealed class Subscription {
 
     class ShowRegistrationFailure(val failureList: List<UserInfoFail>) : Subscription()
     class ShowDataFailure(val failureList: List<DataFailure>) : Subscription()
+
+    object PasswordsVary : Subscription()
 }
 
 sealed class Screen {

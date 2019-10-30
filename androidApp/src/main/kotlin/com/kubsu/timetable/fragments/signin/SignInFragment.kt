@@ -32,17 +32,27 @@ class SignInFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        with(view.toolbar) {
+            setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.action_sign_in -> {
+                        Keyboard.hide(view)
+                        connector bindAction Action.SignIn(
+                            email = view.email_edit_text.text.toString(),
+                            password = view.password_edit_text.text.toString()
+                        )
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        }
+
         progressEffect bind { view.progress_bar.visibility(it) }
         emailErrorEffect bind view.email_edit_text::showErrorMessage
         passwordErrorEffect bind view.password_edit_text::showErrorMessage
 
-        view.sign_in_button.setOnClickListener {
-            Keyboard.hide(view)
-            connector bindAction Action.SignIn(
-                email = view.email_edit_text.text.toString(),
-                password = view.password_edit_text.text.toString()
-            )
-        }
         view.create_account_button.setOnClickListener {
             Keyboard.hide(view)
             connector bindAction Action.Registration

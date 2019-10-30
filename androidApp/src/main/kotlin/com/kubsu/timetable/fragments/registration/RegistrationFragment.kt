@@ -24,6 +24,7 @@ class RegistrationFragment(
     private val progressEffect = UiEffect(Visibility.INVISIBLE)
     private val emailErrorEffect = UiEffect(0)
     private val passwordErrorEffect = UiEffect(0)
+    private val passwordsVaryEffects = UiEffect(Unit)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,16 +33,32 @@ class RegistrationFragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        with(view.toolbar) {
+            setNavigationOnClickListener { popBackStack() }
+            setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.action_registration -> {
+                        Keyboard.hide(view)
+                        connector bindAction Action.Registration(
+                            email = view.email_edit_text.text.toString(),
+                            password = view.password_edit_text.text.toString(),
+                            repeatedPassword = view.repeat_password_edit_text.text.toString()
+                        )
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        }
+
         progressEffect bind { view.progress_bar.visibility(it) }
         emailErrorEffect bind view.email_edit_text::showErrorMessage
         passwordErrorEffect bind view.password_edit_text::showErrorMessage
-
-        view.registration_button.setOnClickListener {
-            Keyboard.hide(view)
-            connector bindAction Action.Registration(
-                email = view.email_edit_text.text.toString(),
-                password = view.password_edit_text.text.toString()
-            )
+        passwordsVaryEffects bind {
+            view.password_edit_text.showErrorMessage(R.string.passwords_vary)
+            view.repeat_password_edit_text.showErrorMessage(R.string.passwords_vary)
         }
     }
 
@@ -50,6 +67,7 @@ class RegistrationFragment(
         progressEffect.unbind()
         emailErrorEffect.unbind()
         passwordErrorEffect.unbind()
+        passwordsVaryEffects.unbind()
     }
 
     private fun render(state: State) {
@@ -64,6 +82,8 @@ class RegistrationFragment(
                 subscription.failureList.forEach(::handleRegistrationFail)
             is Subscription.ShowDataFailure ->
                 subscription.failureList.forEach(::notifyUserOfFailure)
+            Subscription.PasswordsVary ->
+                passwordsVaryEffects.value = Unit
         }
 
     private fun navigation(screen: Screen) =

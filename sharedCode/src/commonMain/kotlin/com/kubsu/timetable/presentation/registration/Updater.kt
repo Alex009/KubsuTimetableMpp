@@ -6,15 +6,21 @@ import com.egroden.teaco.Updater
 val registrationUpdater: Updater<State, Action, Subscription, SideEffect> = { state, action ->
     when (action) {
         is Action.Registration ->
-            UpdateResponse(
-                state = state.copy(progress = true),
-                sideEffects = setOf(
-                    SideEffect.Registration(
-                        email = action.email,
-                        password = action.password
+            if (action.password == action.repeatedPassword)
+                UpdateResponse<State, Subscription, SideEffect>(
+                    state = state.copy(progress = true),
+                    sideEffects = setOf(
+                        SideEffect.Registration(
+                            email = action.email,
+                            password = action.password
+                        )
                     )
                 )
-            )
+            else
+                UpdateResponse<State, Subscription, SideEffect>(
+                    state,
+                    subscription = Subscription.PasswordsVary
+                )
 
         Action.ShowResult ->
             UpdateResponse(

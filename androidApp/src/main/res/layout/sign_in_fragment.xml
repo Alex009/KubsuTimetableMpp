@@ -8,6 +8,14 @@
     android:orientation="vertical"
     tools:context=".fragments.signin.SignInFragment">
 
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ToolbarTheme"
+        app:menu="@menu/sign_in_menu"
+        app:title="@string/sign_in" />
+
     <include layout="@layout/progress_bar" />
 
     <Space
@@ -16,56 +24,44 @@
         android:layout_weight="1" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
+        android:minWidth="400dp"
         android:hint="@string/email"
         app:errorEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/email_edit_text"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:autofillHints="email"
             android:ems="10"
-            android:inputType="textEmailAddress"
-            android:minWidth="400dp" />
+            android:inputType="textEmailAddress" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
+        android:minWidth="400dp"
         android:hint="@string/password"
         app:errorEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/password_edit_text"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:autofillHints="password"
-            android:inputType="textPassword"
-            android:minWidth="400dp" />
+            android:inputType="textPassword" />
 
     </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/sign_in_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="32dp"
-        android:layout_gravity="center"
-        android:minWidth="200dp"
-        android:minHeight="50dp"
-        android:text="@string/sign_in" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/create_account_button"
@@ -75,8 +71,6 @@
         android:layout_marginTop="24dp"
         android:layout_marginEnd="32dp"
         android:layout_gravity="center"
-        android:minWidth="200dp"
-        android:minHeight="50dp"
         android:text="@string/create_account" />
 
     <Space

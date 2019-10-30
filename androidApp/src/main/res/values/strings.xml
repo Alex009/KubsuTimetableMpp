@@ -87,4 +87,7 @@
     <string name="check_new_timetable">Update came, check!</string>
     <string name="show_timetable_for_next_week">Show timetable for next  week</string>
     <string name="process_may_take_some_time">The process may take some time. Please do not close the application.</string>
+    <string name="repeat_password">Repeat password</string>
+    <string name="passwords_vary">Passwords vary</string>
+    <string name="edit_profile">Edit profile</string>
 </resources>
