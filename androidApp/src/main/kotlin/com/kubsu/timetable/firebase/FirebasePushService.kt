@@ -39,7 +39,7 @@ class FirebasePushService : FirebaseMessagingService(), KodeinAware {
             mixinInteractor.registerDataDiff(dataDiffEntity)
             if (
                 userInteractor.getCurrentUserOrNull()?.id == dataDiffEntity.userId
-                && isMustDisplayInNotification(dataDiffEntity)
+                && isMustDisplayInNotification(dataDiffModel)
             )
                 showNotification(notificationId = dataDiffEntity.hashCode())
         }

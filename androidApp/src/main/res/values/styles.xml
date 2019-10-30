@@ -23,6 +23,7 @@
 
     <style name="ToolbarTheme" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar">
         <item name="android:background">@color/colorPrimary</item>
+        <item name="android:backgroundTint">@color/colorPrimary</item>
         <item name="popupTheme">@style/Widget.MaterialComponents.PopupMenu</item>
     </style>
 </resources>

@@ -13,5 +13,9 @@ class DataDiffNetworkDto(
 
     val basename: String,
 
-    val ids: List<Int>
+    @SerialName("silent_ids")
+    val silentIds: List<Int>,
+
+    @SerialName("noisy_ids")
+    val noisyIds: List<Int>
 )

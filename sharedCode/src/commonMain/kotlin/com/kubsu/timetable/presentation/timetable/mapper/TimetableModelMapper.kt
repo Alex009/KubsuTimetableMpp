@@ -31,20 +31,21 @@ object TimetableModelMapper {
             .map { ClassModelMapper.toEntity(it.classModel) }
 
     private fun getTimetableInfoList(timetableEntity: TimetableEntity): List<TimetableInfoToDisplay> {
-        val list = mutableListOf<TimetableInfoToDisplay>()
-        for (day in DayOfWeek.values()) {
+        val result = mutableListOf<TimetableInfoToDisplay>()
+        val daysList = DayOfWeek.values().sortedBy { it.index1Monday }
+        for (day in daysList) {
             val classList: List<ClassEntity> = timetableEntity
                 .classList
                 .filter { it.day == day }
 
             if (classList.isNotEmpty()) {
-                list.add(
+                result.add(
                     TimetableInfoToDisplay.Day(
                         index = DayModelMapper.value(day),
                         dayOfWeek = day
                     )
                 )
-                list.addAll(
+                result.addAll(
                     classList
                         .map(ClassModelMapper::toModel)
                         .map(TimetableInfoToDisplay::Class)
@@ -52,6 +53,6 @@ object TimetableModelMapper {
             }
         }
 
-        return list
+        return result
     }
 }

@@ -18,9 +18,11 @@ import com.kubsu.timetable.domain.entity.Basename
 import com.kubsu.timetable.domain.entity.Timestamp
 import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
 import com.kubsu.timetable.domain.interactor.sync.SyncMixinGateway
+import com.kubsu.timetable.extensions.filterPrevious
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.serialization.KSerializer
@@ -61,6 +63,7 @@ class SyncMixinGatewayImpl(
             .selectAll()
             .asFlow()
             .mapToList()
+            .filterPrevious()
             .mapNotNull { dataDiffList ->
                 val userId = userStorage.get()?.id ?: return@mapNotNull null
                 dataDiffList to userId
@@ -74,6 +77,7 @@ class SyncMixinGatewayImpl(
                     }
                     .filterNot { it.updatedIds.isEmpty() && it.deletedIds.isEmpty() }
             }
+            .filter { it.isNotEmpty() }
 
     private fun getDataDiff(
         userId: Int,
