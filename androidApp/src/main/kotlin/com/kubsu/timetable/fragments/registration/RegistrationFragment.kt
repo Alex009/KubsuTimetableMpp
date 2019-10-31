@@ -36,14 +36,14 @@ class RegistrationFragment(
 
         with(view.toolbar) {
             setNavigationOnClickListener { popBackStack() }
-            setOnMenuItemClickListener {
-                when (it.itemId) {
-                    R.id.action_registration -> {
+            setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.action_add -> {
                         Keyboard.hide(view)
                         connector bindAction Action.Registration(
-                            email = view.email_edit_text.text.toString(),
-                            password = view.password_edit_text.text.toString(),
-                            repeatedPassword = view.repeat_password_edit_text.text.toString()
+                            email = view.email_input_layout.text,
+                            password = view.password_input_layout.text,
+                            repeatedPassword = view.repeat_password_input_layout.text
                         )
                         true
                     }
@@ -53,16 +53,19 @@ class RegistrationFragment(
             }
         }
 
+        view.email_input_layout.removeErrorAfterNewText()
+        view.password_input_layout.removeErrorAfterNewText()
+
         progressEffect bind {
             with(view.progress_bar) {
                 if (it) show() else hide()
             }
         }
-        emailErrorEffect bind view.email_edit_text::showErrorMessage
-        passwordErrorEffect bind view.password_edit_text::showErrorMessage
+        emailErrorEffect bind view.email_input_layout::showErrorMessage
+        passwordErrorEffect bind view.password_input_layout::showErrorMessage
         passwordsVaryEffects bind {
-            view.password_edit_text.showErrorMessage(R.string.passwords_vary)
-            view.repeat_password_edit_text.showErrorMessage(R.string.passwords_vary)
+            view.password_input_layout.showErrorMessage(R.string.passwords_vary)
+            view.repeat_password_input_layout.showErrorMessage(R.string.passwords_vary)
         }
     }
 

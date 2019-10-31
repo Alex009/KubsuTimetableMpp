@@ -131,8 +131,8 @@ class TimetableFragment(
         timetable: TimetableModel?
     ) {
         toolbar.inflateMenu(R.menu.timetable_menu)
-        toolbar.setOnMenuItemClickListener {
-            when (it.itemId) {
+        toolbar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
                 R.id.next_week_timetable -> {
                     navigate(Screen.NextWeekTimetable(typeOfWeek, timetable))
                     true

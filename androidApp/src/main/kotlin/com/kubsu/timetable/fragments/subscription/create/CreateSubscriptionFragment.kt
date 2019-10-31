@@ -5,7 +5,6 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
-import android.widget.TextView
 import com.egroden.teaco.Feature
 import com.egroden.teaco.androidConnectors
 import com.egroden.teaco.bindAction
@@ -51,8 +50,28 @@ class CreateSubscriptionFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        view.toolbar.setNavigationOnClickListener {
-            popBackStack()
+        val subscriptionTitle = view.subscription_title_input_layout.apply {
+            removeErrorAfterNewText()
+            removeFocusAfterEmptyText()
+        }
+        with(view.toolbar) {
+            setNavigationOnClickListener { popBackStack() }
+            setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.action_add -> {
+                        connector bindAction Action.CreateSubscription(
+                            subscriptionName = subscriptionTitle
+                                .text
+                                .takeIf { it.isNotBlank() }
+                                ?: view.subscription_title_input_layout.hint.toString(),
+                            isMain = view.is_main_switch.isChecked
+                        )
+                        true
+                    }
+
+                    else -> false
+                }
+            }
         }
 
         progressEffect bind {
@@ -60,8 +79,8 @@ class CreateSubscriptionFragment(
                 if (it) show() else hide()
             }
         }
-        titleTextEffect bind view.subscription_title::setHint
-        titleErrorEffect bind (view.subscription_title as TextView)::showErrorMessage
+        titleTextEffect bind subscriptionTitle::setHint
+        titleErrorEffect bind subscriptionTitle::showErrorMessage
 
         view.faculty_spinner.setData(
             listEffect = facultyListEffect,
@@ -91,15 +110,6 @@ class CreateSubscriptionFragment(
             errorRes = R.string.choose_subgroup,
             onItemSelected = { connector bindAction Action.SubgroupWasSelected(it) }
         )
-        view.create_button.setOnClickListener {
-            connector bindAction Action.CreateSubscription(
-                subscriptionName = view.subscription_title
-                    .text.toString()
-                    .takeIf { it.isNotBlank() }
-                    ?: view.subscription_title.hint.toString(),
-                isMain = view.is_main_switch.isChecked
-            )
-        }
     }
 
     private fun <T> Spinner.setData(

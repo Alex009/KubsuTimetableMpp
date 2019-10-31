@@ -12,7 +12,6 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/ToolbarTheme"
         app:menu="@menu/sign_in_menu"
         app:title="@string/sign_in" />
 
@@ -21,9 +20,10 @@
     <Space
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="2" />
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/email_input_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -31,10 +31,10 @@
         android:layout_marginEnd="32dp"
         android:minWidth="400dp"
         android:hint="@string/email"
+        android:theme="@style/TextInputLayoutTheme"
         app:errorEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/email_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -44,6 +44,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/password_input_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -51,10 +52,11 @@
         android:layout_marginEnd="32dp"
         android:minWidth="400dp"
         android:hint="@string/password"
+        android:theme="@style/TextInputLayoutTheme"
+        app:endIconMode="password_toggle"
         app:errorEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/password_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -62,6 +64,11 @@
             android:inputType="textPassword" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="2" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/create_account_button"
@@ -76,6 +83,6 @@
     <Space
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="2" />
+        android:layout_weight="1" />
 
 </LinearLayout>

@@ -33,13 +33,13 @@ class SignInFragment(
         super.onViewCreated(view, savedInstanceState)
 
         with(view.toolbar) {
-            setOnMenuItemClickListener {
-                when (it.itemId) {
+            setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
                     R.id.action_sign_in -> {
                         Keyboard.hide(view)
                         connector bindAction Action.SignIn(
-                            email = view.email_edit_text.text.toString(),
-                            password = view.password_edit_text.text.toString()
+                            email = view.email_input_layout.text,
+                            password = view.password_input_layout.text
                         )
                         true
                     }
@@ -54,8 +54,10 @@ class SignInFragment(
                 if (it) show() else hide()
             }
         }
-        emailErrorEffect bind view.email_edit_text::showErrorMessage
-        passwordErrorEffect bind view.password_edit_text::showErrorMessage
+        view.email_input_layout.removeErrorAfterNewText()
+        view.password_input_layout.removeErrorAfterNewText()
+        emailErrorEffect bind view.email_input_layout::showErrorMessage
+        passwordErrorEffect bind view.password_input_layout::showErrorMessage
 
         view.create_account_button.setOnClickListener {
             Keyboard.hide(view)

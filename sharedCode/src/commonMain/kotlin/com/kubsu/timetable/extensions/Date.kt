@@ -9,10 +9,11 @@ fun getCurrentDayOfWeek(): DayOfWeek =
 
 fun List<TimetableInfoToDisplay>.indexOfNearestDayOrNull(): Int? {
     val currentDay = getCurrentDayOfWeek()
-    return indexOfFirst {
-        val dayOfWeek = (it as? TimetableInfoToDisplay.Day)?.dayOfWeek ?: return@indexOfFirst false
+    return indexOfFirstOrNull {
+        val dayOfWeek = (it as? TimetableInfoToDisplay.Day)?.dayOfWeek
+            ?: return@indexOfFirstOrNull false
         dayOfWeek.displayDayIndex >= currentDay.displayDayIndex
-    }.takeIf { it > -1 }
+    } ?: indexOfFirstOrNull { it is TimetableInfoToDisplay.Day }
 }
 
 val DayOfWeek.displayDayIndex: Int

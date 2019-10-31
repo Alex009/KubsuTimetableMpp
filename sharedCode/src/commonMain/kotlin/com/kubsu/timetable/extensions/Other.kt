@@ -13,6 +13,9 @@ import kotlinx.coroutines.withContext
 
 fun <T> T.checkWhenAllHandled() = Unit
 
+fun <T> List<T>.indexOfFirstOrNull(predicate: (T) -> Boolean): Int? =
+    indexOfFirst(predicate).takeIf { it > -1 }
+
 fun <L, R> List<Either<L, R>>.toEitherList(): Either<L, List<R>> {
     val result = ArrayList<R>()
     for (either in this) {

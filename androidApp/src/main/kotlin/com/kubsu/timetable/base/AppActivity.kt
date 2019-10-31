@@ -3,8 +3,11 @@ package com.kubsu.timetable.base
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.view.View
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.NavHost
@@ -48,6 +51,23 @@ class AppActivity : AppCompatActivity(), NavHost {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            // Night mode is not active, we're using the light theme.
+            Configuration.UI_MODE_NIGHT_NO -> {
+                // For 23 api and higher, the status bar will be light with dark content.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                    window.statusBarColor = getCompatColor(android.R.color.black)
+                }
+            }
+
+            // Night mode is active, we're using dark theme.
+            Configuration.UI_MODE_NIGHT_YES -> Unit
+        }
+
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channelId = getString(R.string.default_notification_channel_id)
             val channelName = getString(R.string.default_notification_channel_name)
@@ -59,11 +79,6 @@ class AppActivity : AppCompatActivity(), NavHost {
                     NotificationManager.IMPORTANCE_HIGH
                 )
             )
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.statusBarColor = getCompatColor(R.color.colorPrimaryVariant)
-            window.navigationBarColor = getCompatColor(android.R.color.transparent)
         }
 
         if (!PermissionProvider.hasAllPermissions(this))

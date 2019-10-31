@@ -12,8 +12,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/ToolbarTheme"
-        app:menu="@menu/registration_menu"
+        app:menu="@menu/add_menu"
         app:navigationIcon="@drawable/ic_arrow_back_24dp"
         app:title="@string/registration" />
 
@@ -25,16 +24,17 @@
         android:layout_weight="1" />
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/email_input_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:layout_gravity="center_horizontal"
         android:minWidth="400dp"
+        android:theme="@style/TextInputLayoutTheme"
         app:errorEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/email_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -44,16 +44,18 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/password_input_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:layout_gravity="center_horizontal"
         android:minWidth="400dp"
+        android:theme="@style/TextInputLayoutTheme"
+        app:endIconMode="password_toggle"
         app:errorEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/password_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -63,16 +65,18 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/repeat_password_input_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:layout_gravity="center_horizontal"
+        android:theme="@style/TextInputLayoutTheme"
         android:minWidth="400dp"
+        app:endIconMode="password_toggle"
         app:errorEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/repeat_password_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

@@ -59,6 +59,9 @@
         <action
             android:id="@+id/action_bottomNavFragment_to_nextWeekTimetableFragment"
             app:destination="@id/nextWeekTimetableFragment" />
+        <action
+            android:id="@+id/action_bottomNavFragment_to_showClassFragment"
+            app:destination="@id/showClassFragment" />
     </fragment>
 
     <fragment
@@ -93,5 +96,13 @@
             android:name="timetable"
             app:argType="com.kubsu.timetable.presentation.timetable.model.TimetableModel"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_nextWeekTimetableFragment_to_showClassFragment"
+            app:destination="@id/showClassFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/showClassFragment"
+        android:name="com.kubsu.timetable.fragments.timetable.showClass.ShowClassFragment"
+        android:label="show_class_fragment"
+        tools:layout="@layout/show_class_fragment" />
 </navigation>
