@@ -70,19 +70,32 @@
         android:layout_height="0dp"
         android:layout_weight="2" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/create_account_button"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_marginStart="32dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="32dp"
-        android:layout_gravity="center"
-        android:text="@string/create_account" />
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dont_have_account" />
+
+        <TextView
+            android:id="@+id/registration_clickable_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="@string/registration"
+            android:textColor="@color/colorSecondary" />
+    </LinearLayout>
 
     <Space
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="2" />
 
 </LinearLayout>

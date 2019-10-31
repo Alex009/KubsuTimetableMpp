@@ -10,9 +10,9 @@
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:layout_margin="10dp"
-        card_view:cardCornerRadius="5dp"
-        card_view:cardElevation="5dp"
+        android:layout_marginBottom="0.1dp"
+        card_view:cardCornerRadius="0dp"
+        card_view:cardElevation="0.5dp"
         card_view:contentPadding="5dp">
 
         <TextView

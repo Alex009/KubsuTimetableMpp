@@ -35,7 +35,10 @@ class RegistrationFragment(
         super.onViewCreated(view, savedInstanceState)
 
         with(view.toolbar) {
-            setNavigationOnClickListener { popBackStack() }
+            setNavigationOnClickListener {
+                Keyboard.hide(view)
+                popBackStack()
+            }
             setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.action_add -> {

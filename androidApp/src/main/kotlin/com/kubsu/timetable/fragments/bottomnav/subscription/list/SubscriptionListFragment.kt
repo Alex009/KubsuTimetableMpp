@@ -23,6 +23,7 @@ import com.kubsu.timetable.utils.unbind
 import kotlinx.android.synthetic.main.add_floating_action_button.view.*
 import kotlinx.android.synthetic.main.progress_bar.view.*
 import kotlinx.android.synthetic.main.subscription_list_fragment.view.*
+import ru.whalemare.sheetmenu.ActionItem
 
 class SubscriptionListFragment(
     featureFactory: (oldState: State?) -> Feature<Action, SideEffect, State, Subscription>
@@ -49,20 +50,7 @@ class SubscriptionListFragment(
                     context = view.context,
                     menu = R.menu.subscription_management_menu,
                     showIcons = true,
-                    onClick = { action ->
-                        when (action.id) {
-                            R.id.item_menu_delete ->
-                                requireActivity().materialAlert(
-                                    message = getString(R.string.are_you_sure_you_want_to_unsubscribe),
-                                    onOkButtonClick = {
-                                        connector bindAction Action.DeleteSubscription(subscription)
-                                    },
-                                    onNoButtonClick = {}
-                                )
-                            else ->
-                                Unit
-                        }
-                    }
+                    onClick = { it.handleClick(subscription) }
                 )
             },
             changeSubscriptionStatus = {
@@ -128,4 +116,19 @@ class SubscriptionListFragment(
                         .actionSubscriptionListFragmentToTimetableFragment()
                 )
         }
+
+    private fun ActionItem.handleClick(subscription: SubscriptionModel) {
+        when (id) {
+            R.id.item_menu_delete ->
+                requireActivity().materialAlert(
+                    message = getString(R.string.are_you_sure_you_want_to_unsubscribe),
+                    onOkButtonClick = {
+                        connector bindAction Action.DeleteSubscription(subscription)
+                    },
+                    onNoButtonClick = {}
+                )
+            else ->
+                Unit
+        }
+    }
 }

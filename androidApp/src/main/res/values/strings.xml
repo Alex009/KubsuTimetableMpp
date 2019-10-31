@@ -90,4 +90,6 @@
     <string name="repeat_password">Repeat password</string>
     <string name="passwords_vary">Passwords vary</string>
     <string name="edit_profile">Edit profile</string>
+    <string name="dont_have_account">Don\'t have an account?</string>
+    <string name="сlick_again_to_close">Click again to close</string>
 </resources>

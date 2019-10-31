@@ -5,7 +5,7 @@
     <string name="error_connecting">Ошибка подключения</string>
     <string name="email">Email</string>
     <string name="password">Пароль</string>
-    <string name="sign_in">Войти</string>
+    <string name="sign_in">Вход</string>
     <string name="save">Сохранить</string>
     <string name="empty">Пусто</string>
     <string name="open_nav_drawer">Открыть навигационную панель</string>
@@ -89,4 +89,6 @@
     <string name="repeat_password">Повторите пароль</string>
     <string name="passwords_vary">Пароли отличаются</string>
     <string name="edit_profile">Редактировать профиль</string>
+    <string name="dont_have_account">У вас нет аккаунта?</string>
+    <string name="сlick_again_to_close">Нажмите ещё раз, чтобы закрыть</string>
 </resources>

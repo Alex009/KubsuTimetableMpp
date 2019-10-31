@@ -1,3 +1,4 @@
+# Save from obfuscation
 -keepattributes *Annotation*
 -keepattributes SourceFile,LineNumberTable
 -keep class * extends java.lang.Exception
@@ -16,11 +17,11 @@
 -keep class org.jetbrains.** { *; }
 
 # R8
+-keep class com.kubsu.timetable.presentation.timetable.model.* { *; }
 -keep class com.kubsu.timetable.domain.entity.* { *; }
 -keep class com.kubsu.timetable.data.network.dto.* { *; }
 -keep class com.kubsu.timetable.data.network.client.update.** { *; }
 -keep class com.kubsu.timetable.data.db.diff.** { *; }
--keep class com.kubsu.timetable.presentation.timetable.** { *; }
 
 # Ktor
 -keep class io.ktor.** { *; }

@@ -9,8 +9,6 @@
         <item name="colorSecondaryVariant">@color/colorSecondaryVariant</item>
         <item name="colorOnSecondary">@color/colorOnSecondary</item>
 
-        <item name="android:colorControlHighlight">?attr/colorControlNormal</item>
-
         <item name="materialAlertDialogTheme">@style/DayNight.Dialog.Alert</item>
         <item name="textInputStyle">@style/TextInputLayoutTheme</item>
 
@@ -19,7 +17,7 @@
     </style>
 
     <style name="TextInputLayoutTheme" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
-        <item name="colorPrimary">?attr/colorControlNormal</item>
+        <item name="colorPrimary">@color/colorControl</item>
         <item name="errorTextColor">@color/colorSecondary</item>
     </style>
 

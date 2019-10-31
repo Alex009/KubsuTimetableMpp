@@ -18,6 +18,7 @@ import com.kubsu.timetable.presentation.subscription.model.GroupModel
 import com.kubsu.timetable.presentation.subscription.model.OccupationModel
 import com.kubsu.timetable.presentation.subscription.model.SubgroupModel
 import com.kubsu.timetable.utils.*
+import com.kubsu.timetable.utils.logics.Keyboard
 import com.kubsu.timetable.utils.ui.materialAlert
 import kotlinx.android.synthetic.main.create_subscription_fragment.view.*
 import kotlinx.android.synthetic.main.progress_bar.view.*
@@ -55,7 +56,10 @@ class CreateSubscriptionFragment(
             removeFocusAfterEmptyText()
         }
         with(view.toolbar) {
-            setNavigationOnClickListener { popBackStack() }
+            setNavigationOnClickListener {
+                Keyboard.hide(view)
+                popBackStack()
+            }
             setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.action_add -> {
@@ -83,6 +87,7 @@ class CreateSubscriptionFragment(
         titleErrorEffect bind subscriptionTitle::showErrorMessage
 
         view.faculty_spinner.setData(
+            parentView = view,
             listEffect = facultyListEffect,
             convert = { it.title },
             chooseEffect = chooseFacultyEffect,
@@ -90,6 +95,7 @@ class CreateSubscriptionFragment(
             onItemSelected = { connector bindAction Action.FacultyWasSelected(it) }
         )
         view.occupation_spinner.setData(
+            parentView = view,
             listEffect = occupationListEffect,
             convert = { it.title },
             chooseEffect = chooseOccupationEffect,
@@ -97,6 +103,7 @@ class CreateSubscriptionFragment(
             onItemSelected = { connector bindAction Action.OccupationWasSelected(it) }
         )
         view.group_spinner.setData(
+            parentView = view,
             listEffect = groupListEffect,
             convert = { it.number.toString() },
             chooseEffect = chooseGroupEffect,
@@ -104,6 +111,7 @@ class CreateSubscriptionFragment(
             onItemSelected = { connector bindAction Action.GroupWasSelected(it) }
         )
         view.subgroup_spinner.setData(
+            parentView = view,
             listEffect = subgroupListEffect,
             convert = { it.number.toString() },
             chooseEffect = chooseSubgroupEffect,
@@ -113,6 +121,7 @@ class CreateSubscriptionFragment(
     }
 
     private fun <T> Spinner.setData(
+        parentView: View,
         listEffect: UiEffect<List<T>>,
         convert: (T) -> String,
         chooseEffect: UiEffect<Unit>,
@@ -128,12 +137,15 @@ class CreateSubscriptionFragment(
 
             override fun onItemSelected(
                 parent: AdapterView<*>?,
-                view: View?,
+                view: View,
                 position: Int,
                 id: Long
             ) {
-                if (++check > 1)
+                if (++check > 1) {
+                    parentView.subscription_title_input_layout.clearFocus()
+                    Keyboard.hide(this@setData)
                     onItemSelected(if (position != 0) position - 1 else null)
+                }
             }
         }
         listEffect bind { list ->

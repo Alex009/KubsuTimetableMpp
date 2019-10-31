@@ -59,7 +59,7 @@ class SignInFragment(
         emailErrorEffect bind view.email_input_layout::showErrorMessage
         passwordErrorEffect bind view.password_input_layout::showErrorMessage
 
-        view.create_account_button.setOnClickListener {
+        view.registration_clickable_text_view.setOnClickListener {
             Keyboard.hide(view)
             connector bindAction Action.Registration
         }

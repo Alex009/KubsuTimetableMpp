@@ -42,15 +42,8 @@ sealed class TimetableViewHolder(
             )
 
             val classTime = `class`.classTime
-            class_number_text_view.text = String.format(
-                itemView.context.getString(R.string.class_number_with_parameter),
-                classTime.number
-            )
-            class_time_text_view.text = String.format(
-                itemView.context.getString(R.string.class_time_with_parameters),
-                classTime.start,
-                classTime.end
-            )
+            start_class_time_text_view.text = classTime.start
+            finish_class_time_text_view.text = classTime.end
         }
     }
 

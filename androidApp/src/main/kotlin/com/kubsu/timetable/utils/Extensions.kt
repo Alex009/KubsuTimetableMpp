@@ -1,10 +1,11 @@
 package com.kubsu.timetable.utils
 
-import android.app.Activity
 import android.content.Context
 import android.view.MenuItem
 import android.widget.Spinner
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -12,6 +13,9 @@ import com.google.android.material.textfield.TextInputLayout
 
 inline fun <reified T> nameOf(): String =
     T::class.java.name
+
+fun ComponentActivity.toast(resId: Int) =
+    Toast.makeText(this, resId, Toast.LENGTH_SHORT).show()
 
 fun Context.getCompatColor(resId: Int) =
     ContextCompat.getColor(this, resId)
@@ -50,7 +54,7 @@ fun Spinner.showErrorMessage(messageRes: Int) {
     performClick()
 }
 
-fun Activity.closeApp(): Boolean {
+fun ComponentActivity.closeApp(): Boolean {
     moveTaskToBack(true)
     finish()
     return true
