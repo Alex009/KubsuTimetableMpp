@@ -7,5 +7,6 @@ import platform.SerializeModel
 class UniversityInfoModel(
     val id: Int,
     val facultyId: Int,
-    val typeOfWeek: TypeOfWeekModel
+    val typeOfWeek: TypeOfWeekModel,
+    val weekNumber: Int
 ) : SerializableModel

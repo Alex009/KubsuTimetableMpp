@@ -100,13 +100,15 @@ class SignInFragment(
         when (fail) {
             SignInFail.AccountInactivate ->
                 emailErrorEffect.value = R.string.account_is_blocked
-            SignInFail.IncorrectEmailOrPassword ->
-                emailErrorEffect.value = R.string.incorrect_emai_or_password
             SignInFail.InvalidEmail ->
                 emailErrorEffect.value = R.string.invalid_email
             SignInFail.RequiredEmail ->
                 emailErrorEffect.value = R.string.required
             SignInFail.RequiredPassword ->
                 passwordErrorEffect.value = R.string.required
+            SignInFail.IncorrectEmailOrPassword -> {
+                emailErrorEffect.value = R.string.incorrect_emai_or_password
+                passwordErrorEffect.value = R.string.incorrect_emai_or_password
+            }
         }
 }

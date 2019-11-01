@@ -34,7 +34,7 @@
     <string name="denominator">Знаменатель</string>
     <string name="classroom_with_parameter">Кабинет: %1$s</string>
     <string name="lecture">Лекция</string>
-    <string name="seminar">Практика</string>
+    <string name="practical_class">Практическое занятие</string>
     <string name="class_number_with_parameter">%1$d пара</string>
     <string name="ok">Ок</string>
     <string name="cancel">Отмена</string>
@@ -91,4 +91,6 @@
     <string name="edit_profile">Редактировать профиль</string>
     <string name="dont_have_account">У вас нет аккаунта?</string>
     <string name="сlick_again_to_close">Нажмите ещё раз, чтобы закрыть</string>
+    <string name="numerator_subtitle">Числитель, %1$s неделя</string>
+    <string name="denominator_subtitle">Знаменатель, %1$s неделя</string>
 </resources>

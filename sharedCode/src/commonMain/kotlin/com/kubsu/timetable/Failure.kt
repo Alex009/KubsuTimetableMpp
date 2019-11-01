@@ -61,7 +61,6 @@ sealed class UserInfoFail : DomainFailure() {
 sealed class SubscriptionFail : DomainFailure() {
     object TooLongTitle : SubscriptionFail()
     object RequiredTitle : SubscriptionFail()
-    object SubscriptionAlreadyExists : SubscriptionFail()
 }
 
 /**

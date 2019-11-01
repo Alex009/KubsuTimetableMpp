@@ -1,11 +1,12 @@
 CREATE TABLE universityInfoDb(
 id INTEGER as Int NOT NULL PRIMARY KEY,
 facultyId INTEGER as Int NOT NULL,
-typeOfWeek INTEGER as Int NOT NULL
+typeOfWeek INTEGER as Int NOT NULL,
+weekNumber INTEGER as Int NOT NULL
 );
 
 update:
-INSERT OR REPLACE INTO universityInfoDb(id, facultyId, typeOfWeek) VALUES ?;
+INSERT OR REPLACE INTO universityInfoDb(id, facultyId, typeOfWeek, weekNumber) VALUES ?;
 
 selectAll:
 SELECT * FROM universityInfoDb;

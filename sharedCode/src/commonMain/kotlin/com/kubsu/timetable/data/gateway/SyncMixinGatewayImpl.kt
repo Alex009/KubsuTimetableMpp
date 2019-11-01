@@ -23,7 +23,6 @@ import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.serialization.KSerializer
 
@@ -66,18 +65,17 @@ class SyncMixinGatewayImpl(
             .filterPrevious()
             .mapNotNull { dataDiffList ->
                 val userId = userStorage.get()?.id ?: return@mapNotNull null
-                dataDiffList to userId
-            }
-            .map { (dataDiffList, userId) ->
-                dataDiffList
-                    .filter { it.userId == userId }
-                    .groupBy { BasenameDtoMapper.toEntity(it.basename) }
-                    .map { (basename, dbDiffList) ->
-                        getDataDiff(userId, basename, dbDiffList)
-                    }
-                    .filterNot { it.updatedIds.isEmpty() && it.deletedIds.isEmpty() }
+                dataDiffList.mapToEntityForUser(userId)
             }
             .filter { it.isNotEmpty() }
+
+    private fun List<DataDiffDb>.mapToEntityForUser(userId: Int): List<DataDiffEntity> =
+        filter { it.userId == userId }
+            .groupBy { BasenameDtoMapper.toEntity(it.basename) }
+            .map { (basename, dbDiffList) ->
+                getDataDiff(userId, basename, dbDiffList)
+            }
+            .filterNot { it.updatedIds.isEmpty() && it.deletedIds.isEmpty() }
 
     private fun getDataDiff(
         userId: Int,

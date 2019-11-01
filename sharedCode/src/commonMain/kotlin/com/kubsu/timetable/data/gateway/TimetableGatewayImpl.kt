@@ -6,6 +6,7 @@ import com.kubsu.timetable.data.network.dto.timetable.data.ClassNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.data.TimetableNetworkDto
 import com.kubsu.timetable.domain.entity.timetable.data.*
 import com.kubsu.timetable.domain.interactor.timetable.TimetableGateway
+import com.kubsu.timetable.extensions.getWeekNumber
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import com.squareup.sqldelight.runtime.coroutines.mapToOne
@@ -19,12 +20,34 @@ class TimetableGatewayImpl(
     private val lecturerQueries: LecturerQueries,
     private val universityInfoQueries: UniversityInfoQueries
 ) : TimetableGateway {
-    override fun getUniversityData(facultyId: Int): Flow<UniversityInfoEntity> =
-        universityInfoQueries
-            .selectByFacultyId(facultyId)
+    override fun getUniversityData(facultyId: Int): Flow<UniversityInfoEntity> {
+        val query = universityInfoQueries.selectByFacultyId(facultyId)
+        val universityInfo = query.executeAsOne()
+        val weekNumber = getWeekNumber()
+        if (universityInfo.weekNumber != weekNumber)
+            universityInfo.actualize(weekNumber)
+        return query
             .asFlow()
             .mapToOne()
             .map { UniversityInfoDtoMapper.toEntity(it) }
+    }
+
+    private fun UniversityInfoDb.actualize(newWeekNumber: Int) =
+        universityInfoQueries.update(
+            UniversityInfoDb.Impl(
+                id = id,
+                facultyId = facultyId,
+                typeOfWeek = inverseTypeOfWeek(typeOfWeek),
+                weekNumber = newWeekNumber
+            )
+        )
+
+    private fun inverseTypeOfWeek(typeOfWeek: Int): Int =
+        TypeOfWeek
+            .list
+            .minus(TypeOfWeekDtoMapper.toEntity(typeOfWeek))
+            .first()
+            .let(TypeOfWeekDtoMapper::value)
 
     @UseExperimental(ExperimentalCoroutinesApi::class)
     override fun getAllTimetablesFlow(

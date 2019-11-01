@@ -16,7 +16,6 @@ import com.kubsu.timetable.extensions.jsonContent
 import com.kubsu.timetable.extensions.toJson
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
-import io.ktor.client.request.patch
 import io.ktor.client.request.post
 
 class SubscriptionNetworkClientImpl(
@@ -56,9 +55,8 @@ class SubscriptionNetworkClientImpl(
 
         val titleFailureList = mapTitleFailureList(incorrectData, response)
         val subgroupFailureList = mapSubgroupFailureList(incorrectData, response)
-        val otherFailureList = mapOtherFailureList(incorrectData, response)
 
-        val failList = titleFailureList + subgroupFailureList + otherFailureList
+        val failList = titleFailureList + subgroupFailureList
         return RequestFailure(
             domain = failList.filterIsInstance<SubscriptionFail>(),
             data = failList.filterIsInstance<DataFailure>()
@@ -83,17 +81,6 @@ class SubscriptionNetworkClientImpl(
     ): List<Failure> =
         incorrectData.subgroup.map {
             DataFailure.UnknownResponse(response.code, response.body)
-        }
-
-    private fun mapOtherFailureList(
-        incorrectData: SubscriptionIncorrectData,
-        response: ServerFailure.Response
-    ): List<Failure> =
-        incorrectData.nonFieldFailures.map { failure ->
-            when (failure) {
-                "unique" -> SubscriptionFail.SubscriptionAlreadyExists
-                else -> DataFailure.UnknownResponse(response.code, response.body)
-            }
         }
 
     override suspend fun selectSubscriptionsForUser(): Either<DataFailure, List<SubscriptionNetworkDto>> =
@@ -127,7 +114,7 @@ class SubscriptionNetworkClientImpl(
     ): Either<RequestFailure<List<SubscriptionFail>>, Unit> =
         with(networkSender) {
             handle {
-                patch<Unit>("$baseUrl/api/$apiVersion/subscriptions/${subscription.id}/") {
+                post<Unit>("$baseUrl/api/$apiVersion/subscriptions/") {
                     addSessionKey(it)
                     body = jsonContent(
                         "subgroup" to subscription.subgroup.toJson(),

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorControl">@color/colorOnPrimary</color>
+    <color name="colorSplash">@android:color/white</color>
 </resources>

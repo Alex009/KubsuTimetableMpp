@@ -9,4 +9,5 @@
     <color name="colorOnSecondary">#000000</color>
 
     <color name="colorControl">@color/colorOnPrimary</color>
+    <color name="colorSplash">#424242</color>
 </resources>

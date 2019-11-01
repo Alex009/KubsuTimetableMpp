@@ -8,14 +8,15 @@ object UniversityInfoModelMapper {
         UniversityInfoEntity(
             id = model.id,
             facultyId = model.facultyId,
-            typeOfWeek = TypeOfWeekModelMapper.toEntity(model.typeOfWeek)
+            typeOfWeek = TypeOfWeekModelMapper.toEntity(model.typeOfWeek),
+            weekNumber = model.weekNumber
         )
-
 
     fun toModel(entity: UniversityInfoEntity): UniversityInfoModel =
         UniversityInfoModel(
             id = entity.id,
             facultyId = entity.facultyId,
-            typeOfWeek = TypeOfWeekModelMapper.toModel(entity.typeOfWeek)
+            typeOfWeek = TypeOfWeekModelMapper.toModel(entity.typeOfWeek),
+            weekNumber = entity.weekNumber
         )
 }

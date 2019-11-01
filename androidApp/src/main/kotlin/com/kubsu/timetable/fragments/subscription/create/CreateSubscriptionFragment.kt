@@ -19,7 +19,6 @@ import com.kubsu.timetable.presentation.subscription.model.OccupationModel
 import com.kubsu.timetable.presentation.subscription.model.SubgroupModel
 import com.kubsu.timetable.utils.*
 import com.kubsu.timetable.utils.logics.Keyboard
-import com.kubsu.timetable.utils.ui.materialAlert
 import kotlinx.android.synthetic.main.create_subscription_fragment.view.*
 import kotlinx.android.synthetic.main.progress_bar.view.*
 
@@ -223,13 +222,5 @@ class CreateSubscriptionFragment(
                 titleErrorEffect.value = R.string.title_too_long
             SubscriptionFail.RequiredTitle ->
                 titleErrorEffect.value = R.string.required
-            SubscriptionFail.SubscriptionAlreadyExists -> {
-                requireActivity().materialAlert(
-                    title = getString(R.string.error),
-                    message = getString(R.string.subscription_already_exists),
-                    onOkButtonClick = {}
-                )
-                Unit
-            }
         }
 }

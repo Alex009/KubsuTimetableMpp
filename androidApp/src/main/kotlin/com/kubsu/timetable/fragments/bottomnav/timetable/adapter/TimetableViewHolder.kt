@@ -30,7 +30,7 @@ sealed class TimetableViewHolder(
                 if (`class`.typeOfClass is TypeOfClassModel.Lecture)
                     R.string.lecture
                 else
-                    R.string.seminar
+                    R.string.practical_class
             )
 
             val lecturer = `class`.lecturer

@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.kubsu.timetable.R
 import com.kubsu.timetable.base.BaseFragment
 import com.kubsu.timetable.fragments.bottomnav.timetable.adapter.TimetableAdapter
+import com.kubsu.timetable.presentation.timetable.model.TypeOfWeekModel
 import kotlinx.android.synthetic.main.timetable_fragment.view.*
 
 class NextWeekTimetableFragment : BaseFragment(R.layout.timetable_fragment) {
@@ -20,6 +21,12 @@ class NextWeekTimetableFragment : BaseFragment(R.layout.timetable_fragment) {
             setNavigationIcon(R.drawable.ic_arrow_back_24dp)
             setNavigationOnClickListener {
                 popBackStack()
+            }
+            val universityInfo = args.universityInfo
+            val weekNumber = (universityInfo.weekNumber + 1).toString()
+            subtitle = when (universityInfo.typeOfWeek) {
+                TypeOfWeekModel.Numerator -> getString(R.string.numerator_subtitle, weekNumber)
+                TypeOfWeekModel.Denominator -> getString(R.string.denominator_subtitle, weekNumber)
             }
         }
 
