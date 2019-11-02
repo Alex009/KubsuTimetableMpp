@@ -1,4 +1,9 @@
 <resources>
+    <!-- Start theme. -->
+    <style name="SplashTheme" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/background_splash</item>
+    </style>
+
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -18,7 +23,6 @@
 
     <style name="TextInputLayoutTheme" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
         <item name="colorPrimary">@color/colorControl</item>
-        <item name="errorTextColor">@color/colorSecondary</item>
     </style>
 
     <style name="DayNight.Dialog.Alert" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">

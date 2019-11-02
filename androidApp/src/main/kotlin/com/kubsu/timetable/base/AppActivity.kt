@@ -8,10 +8,12 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.NavHost
 import androidx.navigation.findNavController
+import com.kubsu.timetable.InformationSynchronizer
 import com.kubsu.timetable.R
 import com.kubsu.timetable.firebase.CrashlyticsLogger
 import com.kubsu.timetable.utils.MaterialActionDialogCreator
@@ -28,8 +30,6 @@ import com.thelittlefireman.appkillermanager.models.KillerManagerActionType
 import kotlinx.android.synthetic.main.activity_main.*
 
 class AppActivity : AppCompatActivity(), NavHost {
-    override fun getNavController(): NavController = findNavController(R.id.nav_host_fragment)
-
     private val alertCreator: MaterialActionDialogCreator?
     init {
         alertCreator = DevicesManager
@@ -45,10 +45,17 @@ class AppActivity : AppCompatActivity(), NavHost {
             )
     }
 
+    lateinit var informationSynchronizer: InformationSynchronizer
+    private val syncViewModel: SyncViewModel by viewModels {
+        SyncViewModel.Factory(informationSynchronizer)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         DarkThemeStatus.applyPreviousTheme(applicationContext)
 
         super.onCreate(savedInstanceState)
+
+        setTheme(R.style.AppTheme) // Put the main theme of the application instead of Splash
         setContentView(R.layout.activity_main)
 
         when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
@@ -66,7 +73,6 @@ class AppActivity : AppCompatActivity(), NavHost {
             // Night mode is active, we're using dark theme.
             Configuration.UI_MODE_NIGHT_YES -> Unit
         }
-
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channelId = getString(R.string.default_notification_channel_id)
@@ -102,6 +108,8 @@ class AppActivity : AppCompatActivity(), NavHost {
                 R.string.notification_message
             )
         }
+
+        syncViewModel.right() // initialize lazy object
     }
 
     private fun onFailure(failure: Failure) =
@@ -150,4 +158,6 @@ class AppActivity : AppCompatActivity(), NavHost {
         if (!PermissionProvider.isAllPermissionsAllowed(requestCode, permissions, grantResults))
             closeApp()
     }
+
+    override fun getNavController(): NavController = findNavController(R.id.nav_host_fragment)
 }

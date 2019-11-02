@@ -23,8 +23,9 @@ internal val syncMixinDomainModule = Kodein.Module("sync_mixin_domain") {
             universityInfoQueries = db.universityInfoQueries,
             updatedEntityQueries = db.updatedEntityQueries,
             deletedEntityQueries = db.deletedEntityQueries,
+            updateDataNetworkClient = instance(),
             appInfoGateway = instance(),
-            updateDataNetworkClient = instance()
+            userInfoGateway = instance()
         )
     }
 }

@@ -48,7 +48,7 @@ class UserInfoNetworkClientImpl(
     override suspend fun signIn(
         email: String,
         password: String,
-        token: Token
+        token: Token?
     ): Either<RequestFailure<List<SignInFail>>, UserData> =
         with(networkSender) {
             handle {
@@ -56,7 +56,7 @@ class UserInfoNetworkClientImpl(
                     body = jsonContent(
                         "email" to email.toJson(),
                         "password" to password.toJson(),
-                        "token" to token.value.toJson(),
+                        "token" to (token?.value ?: "").toJson(),
                         "platform" to currentPlatformName.toJson()
                     )
                 }.also(::validate)

@@ -13,7 +13,7 @@ interface UserInteractor {
 
     suspend fun newToken(token: UndeliveredToken): Either<DataFailure, Unit>
 
-    suspend fun getCurrentToken(): Token
+    suspend fun getCurrentTokenOrNull(): Token?
 
     suspend fun update(user: UserEntity): Either<RequestFailure<List<UserInfoFail>>, Unit>
 }

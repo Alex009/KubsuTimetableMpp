@@ -1,21 +1,10 @@
 package com.kubsu.timetable.di
 
-import android.app.Activity
 import android.app.Application
-import android.os.Bundle
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
-import com.kubsu.timetable.base.AppActivity
 import com.kubsu.timetable.di.modules.view.*
-import com.kubsu.timetable.fragments.bottomnav.BottomNavFragment
-import com.kubsu.timetable.fragments.bottomnav.settings.SettingsFragment
-import com.kubsu.timetable.fragments.bottomnav.subscription.list.SubscriptionListFragment
-import com.kubsu.timetable.fragments.bottomnav.timetable.TimetableFragment
-import com.kubsu.timetable.fragments.registration.RegistrationFragment
-import com.kubsu.timetable.fragments.signin.SignInFragment
-import com.kubsu.timetable.fragments.splash.SplashFragment
-import com.kubsu.timetable.fragments.subscription.create.CreateSubscriptionFragment
-import com.kubsu.timetable.utils.nameOf
+import com.kubsu.timetable.di.platform.MyActivityLifecycleCallbacks
+import com.kubsu.timetable.di.platform.MyFragmentFactory
 import org.kodein.di.Copy
 import org.kodein.di.Kodein
 import org.kodein.di.erased.bind
@@ -41,45 +30,10 @@ fun appKodein(application: Application) = Kodein {
     )
 
     bind<Application.ActivityLifecycleCallbacks>() with singleton {
-        object : Application.ActivityLifecycleCallbacks {
-            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-                (activity as? AppActivity)?.let {
-                    it.supportFragmentManager.fragmentFactory = instance()
-                }
-            }
-
-            override fun onActivityStarted(activity: Activity) = Unit
-            override fun onActivityResumed(activity: Activity) = Unit
-            override fun onActivityPaused(activity: Activity) = Unit
-            override fun onActivityStopped(activity: Activity) = Unit
-            override fun onActivityDestroyed(activity: Activity) = Unit
-            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) = Unit
-        }
+        MyActivityLifecycleCallbacks(instance(), instance())
     }
 
-    bind() from singleton {
-        object : FragmentFactory() {
-            override fun instantiate(classLoader: ClassLoader, className: String): Fragment =
-                when (className) {
-                    nameOf<SplashFragment>() ->
-                        instance<SplashFragment>()
-                    nameOf<SignInFragment>() ->
-                        instance<SignInFragment>()
-                    nameOf<RegistrationFragment>() ->
-                        instance<RegistrationFragment>()
-                    nameOf<BottomNavFragment>() ->
-                        instance<BottomNavFragment>()
-                    nameOf<SettingsFragment>() ->
-                        instance<SettingsFragment>()
-                    nameOf<CreateSubscriptionFragment>() ->
-                        instance<CreateSubscriptionFragment>()
-                    nameOf<SubscriptionListFragment>() ->
-                        instance<SubscriptionListFragment>()
-                    nameOf<TimetableFragment>() ->
-                        instance<TimetableFragment>()
-                    else ->
-                        super.instantiate(classLoader, className)
-                }
-        }
+    bind<FragmentFactory>() with singleton {
+        MyFragmentFactory(this)
     }
 }

@@ -20,7 +20,7 @@ interface UserInfoGateway {
 
     suspend fun updateToken(token: UndeliveredToken): Either<DataFailure, Unit>
 
-    fun getCurrentToken(): Token
+    fun getCurrentTokenOrNull(): Token?
 
     fun getCurrentSessionEitherFail(): Either<DataFailure.NotAuthenticated, Session>
 

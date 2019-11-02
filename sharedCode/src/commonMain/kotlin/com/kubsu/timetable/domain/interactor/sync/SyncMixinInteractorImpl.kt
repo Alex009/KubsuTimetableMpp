@@ -10,11 +10,8 @@ import com.kubsu.timetable.domain.entity.Timestamp
 import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
 import com.kubsu.timetable.domain.interactor.userInfo.UserInfoGateway
 import com.kubsu.timetable.extensions.def
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 class SyncMixinInteractorImpl(
@@ -25,33 +22,19 @@ class SyncMixinInteractorImpl(
         mixinGateway.registerDataDiff(entity)
     }
 
-    @UseExperimental(ExperimentalCoroutinesApi::class)
-    override fun updateData(): Flow<Either<DataFailure, Unit>> =
-        mixinGateway
-            .getAvailableDiffListFlow(getUser = userInfoGateway::getCurrentUserOrNull)
-            .map { diffList ->
-                userInfoGateway
-                    .getCurrentSessionEitherFail()
-                    .flatMap { session ->
-                        handleAvailableDiffList(session, diffList).flatMap {
-                            mixinGateway
-                                .diff(session)
-                                .flatMap { (newTimestamp, basenameList) ->
-                                    updateData(session, basenameList, newTimestamp, diffList)
-                                }
-                        }
+    override suspend fun updateData(): Flow<Either<DataFailure, Unit>> = def {
+        userInfoGateway
+            .getCurrentSessionEitherFail()
+            .flatMap { session ->
+                mixinGateway
+                    .diff(session)
+                    .flatMap { (newTimestamp, basenameList) ->
+                        val diffList = mixinGateway.getAvailableDiffList()
+                        updateData(session, basenameList, newTimestamp, diffList)
                     }
             }
-            .flowOn(Dispatchers.Default)
 
-    private suspend fun handleAvailableDiffList(
-        session: Session,
-        diffList: List<DataDiffEntity>
-    ): Either<DataFailure, Unit> = coroutineScope {
-        diffList
-            .map { mixinGateway.meta(session, it.basename, it.updatedIds) }
-            .firstOrNull { it is Either.Left }
-            ?: Either.right(mixinGateway.delete(diffList))
+        return@def subscribeOnPushUpdates()
     }
 
     private suspend fun updateData(
@@ -70,5 +53,26 @@ class SyncMixinInteractorImpl(
             }
             .firstOrNull { it is Either.Left }
             ?: userInfoGateway.updateTimestamp(timestamp)
+    }
+
+    private fun subscribeOnPushUpdates(): Flow<Either<DataFailure, Unit>> =
+        mixinGateway
+            .dataDiffListFlow()
+            .map { diffList ->
+                userInfoGateway
+                    .getCurrentSessionEitherFail()
+                    .flatMap {
+                        handleAvailableDiffList(it, diffList)
+                    }
+            }
+
+    private suspend fun handleAvailableDiffList(
+        session: Session,
+        diffList: List<DataDiffEntity>
+    ): Either<DataFailure, Unit> = coroutineScope {
+        diffList
+            .map { mixinGateway.meta(session, it.basename, it.updatedIds) }
+            .firstOrNull { it is Either.Left }
+            ?: Either.right(mixinGateway.delete(diffList))
     }
 }

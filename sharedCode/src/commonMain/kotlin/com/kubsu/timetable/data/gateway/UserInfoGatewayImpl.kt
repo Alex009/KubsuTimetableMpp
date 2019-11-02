@@ -55,8 +55,8 @@ class UserInfoGatewayImpl(
             Either.right(Unit)
     }
 
-    override fun getCurrentToken(): Token =
-        requireNotNull(tokenStorage.get())
+    override fun getCurrentTokenOrNull(): Token? =
+        tokenStorage.get()
 
     override fun getCurrentSessionEitherFail(): Either<DataFailure.NotAuthenticated, Session> =
         sessionStorage

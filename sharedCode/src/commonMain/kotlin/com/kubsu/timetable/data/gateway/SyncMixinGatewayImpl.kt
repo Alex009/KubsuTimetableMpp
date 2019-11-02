@@ -16,10 +16,10 @@ import com.kubsu.timetable.data.network.dto.timetable.data.*
 import com.kubsu.timetable.data.storage.user.session.Session
 import com.kubsu.timetable.domain.entity.Basename
 import com.kubsu.timetable.domain.entity.Timestamp
-import com.kubsu.timetable.domain.entity.UserEntity
 import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
 import com.kubsu.timetable.domain.interactor.sync.SyncMixinGateway
 import com.kubsu.timetable.domain.interactor.timetable.AppInfoGateway
+import com.kubsu.timetable.domain.interactor.userInfo.UserInfoGateway
 import com.kubsu.timetable.extensions.filterPrevious
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
@@ -38,7 +38,8 @@ class SyncMixinGatewayImpl(
     private val updatedEntityQueries: UpdatedEntityQueries,
     private val deletedEntityQueries: DeletedEntityQueries,
     private val updateDataNetworkClient: UpdateDataNetworkClient,
-    private val appInfoGateway: AppInfoGateway
+    private val appInfoGateway: AppInfoGateway,
+    private val userInfoGateway: UserInfoGateway
 ) : SyncMixinGateway {
     override suspend fun registerDataDiff(entity: DataDiffEntity) {
         val id = createAndGetId(
@@ -59,15 +60,29 @@ class SyncMixinGatewayImpl(
             .last()
     }
 
-    override fun getAvailableDiffListFlow(getUser: () -> UserEntity?): Flow<List<DataDiffEntity>> =
+    override fun getAvailableDiffList(): List<DataDiffEntity> =
+        userInfoGateway
+            .getCurrentUserOrNull()
+            ?.id
+            ?.let {
+                dataDiffQueries
+                    .selectAll()
+                    .executeAsList()
+                    .mapToEntityForUser(it)
+            }
+            ?: emptyList()
+
+    override fun dataDiffListFlow(): Flow<List<DataDiffEntity>> =
         dataDiffQueries
             .selectAll()
             .asFlow()
             .mapToList()
             .filterPrevious()
             .mapNotNull { dataDiffList ->
-                val userId = getUser()?.id ?: return@mapNotNull null
-                dataDiffList.mapToEntityForUser(userId)
+                userInfoGateway
+                    .getCurrentUserOrNull()
+                    ?.id
+                    ?.let { dataDiffList.mapToEntityForUser(it) }
             }
             .filter { it.isNotEmpty() }
 

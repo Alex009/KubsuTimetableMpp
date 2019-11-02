@@ -36,7 +36,7 @@ class AuthGatewayImpl(
     override suspend fun signInTransaction(
         email: String,
         password: String,
-        token: Token,
+        token: Token?,
         withTransaction: suspend (UserData) -> Either<DataFailure, Unit>
     ): Either<RequestFailure<List<SignInFail>>, UserEntity> =
         userInfoNetworkClient
@@ -47,7 +47,7 @@ class AuthGatewayImpl(
                     rightOperation = {
                         sessionStorage.set(userData.session)
                         userStorage.set(UserDtoMapper.toStorageDto(userData.user))
-                        tokenStorage.set(token.value.let(::DeliveredToken))
+                        tokenStorage.set(token?.value?.let(::DeliveredToken))
                         return@bimap UserDtoMapper.toEntity(userData.user)
                     }
                 )

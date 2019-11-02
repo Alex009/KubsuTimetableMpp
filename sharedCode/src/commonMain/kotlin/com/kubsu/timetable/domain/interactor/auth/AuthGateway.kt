@@ -14,7 +14,7 @@ interface AuthGateway {
     suspend fun signInTransaction(
         email: String,
         password: String,
-        token: Token,
+        token: Token?,
         withTransaction: suspend (UserData) -> Either<DataFailure, Unit>
     ): Either<RequestFailure<List<SignInFail>>, UserEntity>
 

@@ -22,8 +22,8 @@ class UserInteractorImpl(
         gateway.updateToken(token)
     }
 
-    override suspend fun getCurrentToken(): Token = def {
-        gateway.getCurrentToken()
+    override suspend fun getCurrentTokenOrNull(): Token? = def {
+        gateway.getCurrentTokenOrNull()
     }
 
     override suspend fun update(

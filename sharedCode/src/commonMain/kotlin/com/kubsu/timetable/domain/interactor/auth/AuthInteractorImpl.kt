@@ -19,7 +19,7 @@ class AuthInteractorImpl(
         email: String,
         password: String
     ): Either<RequestFailure<List<SignInFail>>, UserEntity> = def {
-        val token = userInfoGateway.getCurrentToken()
+        val token = userInfoGateway.getCurrentTokenOrNull()
         authGateway
             .signInTransaction(
                 email = email,

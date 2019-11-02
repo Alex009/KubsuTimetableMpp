@@ -19,7 +19,7 @@ interface UserInfoNetworkClient {
     suspend fun signIn(
         email: String,
         password: String,
-        token: Token
+        token: Token?
     ): Either<RequestFailure<List<SignInFail>>, UserData>
 
     suspend fun update(

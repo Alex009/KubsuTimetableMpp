@@ -24,7 +24,7 @@ class RegistrationFragment(
     private val progressEffect = UiEffect(false)
     private val emailErrorEffect = UiEffect(0)
     private val passwordErrorEffect = UiEffect(0)
-    private val passwordsVaryEffects = UiEffect(Unit)
+    private val passwordsVaryEffects = UiEffect(0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,10 +66,7 @@ class RegistrationFragment(
         }
         emailErrorEffect bind view.email_input_layout::showErrorMessage
         passwordErrorEffect bind view.password_input_layout::showErrorMessage
-        passwordsVaryEffects bind {
-            view.password_input_layout.showErrorMessage(R.string.passwords_vary)
-            view.repeat_password_input_layout.showErrorMessage(R.string.passwords_vary)
-        }
+        passwordsVaryEffects bind view.repeat_password_input_layout::showErrorMessage
     }
 
     override fun onDestroyView() {
@@ -93,7 +90,7 @@ class RegistrationFragment(
             is Subscription.ShowDataFailure ->
                 subscription.failureList.forEach(::notifyUserOfFailure)
             Subscription.PasswordsVary ->
-                passwordsVaryEffects.value = Unit
+                passwordsVaryEffects.value = R.string.passwords_vary
         }
 
     private fun navigation(screen: Screen) =
