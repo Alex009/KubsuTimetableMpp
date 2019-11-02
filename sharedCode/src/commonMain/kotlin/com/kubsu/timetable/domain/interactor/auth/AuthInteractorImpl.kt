@@ -1,6 +1,7 @@
 package com.kubsu.timetable.domain.interactor.auth
 
 import com.egroden.teaco.Either
+import com.egroden.teaco.map
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SignInFail
 import com.kubsu.timetable.UserInfoFail
@@ -18,13 +19,13 @@ class AuthInteractorImpl(
         email: String,
         password: String
     ): Either<RequestFailure<List<SignInFail>>, UserEntity> = def {
-        val token = userInfoGateway.getCurrentTokenOrNull()
+        val token = userInfoGateway.getCurrentToken()
         authGateway
             .signInTransaction(
                 email = email,
                 password = password,
                 token = token,
-                withTransaction = { appInfoGateway.updateInfo(it.id) }
+                withTransaction = { appInfoGateway.updateInfo(it.session, it.user.id) }
             )
     }
 
@@ -36,6 +37,9 @@ class AuthInteractorImpl(
     }
 
     override suspend fun logout() = def {
-        authGateway.logout()
+        userInfoGateway.getCurrentSessionEitherFail().map {
+            authGateway.logout(it)
+        }
+        return@def
     }
 }

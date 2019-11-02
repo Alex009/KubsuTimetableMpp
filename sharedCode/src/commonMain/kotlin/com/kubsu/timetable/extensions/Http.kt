@@ -8,8 +8,8 @@ import io.ktor.utils.io.readRemaining
 
 const val sessionId = "sessionid"
 
-fun HttpRequestBuilder.addSessionKey(session: Session?) =
-    header(sessionId, session?.id)
+fun HttpRequestBuilder.addSessionKey(session: Session) =
+    header(sessionId, session.id)
 
 suspend fun HttpResponse.readContent() =
     content.readRemaining().readText()

@@ -23,7 +23,7 @@ object CrashlyticsLogger {
             is DataFailure.UnknownResponse ->
                 error(
                     tag = tag,
-                    message = failure.debugMessage,
+                    message = "code: ${failure.code}, body: ${failure.body}, message: ${failure.debugMessage}",
                     exception = UnknownResponseException(
                         code = failure.code,
                         body = failure.body,

@@ -1,8 +1,6 @@
 package com.kubsu.timetable.domain.interactor.subscription
 
-import com.egroden.teaco.Either
-import com.egroden.teaco.left
-import com.egroden.teaco.right
+import com.egroden.teaco.*
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SubscriptionFail
@@ -48,13 +46,19 @@ class SubscriptionInteractorImpl(
         subscriptionName: String,
         isMain: Boolean
     ): Either<RequestFailure<List<SubscriptionFail>>, SubscriptionEntity> = def {
-        subscriptionGateway
-            .createSubscriptionTransaction(
-                subgroupId = subgroupId,
-                subscriptionName = subscriptionName,
-                isMain = isMain,
-                withTransaction = { appInfoGateway.updateInfo(it.userId) }
-            )
+        userInfoGateway
+            .getCurrentSessionEitherFail()
+            .mapLeft { RequestFailure<List<SubscriptionFail>>(it) }
+            .flatMap { session ->
+                subscriptionGateway
+                    .createSubscriptionTransaction(
+                        session = session,
+                        subgroupId = subgroupId,
+                        subscriptionName = subscriptionName,
+                        isMain = isMain,
+                        withTransaction = { appInfoGateway.updateInfo(session, it.userId) }
+                    )
+            }
     }
 
     override fun getAllSubscriptionsFlow(): Either<DataFailure, Flow<List<SubscriptionEntity>>> =
@@ -70,10 +74,17 @@ class SubscriptionInteractorImpl(
     override suspend fun update(
         subscription: SubscriptionEntity
     ): Either<RequestFailure<List<SubscriptionFail>>, Unit> = def {
-        subscriptionGateway.update(subscription)
+        userInfoGateway
+            .getCurrentSessionEitherFail()
+            .mapLeft { RequestFailure<List<SubscriptionFail>>(it) }
+            .flatMap { subscriptionGateway.update(it, subscription) }
     }
 
     override suspend fun deleteById(id: Int): Either<DataFailure, Unit> = def {
-        subscriptionGateway.deleteById(id)
+        userInfoGateway
+            .getCurrentSessionEitherFail()
+            .flatMap {
+                subscriptionGateway.deleteById(it, id)
+            }
     }
 }

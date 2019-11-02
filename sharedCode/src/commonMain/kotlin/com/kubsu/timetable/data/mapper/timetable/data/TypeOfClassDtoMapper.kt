@@ -3,8 +3,8 @@ package com.kubsu.timetable.data.mapper.timetable.data
 import com.kubsu.timetable.domain.entity.timetable.data.TypeOfClass
 
 object TypeOfClassDtoMapper {
-    private const val lectureValue = 0
-    private const val practiceValue = 1
+    private const val practiceValue = 0
+    private const val lectureValue = 1
 
     fun toEntity(value: Int): TypeOfClass =
         when (value) {

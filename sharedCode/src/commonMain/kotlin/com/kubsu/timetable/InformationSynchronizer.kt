@@ -35,7 +35,7 @@ class InformationSynchronizer(
     }
 
     private suspend fun updateToken() {
-        val token = userInteractor.getCurrentTokenOrNull()
+        val token = userInteractor.getCurrentToken()
         if (token is UndeliveredToken)
             userInteractor
                 .newToken(token)

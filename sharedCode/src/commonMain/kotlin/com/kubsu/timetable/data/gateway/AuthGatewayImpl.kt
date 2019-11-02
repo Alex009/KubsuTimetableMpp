@@ -12,7 +12,9 @@ import com.kubsu.timetable.data.db.diff.DeletedEntityQueries
 import com.kubsu.timetable.data.db.diff.UpdatedEntityQueries
 import com.kubsu.timetable.data.mapper.UserDtoMapper
 import com.kubsu.timetable.data.network.client.user.UserInfoNetworkClient
+import com.kubsu.timetable.data.network.dto.UserData
 import com.kubsu.timetable.data.storage.user.info.UserStorage
+import com.kubsu.timetable.data.storage.user.session.Session
 import com.kubsu.timetable.data.storage.user.session.SessionStorage
 import com.kubsu.timetable.data.storage.user.token.DeliveredToken
 import com.kubsu.timetable.data.storage.user.token.Token
@@ -26,29 +28,27 @@ class AuthGatewayImpl(
     private val dataDiffQueries: DataDiffQueries,
     private val updatedEntityQueries: UpdatedEntityQueries,
     private val deletedEntityQueries: DeletedEntityQueries,
+    private val userInfoNetworkClient: UserInfoNetworkClient,
     private val userStorage: UserStorage,
-    private val sessionStorage: SessionStorage,
     private val tokenStorage: TokenStorage,
-    private val userInfoNetworkClient: UserInfoNetworkClient
+    private val sessionStorage: SessionStorage
 ) : AuthGateway {
     override suspend fun signInTransaction(
         email: String,
         password: String,
-        token: Token?,
-        withTransaction: suspend (UserEntity) -> Either<DataFailure, Unit>
+        token: Token,
+        withTransaction: suspend (UserData) -> Either<DataFailure, Unit>
     ): Either<RequestFailure<List<SignInFail>>, UserEntity> =
         userInfoNetworkClient
             .signIn(email, password, token)
-            .flatMap { networkDto ->
-                val user = UserDtoMapper.toEntity(networkDto)
-                withTransaction(user).bimap(
-                    leftOperation = {
-                        RequestFailure<List<SignInFail>>(it)
-                    },
+            .flatMap { userData ->
+                withTransaction(userData).bimap(
+                    leftOperation = { RequestFailure<List<SignInFail>>(it) },
                     rightOperation = {
-                        userStorage.set(UserDtoMapper.toStorageDto(user))
-                        tokenStorage.set(token?.value?.let(::DeliveredToken))
-                        return@bimap user
+                        sessionStorage.set(userData.session)
+                        userStorage.set(UserDtoMapper.toStorageDto(userData.user))
+                        tokenStorage.set(token.value.let(::DeliveredToken))
+                        return@bimap UserDtoMapper.toEntity(userData.user)
                     }
                 )
             }
@@ -59,13 +59,10 @@ class AuthGatewayImpl(
     ): Either<RequestFailure<List<UserInfoFail>>, Unit> =
         userInfoNetworkClient.registration(email, password)
 
-    override suspend fun logout() {
+    override suspend fun logout(session: Session) {
         deleteUserInfo()
-        sessionStorage.get()?.let {
-            sessionStorage.set(null)
-            GlobalScope.launch {
-                userInfoNetworkClient.logout()
-            }
+        GlobalScope.launch {
+            userInfoNetworkClient.logout(session)
         }
     }
 
@@ -74,5 +71,6 @@ class AuthGatewayImpl(
         updatedEntityQueries.deleteAll()
         deletedEntityQueries.deleteAll()
         userStorage.set(null)
+        sessionStorage.set(null)
     }
 }

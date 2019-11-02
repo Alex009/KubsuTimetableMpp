@@ -14,7 +14,7 @@ import org.kodein.di.erased.singleton
 
 internal val timetableDomainModule = Kodein.Module("timetable_domain") {
     bind<TimetableInteractor>() with singleton {
-        TimetableInteractorImpl(instance(), instance())
+        TimetableInteractorImpl(instance())
     }
     bind<TimetableGateway>() with singleton {
         val db = instance<MyDatabase>()

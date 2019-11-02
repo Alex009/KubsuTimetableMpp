@@ -13,11 +13,13 @@ import com.kubsu.timetable.data.mapper.timetable.data.*
 import com.kubsu.timetable.data.network.client.update.UpdateDataNetworkClient
 import com.kubsu.timetable.data.network.dto.diff.FantasticFour
 import com.kubsu.timetable.data.network.dto.timetable.data.*
-import com.kubsu.timetable.data.storage.user.info.UserStorage
+import com.kubsu.timetable.data.storage.user.session.Session
 import com.kubsu.timetable.domain.entity.Basename
 import com.kubsu.timetable.domain.entity.Timestamp
+import com.kubsu.timetable.domain.entity.UserEntity
 import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
 import com.kubsu.timetable.domain.interactor.sync.SyncMixinGateway
+import com.kubsu.timetable.domain.interactor.timetable.AppInfoGateway
 import com.kubsu.timetable.extensions.filterPrevious
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
@@ -35,8 +37,8 @@ class SyncMixinGatewayImpl(
     private val universityInfoQueries: UniversityInfoQueries,
     private val updatedEntityQueries: UpdatedEntityQueries,
     private val deletedEntityQueries: DeletedEntityQueries,
-    private val networkClient: UpdateDataNetworkClient,
-    private val userStorage: UserStorage
+    private val updateDataNetworkClient: UpdateDataNetworkClient,
+    private val appInfoGateway: AppInfoGateway
 ) : SyncMixinGateway {
     override suspend fun registerDataDiff(entity: DataDiffEntity) {
         val id = createAndGetId(
@@ -57,14 +59,14 @@ class SyncMixinGatewayImpl(
             .last()
     }
 
-    override fun getAvailableDiffListFlowForCurrentUser(): Flow<List<DataDiffEntity>> =
+    override fun getAvailableDiffListFlow(getUser: () -> UserEntity?): Flow<List<DataDiffEntity>> =
         dataDiffQueries
             .selectAll()
             .asFlow()
             .mapToList()
             .filterPrevious()
             .mapNotNull { dataDiffList ->
-                val userId = userStorage.get()?.id ?: return@mapNotNull null
+                val userId = getUser()?.id ?: return@mapNotNull null
                 dataDiffList.mapToEntityForUser(userId)
             }
             .filter { it.isNotEmpty() }
@@ -130,9 +132,9 @@ class SyncMixinGatewayImpl(
         }
     }
 
-    override suspend fun diff(): Either<DataFailure, Pair<Timestamp, List<Basename>>> =
-        networkClient
-            .diff()
+    override suspend fun diff(session: Session): Either<DataFailure, Pair<Timestamp, List<Basename>>> =
+        updateDataNetworkClient
+            .diff(session)
             .map { diffResponse ->
                 val basenameList = diffResponse
                     .basenameList
@@ -141,28 +143,32 @@ class SyncMixinGatewayImpl(
             }
 
     override suspend fun updateData(
+        session: Session,
         basename: Basename,
         availableDiff: DataDiffEntity?
     ): Either<DataFailure, Unit> {
         val existsIds = availableDiff?.let { it.updatedIds + it.deletedIds } ?: emptyList()
-        return networkClient
+        return updateDataNetworkClient
             .sync(
                 basename = BasenameDtoMapper.value(basename),
-                existsIds = existsIds
+                existsIds = existsIds,
+                session = session
             )
             .flatMap { (updatedIds, deletedIds) ->
                 deleteBasenameData(basename, deletedIds)
-                meta(basename, updatedIds)
+                meta(session, basename, updatedIds)
             }
     }
 
     override suspend fun meta(
+        session: Session,
         basename: Basename,
         updatedIds: List<Int>
     ): Either<DataFailure, Unit> =
         if (updatedIds.isNotEmpty())
-            networkClient
+            updateDataNetworkClient
                 .meta(
+                    session = session,
                     basename = BasenameDtoMapper.value(basename),
                     basenameSerializer = getSerializer(basename),
                     updatedIds = updatedIds
@@ -175,44 +181,54 @@ class SyncMixinGatewayImpl(
         when (basename) {
             Basename.Subscription -> SubscriptionNetworkDto.serializer()
             Basename.Timetable -> TimetableNetworkDto.serializer()
-            Basename.Lecturer -> LecturerNetworkDto.serializer()
             Basename.Class -> ClassNetworkDto.serializer()
+            Basename.Lecturer -> LecturerNetworkDto.serializer()
             Basename.UniversityInfo -> FantasticFour.serializer()
         }
 
     @Suppress("UNCHECKED_CAST")
-    private fun Either<DataFailure, List<*>>.handle(basename: Basename) = map {
-        when (basename) {
-            Basename.Subscription -> handleSubscriptionList(it as List<SubscriptionNetworkDto>)
-            Basename.Timetable -> handleTimetableList(it as List<TimetableNetworkDto>)
-            Basename.Lecturer -> handleLecturerList(it as List<LecturerNetworkDto>)
-            Basename.Class -> handleClassList(it as List<ClassNetworkDto>)
-            Basename.UniversityInfo -> handleUniversityInfoList(it as List<FantasticFour>)
+    private suspend fun Either<DataFailure, List<*>>.handle(basename: Basename): Either<DataFailure, Unit> =
+        flatMap {
+            when (basename) {
+                Basename.Subscription -> handleSubscriptionList(it as List<SubscriptionNetworkDto>)
+                Basename.Timetable -> handleTimetableList(it as List<TimetableNetworkDto>)
+                Basename.Class -> handleClassList(it as List<ClassNetworkDto>)
+                Basename.Lecturer -> handleLecturerList(it as List<LecturerNetworkDto>)
+                Basename.UniversityInfo -> handleUniversityInfoList(it as List<FantasticFour>)
+            }
         }
-    }
 
-    private fun handleSubscriptionList(list: List<SubscriptionNetworkDto>) {
+    private suspend fun handleSubscriptionList(
+        list: List<SubscriptionNetworkDto>
+    ): Either<DataFailure, Unit> {
         for (networkDto in list)
             subscriptionQueries.update(SubscriptionDtoMapper.toDbDto(networkDto))
+        return appInfoGateway.checkSubscriptionDependencies(list)
     }
 
-    private fun handleTimetableList(list: List<TimetableNetworkDto>) {
+    private suspend fun handleTimetableList(
+        list: List<TimetableNetworkDto>
+    ): Either<DataFailure, Unit> {
         for (timetable in list)
             timetableQueries.update(TimetableDtoMapper.toDbDto(timetable))
+        return appInfoGateway.checkTimetableDependencies(list)
     }
 
-    private fun handleLecturerList(list: List<LecturerNetworkDto>) {
-        for (lecturer in list)
-            lecturerQueries.update(LecturerDtoMapper.toDbDto(lecturer))
-    }
-
-    private fun handleClassList(list: List<ClassNetworkDto>) {
+    private suspend fun handleClassList(list: List<ClassNetworkDto>): Either<DataFailure, Unit> {
         for (`class` in list)
             classQueries.update(ClassDtoMapper.toDbDto(`class`))
+        return appInfoGateway.checkClassDependencies(list)
     }
 
-    private fun handleUniversityInfoList(list: List<FantasticFour>) {
+    private fun handleLecturerList(list: List<LecturerNetworkDto>): Either<DataFailure, Unit> {
+        for (lecturer in list)
+            lecturerQueries.update(LecturerDtoMapper.toDbDto(lecturer))
+        return Either.right(Unit)
+    }
+
+    private fun handleUniversityInfoList(list: List<FantasticFour>): Either<DataFailure, Unit> {
         for (info in list.map(::UniversityInfoNetworkDto))
             universityInfoQueries.update(UniversityInfoDtoMapper.toDbDto(info))
+        return Either.right(Unit)
     }
 }

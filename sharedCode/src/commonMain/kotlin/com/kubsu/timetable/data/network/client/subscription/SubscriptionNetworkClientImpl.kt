@@ -11,6 +11,7 @@ import com.kubsu.timetable.data.network.dto.timetable.data.SubscriptionNetworkDt
 import com.kubsu.timetable.data.network.sender.NetworkSender
 import com.kubsu.timetable.data.network.sender.failure.ServerFailure
 import com.kubsu.timetable.data.network.sender.failure.toNetworkFail
+import com.kubsu.timetable.data.storage.user.session.Session
 import com.kubsu.timetable.extensions.addSessionKey
 import com.kubsu.timetable.extensions.jsonContent
 import com.kubsu.timetable.extensions.toJson
@@ -22,6 +23,7 @@ class SubscriptionNetworkClientImpl(
     private val networkSender: NetworkSender
 ) : SubscriptionNetworkClient {
     override suspend fun createSubscription(
+        session: Session,
         subgroupId: Int,
         subscriptionName: String,
         isMain: Boolean
@@ -29,7 +31,7 @@ class SubscriptionNetworkClientImpl(
         with(networkSender) {
             handle {
                 post<SubscriptionNetworkDto>("$baseUrl/api/$apiVersion/subscriptions/") {
-                    addSessionKey(it)
+                    addSessionKey(session)
                     body = jsonContent(
                         "subgroup" to subgroupId.toJson(),
                         "title" to subscriptionName.toJson(),
@@ -83,11 +85,13 @@ class SubscriptionNetworkClientImpl(
             DataFailure.UnknownResponse(response.code, response.body)
         }
 
-    override suspend fun selectSubscriptionsForUser(): Either<DataFailure, List<SubscriptionNetworkDto>> =
+    override suspend fun selectSubscriptionsForUser(
+        session: Session
+    ): Either<DataFailure, List<SubscriptionNetworkDto>> =
         with(networkSender) {
             handle {
                 get<List<SubscriptionNetworkDto>>("$baseUrl/api/$apiVersion/subscriptions/") {
-                    addSessionKey(it)
+                    addSessionKey(session)
                 }
             }.mapLeft {
                 if (it is ServerFailure.Response && it.code == 401)
@@ -110,15 +114,16 @@ class SubscriptionNetworkClientImpl(
         }
 
     override suspend fun update(
+        session: Session,
         subscription: SubscriptionNetworkDto
     ): Either<RequestFailure<List<SubscriptionFail>>, Unit> =
         with(networkSender) {
             handle {
                 post<Unit>("$baseUrl/api/$apiVersion/subscriptions/") {
-                    addSessionKey(it)
+                    addSessionKey(session)
                     body = jsonContent(
+                        "title" to subscription.title.toJson(),
                         "subgroup" to subscription.subgroup.toJson(),
-                        "name" to subscription.title.toJson(),
                         "is_main" to subscription.isMain.toJson()
                     )
                 }
@@ -133,11 +138,14 @@ class SubscriptionNetworkClientImpl(
             }
         }
 
-    override suspend fun deleteSubscription(id: Int): Either<DataFailure, Unit> =
+    override suspend fun deleteSubscription(
+        session: Session,
+        id: Int
+    ): Either<DataFailure, Unit> =
         with(networkSender) {
             handle {
                 delete<Unit>("$baseUrl/api/$apiVersion/subscriptions/$id/") {
-                    addSessionKey(it)
+                    addSessionKey(session)
                 }
             }.mapLeft {
                 if (it is ServerFailure.Response && it.code == 401)

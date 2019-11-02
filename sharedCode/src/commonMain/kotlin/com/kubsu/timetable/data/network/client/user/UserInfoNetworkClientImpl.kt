@@ -4,12 +4,12 @@ import com.egroden.teaco.*
 import com.kubsu.timetable.*
 import com.kubsu.timetable.data.network.client.user.incorrectdata.SignInIncorrectData
 import com.kubsu.timetable.data.network.client.user.incorrectdata.UserIncorrectData
+import com.kubsu.timetable.data.network.dto.UserData
 import com.kubsu.timetable.data.network.dto.UserNetworkDto
 import com.kubsu.timetable.data.network.sender.NetworkSender
 import com.kubsu.timetable.data.network.sender.failure.ServerFailure
 import com.kubsu.timetable.data.network.sender.failure.toNetworkFail
 import com.kubsu.timetable.data.storage.user.session.Session
-import com.kubsu.timetable.data.storage.user.session.SessionStorage
 import com.kubsu.timetable.data.storage.user.token.Token
 import com.kubsu.timetable.domain.entity.Timestamp
 import com.kubsu.timetable.extensions.*
@@ -21,8 +21,7 @@ import kotlinx.serialization.ImplicitReflectionSerializer
 import platform.currentPlatformName
 
 class UserInfoNetworkClientImpl(
-    private val networkSender: NetworkSender,
-    private val sessionStorage: SessionStorage
+    private val networkSender: NetworkSender
 ) : UserInfoNetworkClient {
     override suspend fun registration(
         email: String,
@@ -49,15 +48,15 @@ class UserInfoNetworkClientImpl(
     override suspend fun signIn(
         email: String,
         password: String,
-        token: Token?
-    ): Either<RequestFailure<List<SignInFail>>, UserNetworkDto> =
+        token: Token
+    ): Either<RequestFailure<List<SignInFail>>, UserData> =
         with(networkSender) {
             handle {
                 post<HttpResponse>("$baseUrl/api/$apiVersion/users/login/") {
                     body = jsonContent(
                         "email" to email.toJson(),
                         "password" to password.toJson(),
-                        "token" to (token?.value ?: "").toJson(),
+                        "token" to token.value.toJson(),
                         "platform" to currentPlatformName.toJson()
                     )
                 }.also(::validate)
@@ -73,11 +72,12 @@ class UserInfoNetworkClientImpl(
 
     private suspend fun parseSignInResponse(
         response: HttpResponse
-    ): Either<RequestFailure<List<SignInFail>>, UserNetworkDto> =
+    ): Either<RequestFailure<List<SignInFail>>, UserData> =
         createSession(response)
             .flatMap { session ->
-                sessionStorage.set(session)
-                parseUser(response)
+                parseUser(response).map {
+                    UserData(user = it, session = session)
+                }
             }
             .mapLeft { RequestFailure<List<SignInFail>>(it) }
 
@@ -147,12 +147,13 @@ class UserInfoNetworkClientImpl(
         }
 
     override suspend fun update(
+        session: Session,
         user: UserNetworkDto
     ): Either<RequestFailure<List<UserInfoFail>>, Unit> =
         with(networkSender) {
             handle {
                 patch<Unit>("$baseUrl/api/$apiVersion/users/info/") {
-                    addSessionKey(it)
+                    addSessionKey(session)
                     body = jsonContent(
                         "first_name" to user.firstName.toJson(),
                         "last_name" to user.lastName.toJson()
@@ -251,12 +252,13 @@ class UserInfoNetworkClientImpl(
         }
 
     override suspend fun updateToken(
+        session: Session,
         token: Token
     ): Either<DataFailure, Unit> =
         with(networkSender) {
             handle {
                 get<Unit>("$baseUrl/api/$apiVersion/users/device/") {
-                    addSessionKey(it)
+                    addSessionKey(session)
                     body = jsonContent(
                         "token" to token.value.toJson(),
                         "platform" to currentPlatformName.toJson()
@@ -265,11 +267,11 @@ class UserInfoNetworkClientImpl(
             }.mapLeft(::toNetworkFail)
         }
 
-    override suspend fun logout(): Either<DataFailure, Unit> =
+    override suspend fun logout(session: Session): Either<DataFailure, Unit> =
         with(networkSender) {
             handle {
                 get<Unit>("$baseUrl/api/$apiVersion/users/logout/") {
-                    addSessionKey(it)
+                    addSessionKey(session)
                 }
             }.mapLeft(::toNetworkFail)
         }

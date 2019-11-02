@@ -1,6 +1,7 @@
 package com.kubsu.timetable.data.gateway
 
 import com.egroden.teaco.Either
+import com.egroden.teaco.left
 import com.egroden.teaco.map
 import com.egroden.teaco.right
 import com.kubsu.timetable.DataFailure
@@ -32,10 +33,11 @@ class UserInfoGatewayImpl(
             ?.let(UserDtoMapper::toEntity)
 
     override suspend fun updateUserInfo(
+        session: Session,
         user: UserEntity
     ): Either<RequestFailure<List<UserInfoFail>>, Unit> =
         networkClient
-            .update(UserDtoMapper.toNetworkDto(user))
+            .update(session, UserDtoMapper.toNetworkDto(user))
             .map {
                 userStorage.set(UserDtoMapper.toStorageDto(user))
             }
@@ -45,7 +47,7 @@ class UserInfoGatewayImpl(
         val currentSession = sessionStorage.get()
         return if (currentSession != null)
             networkClient
-                .updateToken(token)
+                .updateToken(currentSession, token)
                 .map {
                     tokenStorage.set(DeliveredToken(token.value))
                 }
@@ -53,8 +55,14 @@ class UserInfoGatewayImpl(
             Either.right(Unit)
     }
 
-    override fun getCurrentTokenOrNull(): Token? =
-        tokenStorage.get()
+    override fun getCurrentToken(): Token =
+        requireNotNull(tokenStorage.get())
+
+    override fun getCurrentSessionEitherFail(): Either<DataFailure.NotAuthenticated, Session> =
+        sessionStorage
+            .get()
+            ?.let(Either.Companion::right)
+            ?: Either.left(DataFailure.NotAuthenticated())
 
     override fun updateTimestamp(timestamp: Timestamp): Either<DataFailure, Unit> =
         sessionStorage

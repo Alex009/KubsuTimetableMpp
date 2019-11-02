@@ -13,6 +13,7 @@ import com.kubsu.timetable.data.network.client.university.UniversityDataNetworkC
 import com.kubsu.timetable.data.network.dto.timetable.data.ClassNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.data.SubscriptionNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.data.TimetableNetworkDto
+import com.kubsu.timetable.data.storage.user.session.Session
 import com.kubsu.timetable.domain.interactor.timetable.AppInfoGateway
 import com.kubsu.timetable.extensions.toEitherList
 
@@ -27,24 +28,24 @@ class AppInfoGatewayImpl(
     private val timetableNetworkClient: TimetableNetworkClient,
     private val universityDataNetworkClient: UniversityDataNetworkClient
 ) : AppInfoGateway {
-    override suspend fun updateInfo(userId: Int): Either<DataFailure, Unit> {
+    override suspend fun updateInfo(session: Session, userId: Int): Either<DataFailure, Unit> {
         val currentList = subscriptionQueries
             .selectByUserId(userId)
             .executeAsList()
             .map(SubscriptionDtoMapper::toNetworkDto)
         return if (currentList.isEmpty())
             subscriptionNetworkClient
-                .selectSubscriptionsForUser()
+                .selectSubscriptionsForUser(session)
                 .flatMap {
-                    checkSubscriptionDependencies(it).map { Unit }
+                    checkSubscriptionDependencies(it)
                 }
         else
-            checkSubscriptionDependencies(currentList).map { Unit }
+            checkSubscriptionDependencies(currentList)
     }
 
-    private suspend fun checkSubscriptionDependencies(
+    override suspend fun checkSubscriptionDependencies(
         list: List<SubscriptionNetworkDto>
-    ): Either<DataFailure, List<Unit>> =
+    ): Either<DataFailure, Unit> =
         list
             .map { subscription ->
                 checkAvailabilityOfTimetables(subscription).map {
@@ -54,6 +55,7 @@ class AppInfoGatewayImpl(
                 }
             }
             .toEitherList()
+            .map { Unit }
 
     private suspend fun checkAvailabilityOfTimetables(
         subscription: SubscriptionNetworkDto
@@ -67,15 +69,15 @@ class AppInfoGatewayImpl(
             timetableNetworkClient
                 .selectTimetableList(subgroupId)
                 .flatMap {
-                    checkTimetableDependencies(it).map { Unit }
+                    checkTimetableDependencies(it)
                 }
         else
-            checkTimetableDependencies(currentList).map { Unit }
+            checkTimetableDependencies(currentList)
     }
 
-    private suspend fun checkTimetableDependencies(
+    override suspend fun checkTimetableDependencies(
         list: List<TimetableNetworkDto>
-    ): Either<DataFailure, List<Unit>> =
+    ): Either<DataFailure, Unit> =
         list
             .map { timetable ->
                 checkAvailabilityOfClasses(timetable).flatMap {
@@ -87,6 +89,7 @@ class AppInfoGatewayImpl(
                 }
             }
             .toEitherList()
+            .map { Unit }
 
     private suspend fun checkAvailabilityOfUniversityInfo(
         timetable: TimetableNetworkDto
@@ -115,15 +118,15 @@ class AppInfoGatewayImpl(
             timetableNetworkClient
                 .selectClassesByTimetableId(timetableId)
                 .flatMap {
-                    checkClassDependencies(it).map { Unit }
+                    checkClassDependencies(it)
                 }
         else
-            checkClassDependencies(currentList).map { Unit }
+            checkClassDependencies(currentList)
     }
 
-    private suspend fun checkClassDependencies(
+    override suspend fun checkClassDependencies(
         list: List<ClassNetworkDto>
-    ): Either<DataFailure, List<Unit>> =
+    ): Either<DataFailure, Unit> =
         list
             .map { clazz ->
                 checkAvailabilityOfClassTime(clazz.classTimeId).flatMap {
@@ -133,6 +136,7 @@ class AppInfoGatewayImpl(
                 }
             }
             .toEitherList()
+            .map { Unit }
 
     private suspend fun checkAvailabilityOfClassTime(id: Int): Either<DataFailure, Unit> {
         val currentClassTime = classTimeQueries.selectById(id).executeAsOneOrNull()

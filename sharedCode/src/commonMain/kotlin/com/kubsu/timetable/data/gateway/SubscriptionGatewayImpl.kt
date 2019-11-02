@@ -15,6 +15,7 @@ import com.kubsu.timetable.data.mapper.timetable.select.OccupationDtoMapper
 import com.kubsu.timetable.data.mapper.timetable.select.SubgroupDtoMapper
 import com.kubsu.timetable.data.network.client.subscription.SubscriptionNetworkClient
 import com.kubsu.timetable.data.network.client.university.UniversityDataNetworkClient
+import com.kubsu.timetable.data.storage.user.session.Session
 import com.kubsu.timetable.domain.entity.UserEntity
 import com.kubsu.timetable.domain.entity.timetable.data.SubscriptionEntity
 import com.kubsu.timetable.domain.entity.timetable.select.FacultyEntity
@@ -53,6 +54,7 @@ class SubscriptionGatewayImpl(
             .map { list -> list.map { SubgroupDtoMapper.toEntity(it, groupId) } }
 
     override suspend fun createSubscriptionTransaction(
+        session: Session,
         subgroupId: Int,
         subscriptionName: String,
         isMain: Boolean,
@@ -62,7 +64,8 @@ class SubscriptionGatewayImpl(
             .createSubscription(
                 subgroupId = subgroupId,
                 subscriptionName = subscriptionName,
-                isMain = isMain
+                isMain = isMain,
+                session = session
             )
             .flatMap { networkDto ->
                 val subscription = SubscriptionDtoMapper.toEntity(networkDto)
@@ -91,17 +94,21 @@ class SubscriptionGatewayImpl(
             .map { it.map(SubscriptionDtoMapper::toEntity) }
 
     override suspend fun update(
+        session: Session,
         subscription: SubscriptionEntity
     ): Either<RequestFailure<List<SubscriptionFail>>, Unit> =
         subscriptionNetworkClient
-            .update(SubscriptionDtoMapper.toNetworkDto(subscription))
+            .update(
+                session = session,
+                subscription = SubscriptionDtoMapper.toNetworkDto(subscription)
+            )
             .map {
                 subscriptionQueries.update(SubscriptionDtoMapper.toDbDto(subscription))
             }
 
-    override suspend fun deleteById(id: Int): Either<DataFailure, Unit> =
+    override suspend fun deleteById(session: Session, id: Int): Either<DataFailure, Unit> =
         subscriptionNetworkClient
-            .deleteSubscription(id)
+            .deleteSubscription(session = session, id = id)
             .map {
                 subscriptionQueries.deleteById(id)
             }
