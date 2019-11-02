@@ -19,9 +19,9 @@ fun Fragment.safePopBackStack(): Boolean {
 
 fun ComponentActivity.popBackStackOrClose(): Boolean =
     try {
-        popBackStackOrClose(R.id.nav_host_fragment)
-    } catch (e: Exception) {
         popBackStackOrClose(R.id.bottom_nav_host_fragment)
+    } catch (e: Exception) {
+        popBackStackOrClose(R.id.nav_host_fragment)
     }
 
 private val clickCount = AtomicInteger(0)
@@ -46,10 +46,10 @@ private fun ComponentActivity.popBackStackOrClose(viewId: Int): Boolean =
 fun Fragment.safeNavigate(navDirections: NavDirections) {
     val activity = activity ?: return
     return try {
-        findNavController(activity, R.id.nav_host_fragment)
+        findNavController(activity, R.id.bottom_nav_host_fragment)
             .navigate(navDirections)
     } catch (e: Exception) {
-        findNavController(activity, R.id.bottom_nav_host_fragment)
+        findNavController(activity, R.id.nav_host_fragment)
             .navigate(navDirections)
     }
 }

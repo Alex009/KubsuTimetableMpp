@@ -6,4 +6,5 @@
     android:layout_height="10dp"
     android:indeterminate="true"
     android:indeterminateOnly="true"
+    android:visibility="gone"
     android:scaleY="2" />

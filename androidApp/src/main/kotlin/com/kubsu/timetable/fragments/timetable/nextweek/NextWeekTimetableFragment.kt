@@ -25,8 +25,9 @@ class NextWeekTimetableFragment : BaseFragment(R.layout.timetable_fragment) {
             val universityInfo = args.universityInfo
             val weekNumber = (universityInfo.weekNumber + 1).toString()
             subtitle = when (universityInfo.typeOfWeek) {
-                TypeOfWeekModel.Numerator -> getString(R.string.numerator_subtitle, weekNumber)
-                TypeOfWeekModel.Denominator -> getString(R.string.denominator_subtitle, weekNumber)
+                // inverse
+                TypeOfWeekModel.Numerator -> getString(R.string.denominator_subtitle, weekNumber)
+                TypeOfWeekModel.Denominator -> getString(R.string.numerator_subtitle, weekNumber)
             }
         }
 

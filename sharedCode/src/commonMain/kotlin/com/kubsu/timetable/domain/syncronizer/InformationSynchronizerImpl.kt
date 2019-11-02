@@ -1,6 +1,7 @@
-package com.kubsu.timetable
+package com.kubsu.timetable.domain.syncronizer
 
 import com.egroden.teaco.mapLeft
+import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.data.storage.user.token.UndeliveredToken
 import com.kubsu.timetable.domain.interactor.sync.SyncMixinInteractor
 import com.kubsu.timetable.domain.interactor.userInfo.UserInteractor
@@ -11,14 +12,14 @@ import kotlinx.coroutines.launch
 import platform.PlatformArgs
 import platform.whenNetworkConnectionBeActive
 
-class InformationSynchronizer(
+class InformationSynchronizerImpl(
     private val userInteractor: UserInteractor,
     private val syncMixinInteractor: SyncMixinInteractor,
     private val platformArgs: PlatformArgs
-) {
+) : InformationSynchronizer {
     private var syncJob: Job? = null
 
-    fun awaitConnectionAndSync(
+    override fun awaitConnectionAndSync(
         scope: CoroutineScope,
         onFailure: (DataFailure) -> Unit
     ) =

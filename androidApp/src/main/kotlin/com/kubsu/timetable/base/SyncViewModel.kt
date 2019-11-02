@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.kubsu.timetable.DataFailure
-import com.kubsu.timetable.InformationSynchronizer
+import com.kubsu.timetable.domain.syncronizer.InformationSynchronizer
 import com.kubsu.timetable.firebase.CrashlyticsLogger
 
 class SyncViewModel(

@@ -70,7 +70,7 @@ class TimetableFragment(
                 showTimetableMenu(
                     toolbar = view.toolbar,
                     universityInfo = universityInfo,
-                    timetable = nextWeekTimetableEffect.value
+                    getTimetable = nextWeekTimetableEffect::value
                 )
         }
         currentTimetableEffect bind { timetableModel ->
@@ -102,6 +102,7 @@ class TimetableFragment(
         progressEffect.value = state.progress
 
         val universityInfo = state.universityInfoModel
+        universityInfoEffect.value = universityInfo
         when (universityInfo?.typeOfWeek) {
             TypeOfWeekModel.Numerator -> {
                 subtitleEffect.value = getString(
@@ -134,13 +135,13 @@ class TimetableFragment(
     private fun showTimetableMenu(
         toolbar: MaterialToolbar,
         universityInfo: UniversityInfoModel,
-        timetable: TimetableModel?
+        getTimetable: () -> TimetableModel?
     ) {
         toolbar.inflateMenu(R.menu.timetable_menu)
         toolbar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.next_week_timetable -> {
-                    navigate(Screen.NextWeekTimetable(universityInfo, timetable))
+                    navigate(Screen.NextWeekTimetable(universityInfo, getTimetable()))
                     true
                 }
 

@@ -4,8 +4,8 @@ import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 import androidx.fragment.app.FragmentFactory
-import com.kubsu.timetable.InformationSynchronizer
 import com.kubsu.timetable.base.AppActivity
+import com.kubsu.timetable.domain.syncronizer.InformationSynchronizer
 
 class MyActivityLifecycleCallbacks(
     private val fragmentFactory: FragmentFactory,

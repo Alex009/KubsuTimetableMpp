@@ -13,8 +13,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.NavHost
 import androidx.navigation.findNavController
-import com.kubsu.timetable.InformationSynchronizer
 import com.kubsu.timetable.R
+import com.kubsu.timetable.domain.syncronizer.InformationSynchronizer
 import com.kubsu.timetable.firebase.CrashlyticsLogger
 import com.kubsu.timetable.utils.MaterialActionDialogCreator
 import com.kubsu.timetable.utils.closeApp
