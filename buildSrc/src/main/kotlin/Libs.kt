@@ -42,6 +42,9 @@ object Libs {
     const val kotlinx_coroutines_core_common: String =
             "org.jetbrains.kotlinx:kotlinx-coroutines-core-common:" +
             Versions.org_jetbrains_kotlinx_kotlinx_coroutines
+    const val kotlinx_coroutines_test: String =
+        "org.jetbrains.kotlinx:kotlinx-coroutines-test:" +
+                Versions.org_jetbrains_kotlinx_kotlinx_coroutines
 
     const val kotlinx_coroutines_core_native: String =
             "org.jetbrains.kotlinx:kotlinx-coroutines-core-native:" +
@@ -318,6 +321,7 @@ object Libs {
      * http://mockk.io
      */
     const val mockk_common: String = "io.mockk:mockk-common:" + Versions.mockk_common
+    const val mockk: String = "io.mockk:mockk:" + Versions.mockk_common
 
     /**
      * http://developer.android.com/tools/extras/support-library.html

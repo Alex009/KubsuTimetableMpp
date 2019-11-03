@@ -32,6 +32,7 @@ class SyncMixinGatewayImpl(
     private val subscriptionQueries: SubscriptionQueries,
     private val timetableQueries: TimetableQueries,
     private val lecturerQueries: LecturerQueries,
+    private val classTimeQueries: ClassTimeQueries,
     private val classQueries: ClassQueries,
     private val dataDiffQueries: DataDiffQueries,
     private val universityInfoQueries: UniversityInfoQueries,
@@ -119,10 +120,23 @@ class SyncMixinGatewayImpl(
         deletedEntityQueries
             .selectByDataDiffId(dataDiffId)
             .executeAsList()
-    
+
+    override fun deleteBasenameData(basename: Basename, deletedIds: List<Int>) {
+        if (deletedIds.isNotEmpty()) {
+            val deleteById = when (basename) {
+                Basename.Subscription -> subscriptionQueries::deleteById
+                Basename.Timetable -> timetableQueries::deleteById
+                Basename.Lecturer -> lecturerQueries::deleteById
+                Basename.Class -> classQueries::deleteById
+                Basename.UniversityInfo -> universityInfoQueries::deleteById
+                Basename.ClassTime -> classTimeQueries::deleteById
+            }
+            for (id in deletedIds) deleteById(id)
+        }
+    }
+
     override suspend fun delete(list: List<DataDiffEntity>) {
-        for (diff in list) {
-            deleteBasenameData(diff.basename, diff.deletedIds)
+        for (diff in list)
             dataDiffQueries
                 .selectIds(BasenameDtoMapper.value(diff.basename), diff.userId)
                 .executeAsList()
@@ -131,20 +145,6 @@ class SyncMixinGatewayImpl(
                     updatedEntityQueries.deleteByDataDiffId(diffId)
                     dataDiffQueries.deleteById(diffId)
                 }
-        }
-    }
-
-    private fun deleteBasenameData(basename: Basename, deletedIds: List<Int>) {
-        if (deletedIds.isNotEmpty()) {
-            val deleteById = when (basename) {
-                Basename.Subscription -> subscriptionQueries::deleteById
-                Basename.Timetable -> timetableQueries::deleteById
-                Basename.Lecturer -> lecturerQueries::deleteById
-                Basename.Class -> classQueries::deleteById
-                Basename.UniversityInfo -> universityInfoQueries::deleteById
-            }
-            for (id in deletedIds) deleteById(id)
-        }
     }
 
     override suspend fun diff(session: Session): Either<DataFailure, Pair<Timestamp, List<Basename>>> =
@@ -199,6 +199,7 @@ class SyncMixinGatewayImpl(
             Basename.Class -> ClassNetworkDto.serializer()
             Basename.Lecturer -> LecturerNetworkDto.serializer()
             Basename.UniversityInfo -> FantasticFour.serializer()
+            Basename.ClassTime -> ClassTimeNetworkDto.serializer()
         }
 
     @Suppress("UNCHECKED_CAST")
@@ -210,6 +211,7 @@ class SyncMixinGatewayImpl(
                 Basename.Class -> handleClassList(it as List<ClassNetworkDto>)
                 Basename.Lecturer -> handleLecturerList(it as List<LecturerNetworkDto>)
                 Basename.UniversityInfo -> handleUniversityInfoList(it as List<FantasticFour>)
+                Basename.ClassTime -> handleClassTimeList(it as List<ClassTimeNetworkDto>)
             }
         }
 
@@ -244,6 +246,12 @@ class SyncMixinGatewayImpl(
     private fun handleUniversityInfoList(list: List<FantasticFour>): Either<DataFailure, Unit> {
         for (info in list.map(::UniversityInfoNetworkDto))
             universityInfoQueries.update(UniversityInfoDtoMapper.toDbDto(info))
+        return Either.right(Unit)
+    }
+
+    private fun handleClassTimeList(list: List<ClassTimeNetworkDto>): Either<DataFailure, Unit> {
+        for (classTime in list)
+            classTimeQueries.update(ClassTimeDtoMapper.toDbDto(classTime))
         return Either.right(Unit)
     }
 }

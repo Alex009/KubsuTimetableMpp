@@ -6,6 +6,7 @@ sealed class Basename {
     object Lecturer : Basename()
     object Class : Basename()
     object UniversityInfo : Basename()
+    object ClassTime : Basename()
 
     companion object {
         val list: List<Basename>
@@ -14,7 +15,8 @@ sealed class Basename {
                 Timetable,
                 Lecturer,
                 Class,
-                UniversityInfo
+                UniversityInfo,
+                ClassTime
             )
     }
 }

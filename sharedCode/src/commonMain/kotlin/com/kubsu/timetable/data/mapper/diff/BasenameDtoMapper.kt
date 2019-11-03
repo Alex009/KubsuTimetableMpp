@@ -8,6 +8,7 @@ object BasenameDtoMapper {
     private const val lecturerValue = "lecturers"
     private const val classValue = "classes"
     private const val universityInfoValue = "university-info"
+    private const val classTimeValue = "classtimes"
 
     fun toEntity(value: String): Basename =
         when (value) {
@@ -16,6 +17,7 @@ object BasenameDtoMapper {
             lecturerValue -> Basename.Lecturer
             classValue -> Basename.Class
             universityInfoValue -> Basename.UniversityInfo
+            classTimeValue -> Basename.ClassTime
             else -> throw IllegalArgumentException("Unknown value: $value")
         }
 
@@ -26,5 +28,6 @@ object BasenameDtoMapper {
             Basename.Lecturer -> lecturerValue
             Basename.Class -> classValue
             Basename.UniversityInfo -> universityInfoValue
+            Basename.ClassTime -> classTimeValue
         }
 }

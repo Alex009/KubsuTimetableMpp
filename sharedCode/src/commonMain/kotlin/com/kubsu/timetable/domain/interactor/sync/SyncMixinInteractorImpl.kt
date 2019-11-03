@@ -2,6 +2,7 @@ package com.kubsu.timetable.domain.interactor.sync
 
 import com.egroden.teaco.Either
 import com.egroden.teaco.flatMap
+import com.egroden.teaco.map
 import com.egroden.teaco.right
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.data.storage.user.session.Session
@@ -30,7 +31,9 @@ class SyncMixinInteractorImpl(
                     .diff(session)
                     .flatMap { (newTimestamp, basenameList) ->
                         val diffList = mixinGateway.getAvailableDiffList()
-                        updateData(session, basenameList, newTimestamp, diffList)
+                        updateData(session, basenameList, newTimestamp, diffList).map {
+                            mixinGateway.delete(diffList)
+                        }
                     }
             }
 
@@ -73,6 +76,10 @@ class SyncMixinInteractorImpl(
         diffList
             .map { mixinGateway.meta(session, it.basename, it.updatedIds) }
             .firstOrNull { it is Either.Left }
-            ?: Either.right(mixinGateway.delete(diffList))
+            ?: Either.right(
+                diffList.forEach {
+                    mixinGateway.deleteBasenameData(it.basename, it.deletedIds)
+                }
+            )
     }
 }

@@ -65,8 +65,13 @@ kotlin {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
 
+                // Coroutines
+                implementation(Libs.kotlinx_coroutines_core_common)
+                implementation(Libs.kotlinx_coroutines_test)
+
                 // Mock
                 implementation(Libs.mockk_common)
+                implementation(Libs.mockk)
             }
         }
         val androidMain by getting {

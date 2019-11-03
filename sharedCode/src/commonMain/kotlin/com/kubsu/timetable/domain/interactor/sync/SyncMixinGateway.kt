@@ -13,8 +13,9 @@ interface SyncMixinGateway {
 
     fun getAvailableDiffList(): List<DataDiffEntity>
     fun dataDiffListFlow(): Flow<List<DataDiffEntity>>
-
+    fun deleteBasenameData(basename: Basename, deletedIds: List<Int>)
     suspend fun delete(list: List<DataDiffEntity>)
+
     suspend fun diff(session: Session): Either<DataFailure, Pair<Timestamp, List<Basename>>>
 
     suspend fun updateData(

@@ -150,7 +150,7 @@ class AppInfoGatewayImpl(
             Either.right(Unit)
     }
 
-    private suspend fun checkAvailabilityOfLecturer(id: Int): Either<DataFailure, Unit> {
+    suspend fun checkAvailabilityOfLecturer(id: Int): Either<DataFailure, Unit> {
         val currentLecturer = lecturerQueries.selectById(id).executeAsOneOrNull()
         return if (currentLecturer == null)
             timetableNetworkClient

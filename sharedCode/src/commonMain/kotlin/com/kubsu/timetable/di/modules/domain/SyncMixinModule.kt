@@ -17,6 +17,7 @@ internal val syncMixinDomainModule = Kodein.Module("sync_mixin_domain") {
         SyncMixinGatewayImpl(
             classQueries = db.classQueries,
             lecturerQueries = db.lecturerQueries,
+            classTimeQueries = db.classTimeQueries,
             subscriptionQueries = db.subscriptionQueries,
             timetableQueries = db.timetableQueries,
             dataDiffQueries = db.dataDiffQueries,

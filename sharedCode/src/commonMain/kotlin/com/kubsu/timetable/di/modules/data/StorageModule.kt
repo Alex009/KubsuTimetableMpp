@@ -8,11 +8,11 @@ import com.kubsu.timetable.data.storage.user.session.SessionStorage
 import com.kubsu.timetable.data.storage.user.session.SessionStorageImpl
 import com.kubsu.timetable.data.storage.user.token.TokenStorage
 import com.kubsu.timetable.data.storage.user.token.TokenStorageImpl
+import com.kubsu.timetable.platform.createSettingsFactory
 import org.kodein.di.Kodein
 import org.kodein.di.erased.bind
 import org.kodein.di.erased.instance
 import org.kodein.di.erased.singleton
-import platform.createSettingsFactory
 
 internal val storageModule = Kodein.Module("storage") {
     bind() from singleton { createSettingsFactory(instance()) }
