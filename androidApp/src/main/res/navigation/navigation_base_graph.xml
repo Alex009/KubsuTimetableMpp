@@ -91,7 +91,8 @@
         tools:layout="@layout/timetable_fragment">
         <argument
             android:name="universityInfo"
-            app:argType="com.kubsu.timetable.presentation.timetable.model.UniversityInfoModel" />
+            app:argType="com.kubsu.timetable.presentation.timetable.model.UniversityInfoModel"
+            app:nullable="true" />
         <argument
             android:name="timetable"
             app:argType="com.kubsu.timetable.presentation.timetable.model.TimetableModel"

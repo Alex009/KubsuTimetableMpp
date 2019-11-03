@@ -8,7 +8,6 @@ import com.egroden.teaco.Feature
 import com.egroden.teaco.androidConnectors
 import com.egroden.teaco.bindAction
 import com.egroden.teaco.connect
-import com.google.android.material.appbar.MaterialToolbar
 import com.kubsu.timetable.R
 import com.kubsu.timetable.base.BaseFragment
 import com.kubsu.timetable.data.storage.displayed.subscription.DisplayedSubscriptionStorage
@@ -50,6 +49,24 @@ class TimetableFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        with(view.toolbar) {
+            inflateMenu(R.menu.timetable_menu)
+            setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.next_week_timetable -> {
+                        navigate(
+                            Screen.NextWeekTimetable(
+                                universityInfo = universityInfoEffect.value,
+                                timetable = nextWeekTimetableEffect.value
+                            )
+                        )
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        }
         val timetableAdapter = TimetableAdapter()
         val linearLayoutManager = LinearLayoutManager(view.context)
         with(view.timetable_recycler_view) {
@@ -64,14 +81,6 @@ class TimetableFragment(
             with(view.progress_bar) {
                 if (it) show() else hide()
             }
-        }
-        universityInfoEffect bind { universityInfo ->
-            if (universityInfo != null)
-                showTimetableMenu(
-                    toolbar = view.toolbar,
-                    universityInfo = universityInfo,
-                    getTimetable = nextWeekTimetableEffect::value
-                )
         }
         currentTimetableEffect bind { timetableModel ->
             val timetableInfoList = timetableModel?.infoList ?: emptyList()
@@ -131,24 +140,6 @@ class TimetableFragment(
         when (subscription) {
             is Subscription.Navigate -> navigate(subscription.screen)
         }
-
-    private fun showTimetableMenu(
-        toolbar: MaterialToolbar,
-        universityInfo: UniversityInfoModel,
-        getTimetable: () -> TimetableModel?
-    ) {
-        toolbar.inflateMenu(R.menu.timetable_menu)
-        toolbar.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.next_week_timetable -> {
-                    navigate(Screen.NextWeekTimetable(universityInfo, getTimetable()))
-                    true
-                }
-
-                else -> false
-            }
-        }
-    }
 
     private fun navigate(screen: Screen) =
         when (screen) {

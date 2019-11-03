@@ -35,7 +35,7 @@ sealed class Subscription {
 
 sealed class Screen {
     class NextWeekTimetable(
-        val universityInfo: UniversityInfoModel,
+        val universityInfo: UniversityInfoModel?,
         val timetable: TimetableModel?
     ) : Screen()
 }

@@ -6,6 +6,7 @@ import com.kubsu.timetable.data.storage.user.token.UndeliveredToken
 import com.kubsu.timetable.domain.interactor.sync.SyncMixinInteractor
 import com.kubsu.timetable.domain.interactor.userInfo.UserInteractor
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -34,7 +35,7 @@ class InformationSynchronizerImpl(
         onFailure: (DataFailure) -> Unit
     ) {
         syncJob?.cancel()
-        syncJob = scope.launch {
+        syncJob = scope.launch(Dispatchers.Default) {
             updateToken(onFailure)
             syncData(onFailure)
         }
