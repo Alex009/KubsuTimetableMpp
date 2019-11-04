@@ -106,7 +106,7 @@ class AppInfoGatewayImpl(
             Either.right(Unit)
     }
 
-    private suspend fun checkAvailabilityOfClasses(
+    suspend fun checkAvailabilityOfClasses(
         timetable: TimetableNetworkDto
     ): Either<DataFailure, Unit> {
         val timetableId = timetable.id
@@ -129,8 +129,8 @@ class AppInfoGatewayImpl(
     ): Either<DataFailure, Unit> =
         list
             .map { clazz ->
-                checkAvailabilityOfClassTime(clazz.classTimeId).flatMap {
-                    checkAvailabilityOfLecturer(clazz.lecturerId).map {
+                checkAvailabilityOfClassTime(clazz).flatMap {
+                    checkAvailabilityOfLecturer(clazz).map {
                         classQueries.update(ClassDtoMapper.toDbDto(clazz))
                     }
                 }
@@ -138,7 +138,8 @@ class AppInfoGatewayImpl(
             .toEitherList()
             .map { Unit }
 
-    private suspend fun checkAvailabilityOfClassTime(id: Int): Either<DataFailure, Unit> {
+    suspend fun checkAvailabilityOfClassTime(clazz: ClassNetworkDto): Either<DataFailure, Unit> {
+        val id = clazz.classTimeId
         val currentClassTime = classTimeQueries.selectById(id).executeAsOneOrNull()
         return if (currentClassTime == null)
             timetableNetworkClient
@@ -150,7 +151,8 @@ class AppInfoGatewayImpl(
             Either.right(Unit)
     }
 
-    suspend fun checkAvailabilityOfLecturer(id: Int): Either<DataFailure, Unit> {
+    suspend fun checkAvailabilityOfLecturer(clazz: ClassNetworkDto): Either<DataFailure, Unit> {
+        val id = clazz.lecturerId
         val currentLecturer = lecturerQueries.selectById(id).executeAsOneOrNull()
         return if (currentLecturer == null)
             timetableNetworkClient

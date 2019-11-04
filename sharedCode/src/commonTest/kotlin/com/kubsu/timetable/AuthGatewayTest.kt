@@ -15,10 +15,7 @@ import com.kubsu.timetable.data.storage.user.session.SessionStorage
 import com.kubsu.timetable.data.storage.user.token.TokenStorage
 import com.kubsu.timetable.data.storage.user.token.UndeliveredToken
 import com.kubsu.timetable.domain.interactor.auth.AuthGateway
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.confirmVerified
-import io.mockk.mockk
+import io.mockk.*
 import runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -55,15 +52,15 @@ class AuthGatewayTest {
 
     @BeforeTest
     fun before() {
-        coEvery { dataDiffQueries.deleteAll() } returns Unit
-        coEvery { updatedEntityQueries.deleteAll() } returns Unit
-        coEvery { deletedEntityQueries.deleteAll() } returns Unit
+        every { dataDiffQueries.deleteAll() } returns Unit
+        every { updatedEntityQueries.deleteAll() } returns Unit
+        every { deletedEntityQueries.deleteAll() } returns Unit
 
-        coEvery { userStorage.set(null) } returns Unit
-        coEvery { userStorage.set(user) } returns Unit
+        every { userStorage.set(null) } returns Unit
+        every { userStorage.set(user) } returns Unit
 
-        coEvery { sessionStorage.set(null) } returns Unit
-        coEvery { sessionStorage.set(session) } returns Unit
+        every { sessionStorage.set(null) } returns Unit
+        every { sessionStorage.set(session) } returns Unit
 
         coEvery { tokenStorage.set(any()) } returns Unit
     }
@@ -84,9 +81,9 @@ class AuthGatewayTest {
                 ifRight = { assertEquals(userDto, it) }
             )
 
-        coVerify { sessionStorage.set(session) }
-        coVerify { userStorage.set(user) }
-        coVerify { tokenStorage.set(any()) }
+        verify { sessionStorage.set(session) }
+        verify { userStorage.set(user) }
+        verify { tokenStorage.set(any()) }
         confirmVerified(sessionStorage, userStorage, tokenStorage)
     }
 
@@ -104,9 +101,9 @@ class AuthGatewayTest {
                 throw IllegalStateException()
             }
 
-        coVerify(inverse = true) { sessionStorage.set(session) }
-        coVerify(inverse = true) { userStorage.set(user) }
-        coVerify(inverse = true) { tokenStorage.set(any()) }
+        verify(inverse = true) { sessionStorage.set(session) }
+        verify(inverse = true) { userStorage.set(user) }
+        verify(inverse = true) { tokenStorage.set(any()) }
         confirmVerified(sessionStorage, userStorage, tokenStorage)
     }
 
@@ -124,9 +121,9 @@ class AuthGatewayTest {
                 throw IllegalStateException()
             }
 
-        coVerify(inverse = true) { sessionStorage.set(session) }
-        coVerify(inverse = true) { userStorage.set(user) }
-        coVerify(inverse = true) { tokenStorage.set(any()) }
+        verify(inverse = true) { sessionStorage.set(session) }
+        verify(inverse = true) { userStorage.set(user) }
+        verify(inverse = true) { tokenStorage.set(any()) }
         confirmVerified(sessionStorage, userStorage, tokenStorage)
     }
 
@@ -162,11 +159,11 @@ class AuthGatewayTest {
 
         authGateway.logout(session)
 
-        coVerify { dataDiffQueries.deleteAll() }
-        coVerify { updatedEntityQueries.deleteAll() }
-        coVerify { deletedEntityQueries.deleteAll() }
-        coVerify { userStorage.set(null) }
-        coVerify { sessionStorage.set(null) }
+        verify { dataDiffQueries.deleteAll() }
+        verify { updatedEntityQueries.deleteAll() }
+        verify { deletedEntityQueries.deleteAll() }
+        verify { userStorage.set(null) }
+        verify { sessionStorage.set(null) }
         confirmVerified(
             dataDiffQueries,
             updatedEntityQueries,
@@ -184,11 +181,11 @@ class AuthGatewayTest {
 
         authGateway.logout(session)
 
-        coVerify { dataDiffQueries.deleteAll() }
-        coVerify { updatedEntityQueries.deleteAll() }
-        coVerify { deletedEntityQueries.deleteAll() }
-        coVerify { userStorage.set(null) }
-        coVerify { sessionStorage.set(null) }
+        verify { dataDiffQueries.deleteAll() }
+        verify { updatedEntityQueries.deleteAll() }
+        verify { deletedEntityQueries.deleteAll() }
+        verify { userStorage.set(null) }
+        verify { sessionStorage.set(null) }
         confirmVerified(
             dataDiffQueries,
             updatedEntityQueries,

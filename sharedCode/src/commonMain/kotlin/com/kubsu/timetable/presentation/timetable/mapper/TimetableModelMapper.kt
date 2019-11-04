@@ -37,6 +37,7 @@ object TimetableModelMapper {
             val classList: List<ClassEntity> = timetableEntity
                 .classList
                 .filter { it.day == day }
+                .sortedBy { it.classTime.number }
 
             if (classList.isNotEmpty()) {
                 result.add(
