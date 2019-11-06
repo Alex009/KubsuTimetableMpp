@@ -49,11 +49,7 @@ class SignInFragment(
             }
         }
 
-        progressEffect bind {
-            with(view.progress_bar) {
-                if (it) show() else hide()
-            }
-        }
+        progressEffect bind view.progress_bar::setVisibleStatus
         view.email_input_layout.removeErrorAfterNewText()
         view.password_input_layout.removeErrorAfterNewText()
         emailErrorEffect bind view.email_input_layout::showErrorMessage

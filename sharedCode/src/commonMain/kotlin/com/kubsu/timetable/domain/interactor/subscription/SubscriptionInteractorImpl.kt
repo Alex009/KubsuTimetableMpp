@@ -1,6 +1,9 @@
 package com.kubsu.timetable.domain.interactor.subscription
 
-import com.egroden.teaco.*
+import com.egroden.teaco.Either
+import com.egroden.teaco.flatMap
+import com.egroden.teaco.map
+import com.egroden.teaco.mapLeft
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SubscriptionFail
@@ -9,7 +12,7 @@ import com.kubsu.timetable.domain.entity.timetable.select.FacultyEntity
 import com.kubsu.timetable.domain.entity.timetable.select.GroupEntity
 import com.kubsu.timetable.domain.entity.timetable.select.OccupationEntity
 import com.kubsu.timetable.domain.entity.timetable.select.SubgroupEntity
-import com.kubsu.timetable.domain.interactor.timetable.AppInfoGateway
+import com.kubsu.timetable.domain.interactor.appinfo.AppInfoGateway
 import com.kubsu.timetable.domain.interactor.userInfo.UserInfoGateway
 import com.kubsu.timetable.extensions.def
 import kotlinx.coroutines.flow.Flow
@@ -63,13 +66,8 @@ class SubscriptionInteractorImpl(
 
     override fun getAllSubscriptionsFlow(): Either<DataFailure, Flow<List<SubscriptionEntity>>> =
         userInfoGateway
-            .getCurrentUserOrNull()
-            ?.let {
-                Either.right(subscriptionGateway.getAllSubscriptionsFlow(it))
-            }
-            ?: Either.left(
-                DataFailure.NotAuthenticated("SubscriptionInteractor#getAll")
-            )
+            .getCurrentUserEitherFailure()
+            .map(subscriptionGateway::getAllSubscriptionsFlow)
 
     override suspend fun update(
         subscription: SubscriptionEntity

@@ -11,6 +11,7 @@ import com.egroden.teaco.bindAction
 import com.egroden.teaco.connect
 import com.kubsu.timetable.BaseNavGraphDirections
 import com.kubsu.timetable.R
+import com.kubsu.timetable.fragments.bottomnav.BottomNavFragmentDirections
 import com.kubsu.timetable.presentation.settings.*
 import com.kubsu.timetable.utils.logics.DarkThemeStatus
 import com.kubsu.timetable.utils.safeNavigate
@@ -39,6 +40,12 @@ class SettingsFragment(
                 true
             }
         }
+        findPreference<Preference>("invalidation")?.apply {
+            setOnPreferenceClickListener {
+                connector bindAction Action.Invalidate
+                true
+            }
+        }
         findPreference<Preference>("logout")?.apply {
             setOnPreferenceClickListener {
                 requireActivity().materialAlert(
@@ -63,6 +70,8 @@ class SettingsFragment(
             when (screen) {
                 Screen.SignIn ->
                     BaseNavGraphDirections.actionGlobalSignInFragment()
+                Screen.Invalidate ->
+                    BottomNavFragmentDirections.actionBottomNavFragmentToInvalidateFragment()
             }
         )
 }

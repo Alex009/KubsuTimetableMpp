@@ -6,6 +6,7 @@ import com.kubsu.timetable.fragments.bottomnav.BottomNavFragment
 import com.kubsu.timetable.fragments.bottomnav.settings.SettingsFragment
 import com.kubsu.timetable.fragments.bottomnav.subscription.list.SubscriptionListFragment
 import com.kubsu.timetable.fragments.bottomnav.timetable.TimetableFragment
+import com.kubsu.timetable.fragments.invalidate.InvalidateFragment
 import com.kubsu.timetable.fragments.registration.RegistrationFragment
 import com.kubsu.timetable.fragments.signin.SignInFragment
 import com.kubsu.timetable.fragments.splash.SplashFragment
@@ -27,6 +28,8 @@ class MyFragmentFactory(private val kodein: DKodeinAware) : FragmentFactory() {
                 instance<BottomNavFragment>()
             nameOf<SettingsFragment>() ->
                 instance<SettingsFragment>()
+            nameOf<InvalidateFragment>() ->
+                instance<InvalidateFragment>()
             nameOf<CreateSubscriptionFragment>() ->
                 instance<CreateSubscriptionFragment>()
             nameOf<SubscriptionListFragment>() ->

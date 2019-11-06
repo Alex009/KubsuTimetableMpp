@@ -7,6 +7,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
+import androidx.core.widget.ContentLoadingProgressBar
 import androidx.core.widget.doOnTextChanged
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.textfield.TextInputLayout
@@ -19,6 +20,12 @@ fun ComponentActivity.toast(resId: Int) =
 
 fun Context.getCompatColor(resId: Int) =
     ContextCompat.getColor(this, resId)
+
+fun Context.convertDpToPx(dp: Int): Int =
+    (dp * resources.displayMetrics.density + 0.5f).toInt()
+
+fun ContentLoadingProgressBar.setVisibleStatus(value: Boolean) =
+    if (value) show() else hide()
 
 val BottomNavigationView.selectedItem: MenuItem
     get() = menu.findItem(selectedItemId)

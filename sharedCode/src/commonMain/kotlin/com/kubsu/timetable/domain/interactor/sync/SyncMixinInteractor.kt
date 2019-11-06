@@ -6,7 +6,9 @@ import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
 import kotlinx.coroutines.flow.Flow
 
 interface SyncMixinInteractor {
-    suspend fun registerDataDiff(entity: DataDiffEntity)
+    suspend fun registerDataDiff(entity: DataDiffEntity.Raw)
 
-    suspend fun updateData(): Flow<Either<DataFailure, Unit>>
+    suspend fun syncDataAndObserveUpdates(): Flow<Either<DataFailure, Unit>>
+
+    suspend fun syncData(): Either<DataFailure, Unit>
 }

@@ -2,8 +2,8 @@ package com.kubsu.timetable.presentation.signin
 
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.SignInFail
-import com.kubsu.timetable.platform.SerializableModel
-import com.kubsu.timetable.platform.SerializeModel
+import platform.SerializableModel
+import platform.SerializeModel
 
 sealed class Action {
     class SignIn(val email: String, val password: String) : Action()
@@ -16,7 +16,7 @@ sealed class Action {
 
 @SerializeModel
 data class State(
-    val progress: Boolean = false
+    val progress: Boolean
 ) : SerializableModel
 
 sealed class SideEffect {

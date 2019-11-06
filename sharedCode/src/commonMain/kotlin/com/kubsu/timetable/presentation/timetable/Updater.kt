@@ -5,7 +5,7 @@ import com.egroden.teaco.Updater
 
 val timetableUpdater: Updater<State, Action, Subscription, SideEffect> = { state, action ->
     when (action) {
-        is Action.UpdateData ->
+        is Action.LoadData ->
             UpdateResponse(
                 state = state.copy(
                     currentSubscription = action.subscription,
@@ -25,6 +25,15 @@ val timetableUpdater: Updater<State, Action, Subscription, SideEffect> = { state
                     numeratorTimetable = action.numeratorTimetable,
                     denominatorTimetable = action.denominatorTimetable
                 )
+            )
+
+        is Action.WasDisplayed ->
+            UpdateResponse(
+                state = state,
+                sideEffects = if (action.classModel.needToEmphasize)
+                    setOf(SideEffect.ChangesWasDisplayed(action.classModel))
+                else
+                    setOf()
             )
     }
 }

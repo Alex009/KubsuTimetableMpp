@@ -2,13 +2,13 @@ package com.kubsu.timetable.presentation.subscription.create
 
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.SubscriptionFail
-import com.kubsu.timetable.platform.SerializableModel
-import com.kubsu.timetable.platform.SerializeModel
 import com.kubsu.timetable.presentation.subscription.model.FacultyModel
 import com.kubsu.timetable.presentation.subscription.model.GroupModel
 import com.kubsu.timetable.presentation.subscription.model.OccupationModel
 import com.kubsu.timetable.presentation.subscription.model.SubgroupModel
 import com.kubsu.timetable.presentation.timetable.model.SubscriptionModel
+import platform.SerializableModel
+import platform.SerializeModel
 
 sealed class Action {
     object LoadFacultyList : Action()

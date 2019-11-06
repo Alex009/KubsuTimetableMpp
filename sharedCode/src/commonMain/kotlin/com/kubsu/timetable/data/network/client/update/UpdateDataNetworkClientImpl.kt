@@ -4,11 +4,13 @@ import com.egroden.teaco.Either
 import com.egroden.teaco.mapLeft
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.data.network.dto.diff.DiffResponse
+import com.kubsu.timetable.data.network.dto.diff.MigrationResponse
 import com.kubsu.timetable.data.network.dto.diff.SyncResponse
 import com.kubsu.timetable.data.network.sender.NetworkSender
 import com.kubsu.timetable.data.network.sender.failure.ServerFailure
 import com.kubsu.timetable.data.network.sender.failure.toNetworkFail
 import com.kubsu.timetable.data.storage.user.session.Session
+import com.kubsu.timetable.data.storage.user.token.Token
 import com.kubsu.timetable.extensions.addSessionKey
 import com.kubsu.timetable.extensions.jsonContent
 import com.kubsu.timetable.extensions.toJson
@@ -19,6 +21,26 @@ import kotlinx.serialization.list
 class UpdateDataNetworkClientImpl(
     private val networkSender: NetworkSender
 ) : UpdateDataNetworkClient {
+    override suspend fun checkMigrations(
+        session: Session,
+        token: Token?
+    ): Either<DataFailure, List<MigrationResponse>> =
+        with(networkSender) {
+            handle {
+                post<List<MigrationResponse>>("$baseUrl/api/$apiVersion/university/migrations/") {
+                    addSessionKey(session)
+                    body = jsonContent(
+                        "token" to (token?.value ?: "").toJson()
+                    )
+                }
+            }.mapLeft {
+                if (it is ServerFailure.Response && it.code == 401)
+                    DataFailure.NotAuthenticated(it.body)
+                else
+                    toNetworkFail(it)
+            }
+        }
+
     override suspend fun diff(session: Session): Either<DataFailure, DiffResponse> =
         with(networkSender) {
             handle {

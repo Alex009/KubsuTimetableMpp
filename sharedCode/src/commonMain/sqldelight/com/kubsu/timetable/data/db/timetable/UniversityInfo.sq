@@ -17,5 +17,8 @@ SELECT * FROM universityInfoDb WHERE facultyId = ?;
 deleteById:
 DELETE FROM universityInfoDb WHERE id = ?;
 
+deleteByFacultyId:
+DELETE FROM universityInfoDb WHERE facultyId = ?;
+
 deleteAll:
 DELETE FROM universityInfoDb;

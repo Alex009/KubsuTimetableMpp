@@ -1,9 +1,6 @@
 package com.kubsu.timetable.data.gateway
 
-import com.egroden.teaco.Either
-import com.egroden.teaco.flatMap
-import com.egroden.teaco.map
-import com.egroden.teaco.right
+import com.egroden.teaco.*
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.data.db.diff.*
 import com.kubsu.timetable.data.db.timetable.*
@@ -14,17 +11,19 @@ import com.kubsu.timetable.data.network.client.update.UpdateDataNetworkClient
 import com.kubsu.timetable.data.network.dto.diff.FantasticFour
 import com.kubsu.timetable.data.network.dto.timetable.data.*
 import com.kubsu.timetable.data.storage.user.session.Session
+import com.kubsu.timetable.data.storage.user.token.Token
 import com.kubsu.timetable.domain.entity.Basename
 import com.kubsu.timetable.domain.entity.Timestamp
 import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
+import com.kubsu.timetable.domain.interactor.appinfo.AppInfoGateway
 import com.kubsu.timetable.domain.interactor.sync.SyncMixinGateway
-import com.kubsu.timetable.domain.interactor.timetable.AppInfoGateway
 import com.kubsu.timetable.domain.interactor.userInfo.UserInfoGateway
 import com.kubsu.timetable.extensions.filterPrevious
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.serialization.KSerializer
 
@@ -42,7 +41,7 @@ class SyncMixinGatewayImpl(
     private val appInfoGateway: AppInfoGateway,
     private val userInfoGateway: UserInfoGateway
 ) : SyncMixinGateway {
-    override suspend fun registerDataDiff(entity: DataDiffEntity) {
+    override suspend fun registerDataDiff(entity: DataDiffEntity.Raw) {
         val id = createAndGetId(
             basename = BasenameDtoMapper.value(entity.basename),
             userId = entity.userId
@@ -54,26 +53,42 @@ class SyncMixinGatewayImpl(
     }
 
     private fun createAndGetId(basename: String, userId: Int): Int {
-        dataDiffQueries.insert(basename, userId)
+        dataDiffQueries.insert(basename, userId, handled = false)
         return dataDiffQueries
             .selectIds(basename, userId)
             .executeAsList()
             .last()
     }
 
-    override fun getAvailableDiffList(): List<DataDiffEntity> =
-        userInfoGateway
-            .getCurrentUserOrNull()
-            ?.id
-            ?.let {
-                dataDiffQueries
-                    .selectAll()
-                    .executeAsList()
-                    .mapToEntityForUser(it)
+    override suspend fun checkMigrations(
+        session: Session,
+        token: Token?
+    ): Either<DataFailure, Unit> =
+        updateDataNetworkClient
+            .checkMigrations(session, token)
+            .map {
+                for (migration in it)
+                    meta(
+                        session = session,
+                        basename = BasenameDtoMapper.toEntity(migration.basename),
+                        updatedIds = migration.ids
+                    )
             }
-            ?: emptyList()
 
-    override fun dataDiffListFlow(): Flow<List<DataDiffEntity>> =
+    override suspend fun getAvailableDiffList(): List<DataDiffEntity.Merged> =
+        userInfoGateway
+            .getCurrentUserEitherFailure()
+            .fold(
+                ifLeft = { emptyList() },
+                ifRight = {
+                    dataDiffQueries
+                        .selectAll()
+                        .executeAsList()
+                        .mapToEntityForUser(it.id)
+                }
+            )
+
+    override fun rowDataDiffListFlow(): Flow<List<DataDiffEntity.Raw>> =
         dataDiffQueries
             .selectAll()
             .asFlow()
@@ -81,47 +96,43 @@ class SyncMixinGatewayImpl(
             .filterPrevious()
             .mapNotNull { dataDiffList ->
                 userInfoGateway
-                    .getCurrentUserOrNull()
-                    ?.id
-                    ?.let { dataDiffList.mapToEntityForUser(it) }
+                    .getCurrentUserEitherFailure()
+                    .fold(
+                        ifLeft = { null },
+                        ifRight = { dataDiffList.mapToEntityForUser(it.id) }
+                    )
+            }
+            .map { mergedList ->
+                mergedList
+                    .map { it.raw }
+                    .filterNot { it.updatedIds.isEmpty() && it.deletedIds.isEmpty() }
             }
             .filter { it.isNotEmpty() }
 
-    private fun List<DataDiffDb>.mapToEntityForUser(userId: Int): List<DataDiffEntity> =
+    private fun List<DataDiffDb>.mapToEntityForUser(userId: Int): List<DataDiffEntity.Merged> =
         filter { it.userId == userId }
             .groupBy { BasenameDtoMapper.toEntity(it.basename) }
             .map { (basename, dbDiffList) ->
-                getDataDiff(userId, basename, dbDiffList)
+                DataDiffDtoMapper.toMergedEntity(
+                    userId = userId,
+                    basename = basename,
+                    dataDiffList = dbDiffList,
+                    getUpdated = ::selectUpdatedEntityList,
+                    getDeleted = ::selectDeletedEntityList
+                )
             }
-            .filterNot { it.updatedIds.isEmpty() && it.deletedIds.isEmpty() }
 
-    private fun getDataDiff(
-        userId: Int,
-        basename: Basename,
-        dataDiffList: List<DataDiffDb>
-    ): DataDiffEntity =
-        DataDiffDtoMapper.toEntity(
-            userId = userId,
-            basename = basename,
-            updated = dataDiffList
-                .map { dataDiff -> selectUpdatedEntityList(dataDiff.id) }
-                .flatten(),
-            deleted = dataDiffList
-                .map { dataDiff -> selectDeletedEntityList(dataDiff.id) }
-                .flatten()
-        )
-
-    private fun selectUpdatedEntityList(dataDiffId: Int): List<UpdatedEntityDb> =
+    private fun selectUpdatedEntityList(dataDiff: DataDiffDb): List<UpdatedEntityDb> =
         updatedEntityQueries
-            .selectByDataDiffId(dataDiffId)
+            .selectByDataDiffId(dataDiff.id)
             .executeAsList()
 
-    private fun selectDeletedEntityList(dataDiffId: Int): List<DeletedEntityDb> =
+    private fun selectDeletedEntityList(dataDiff: DataDiffDb): List<DeletedEntityDb> =
         deletedEntityQueries
-            .selectByDataDiffId(dataDiffId)
+            .selectByDataDiffId(dataDiff.id)
             .executeAsList()
 
-    override fun deleteBasenameData(basename: Basename, deletedIds: List<Int>) {
+    override suspend fun deleteBasenameData(basename: Basename, deletedIds: List<Int>) {
         if (deletedIds.isNotEmpty()) {
             val deleteById = when (basename) {
                 Basename.Subscription -> subscriptionQueries::deleteById
@@ -135,7 +146,7 @@ class SyncMixinGatewayImpl(
         }
     }
 
-    override suspend fun delete(list: List<DataDiffEntity>) {
+    override suspend fun delete(list: List<DataDiffEntity.Merged>) {
         for (diff in list)
             dataDiffQueries
                 .selectIds(BasenameDtoMapper.value(diff.basename), diff.userId)
@@ -145,6 +156,23 @@ class SyncMixinGatewayImpl(
                     updatedEntityQueries.deleteByDataDiffId(diffId)
                     dataDiffQueries.deleteById(diffId)
                 }
+    }
+
+    override suspend fun rawListHandled(list: List<DataDiffEntity.Raw>) {
+        for (raw in list) {
+            val basename = BasenameDtoMapper.value(raw.basename)
+            dataDiffQueries
+                .selectIds(basename, raw.userId)
+                .executeAsList()
+                .forEach { diffId ->
+                    dataDiffQueries.update(
+                        id = diffId,
+                        basename = basename,
+                        userId = raw.userId,
+                        handled = true
+                    )
+                }
+        }
     }
 
     override suspend fun diff(session: Session): Either<DataFailure, Pair<Timestamp, List<Basename>>> =
@@ -160,7 +188,7 @@ class SyncMixinGatewayImpl(
     override suspend fun updateData(
         session: Session,
         basename: Basename,
-        availableDiff: DataDiffEntity?
+        availableDiff: DataDiffEntity.Merged?
     ): Either<DataFailure, Unit> {
         val existsIds = availableDiff?.let { it.updatedIds + it.deletedIds } ?: emptyList()
         return updateDataNetworkClient
@@ -233,7 +261,7 @@ class SyncMixinGatewayImpl(
 
     private suspend fun handleClassList(list: List<ClassNetworkDto>): Either<DataFailure, Unit> {
         for (`class` in list)
-            classQueries.update(ClassDtoMapper.toDbDto(`class`))
+            classQueries.update(ClassDtoMapper.toDbDto(`class`, needToEmphasize = true))
         return appInfoGateway.checkClassDependencies(list)
     }
 

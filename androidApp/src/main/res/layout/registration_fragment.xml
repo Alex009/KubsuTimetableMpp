@@ -12,7 +12,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:menu="@menu/add_menu"
+        app:menu="@menu/confirm_menu"
         app:navigationIcon="@drawable/ic_arrow_back_24dp"
         app:title="@string/registration" />
 

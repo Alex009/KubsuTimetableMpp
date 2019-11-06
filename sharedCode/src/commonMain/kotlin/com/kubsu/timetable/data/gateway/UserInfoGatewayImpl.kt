@@ -27,10 +27,12 @@ class UserInfoGatewayImpl(
     private val sessionStorage: SessionStorage,
     private val tokenStorage: TokenStorage
 ) : UserInfoGateway {
-    override fun getCurrentUserOrNull(): UserEntity? =
+    override fun getCurrentUserEitherFailure(): Either<DataFailure, UserEntity> =
         userStorage
             .get()
             ?.let(UserDtoMapper::toEntity)
+            ?.let(Either.Companion::right)
+            ?: Either.left(DataFailure.NotAuthenticated("User == null"))
 
     override suspend fun updateUserInfo(
         session: Session,

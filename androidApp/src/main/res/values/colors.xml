@@ -8,6 +8,8 @@
     <color name="colorSecondaryVariant">#d9840d</color>
     <color name="colorOnSecondary">#000000</color>
 
+    <color name="colorAccent">#b71c1c</color>
+
     <color name="colorControl">@color/colorOnPrimary</color>
     <color name="colorSplash">#424242</color>
 </resources>

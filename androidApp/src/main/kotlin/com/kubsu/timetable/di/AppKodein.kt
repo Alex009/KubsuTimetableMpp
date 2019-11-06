@@ -5,13 +5,13 @@ import androidx.fragment.app.FragmentFactory
 import com.kubsu.timetable.di.modules.view.*
 import com.kubsu.timetable.di.platform.MyActivityLifecycleCallbacks
 import com.kubsu.timetable.di.platform.MyFragmentFactory
-import com.kubsu.timetable.platform.PlatformArgs
-import com.kubsu.timetable.platform.di.androidCommonKodein
 import org.kodein.di.Copy
 import org.kodein.di.Kodein
 import org.kodein.di.erased.bind
 import org.kodein.di.erased.instance
 import org.kodein.di.erased.singleton
+import platform.PlatformArgs
+import platform.di.androidCommonKodein
 
 fun appKodein(application: Application) = Kodein {
     extend(androidCommonKodein, copy = Copy.All)
@@ -24,6 +24,7 @@ fun appKodein(application: Application) = Kodein {
         bottomNavViewModule,
         settingsViewModule,
         registrationViewModule,
+        invalidateViewModule,
         createSubscriptionViewModule,
         subscriptionListViewModule,
         timetableViewModule

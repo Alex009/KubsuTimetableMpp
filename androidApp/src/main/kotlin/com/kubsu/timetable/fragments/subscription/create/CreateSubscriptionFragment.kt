@@ -61,7 +61,7 @@ class CreateSubscriptionFragment(
             }
             setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
-                    R.id.action_add -> {
+                    R.id.action_confirm -> {
                         connector bindAction Action.CreateSubscription(
                             subscriptionName = subscriptionTitle
                                 .text
@@ -77,11 +77,7 @@ class CreateSubscriptionFragment(
             }
         }
 
-        progressEffect bind {
-            with(view.progress_bar) {
-                if (it) show() else hide()
-            }
-        }
+        progressEffect bind view.progress_bar::setVisibleStatus
         titleTextEffect bind subscriptionTitle::setHint
         titleErrorEffect bind subscriptionTitle::showErrorMessage
 

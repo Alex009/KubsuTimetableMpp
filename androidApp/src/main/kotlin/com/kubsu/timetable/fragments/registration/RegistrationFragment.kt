@@ -41,7 +41,7 @@ class RegistrationFragment(
             }
             setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
-                    R.id.action_add -> {
+                    R.id.action_confirm -> {
                         Keyboard.hide(view)
                         connector bindAction Action.Registration(
                             email = view.email_input_layout.text,
@@ -59,11 +59,7 @@ class RegistrationFragment(
         view.email_input_layout.removeErrorAfterNewText()
         view.password_input_layout.removeErrorAfterNewText()
 
-        progressEffect bind {
-            with(view.progress_bar) {
-                if (it) show() else hide()
-            }
-        }
+        progressEffect bind view.progress_bar::setVisibleStatus
         emailErrorEffect bind view.email_input_layout::showErrorMessage
         passwordErrorEffect bind view.password_input_layout::showErrorMessage
         passwordsVaryEffects bind view.repeat_password_input_layout::showErrorMessage

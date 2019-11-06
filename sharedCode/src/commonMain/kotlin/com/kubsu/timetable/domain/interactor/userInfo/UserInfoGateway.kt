@@ -11,7 +11,7 @@ import com.kubsu.timetable.domain.entity.Timestamp
 import com.kubsu.timetable.domain.entity.UserEntity
 
 interface UserInfoGateway {
-    fun getCurrentUserOrNull(): UserEntity?
+    fun getCurrentUserEitherFailure(): Either<DataFailure, UserEntity>
 
     suspend fun updateUserInfo(
         session: Session,

@@ -1,9 +1,11 @@
 package com.kubsu.timetable.presentation.settings
 
-import com.kubsu.timetable.platform.SerializableModel
-import com.kubsu.timetable.platform.SerializeModel
+import platform.SerializableModel
+import platform.SerializeModel
 
 sealed class Action {
+    object Invalidate : Action()
+
     object Logout : Action()
 
     internal object SuccessLogout : Action()
@@ -22,4 +24,5 @@ sealed class Subscription {
 
 sealed class Screen {
     object SignIn : Screen()
+    object Invalidate : Screen()
 }

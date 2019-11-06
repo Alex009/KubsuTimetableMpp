@@ -94,4 +94,7 @@
     <string name="сlick_again_to_close">Click again to close</string>
     <string name="numerator_subtitle">Numerator, %1$s week</string>
     <string name="denominator_subtitle">Denominator, %1$s week</string>
+    <string name="attention">Attention!</string>
+    <string name="warning_before_validation">Before you confirm, make sure that you have a sufficient percentage of charge and the Internet connection is stable.</string>
+    <string name="cache_invalidation">Cache invalidation</string>
 </resources>

@@ -9,6 +9,13 @@
 
     <PreferenceCategory>
         <Preference
+            android:icon="@drawable/ic_delete_forever_24dp"
+            android:key="invalidation"
+            android:title="@string/cache_invalidation" />
+    </PreferenceCategory>
+
+    <PreferenceCategory>
+        <Preference
             android:icon="@drawable/ic_exit_to_app_24dp"
             android:key="logout"
             android:title="@string/logout" />

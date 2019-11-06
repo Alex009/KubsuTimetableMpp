@@ -6,11 +6,12 @@ classroom TEXT NOT NULL,
 classTimeId INTEGER as Int NOT NULL,
 day INTEGER as Int NOT NULL,
 lecturerId INTEGER as Int NOT NULL,
-timetableId INTEGER as Int NOT NULL
+timetableId INTEGER as Int NOT NULL,
+needToEmphasize INTEGER AS Boolean NOT NULL DEFAULT 0
 );
 
 update:
-INSERT OR REPLACE INTO classDb(id, title, typeOfClass, classroom, classTimeId, day, lecturerId, timetableId) VALUES ?;
+INSERT OR REPLACE INTO classDb(id, title, typeOfClass, classroom, classTimeId, day, lecturerId, timetableId, needToEmphasize) VALUES ?;
 
 selectAll:
 SELECT * FROM classDb;

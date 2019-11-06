@@ -11,7 +11,8 @@ object ClassDtoMapper {
     fun toEntity(
         networkDto: ClassNetworkDto,
         classTime: ClassTimeEntity,
-        lecturer: LecturerEntity
+        lecturer: LecturerEntity,
+        needToEmphasize: Boolean
     ): ClassEntity =
         ClassEntity(
             id = networkDto.id,
@@ -21,7 +22,8 @@ object ClassDtoMapper {
             classTime = classTime,
             day = DayDtoMapper.toEntity(networkDto.weekday),
             lecturer = lecturer,
-            timetableId = networkDto.timetableId
+            timetableId = networkDto.timetableId,
+            needToEmphasize = needToEmphasize
         )
 
     fun toEntity(
@@ -37,7 +39,8 @@ object ClassDtoMapper {
             classTime = classTime,
             day = DayDtoMapper.toEntity(dbDto.day),
             lecturer = lecturer,
-            timetableId = dbDto.timetableId
+            timetableId = dbDto.timetableId,
+            needToEmphasize = dbDto.needToEmphasize
         )
 
     fun toDbDto(
@@ -51,11 +54,13 @@ object ClassDtoMapper {
             classTimeId = entity.classTime.id,
             day = DayDtoMapper.value(entity.day),
             lecturerId = entity.lecturer.id,
-            timetableId = entity.timetableId
+            timetableId = entity.timetableId,
+            needToEmphasize = entity.needToEmphasize
         )
 
     fun toDbDto(
-        networkDto: ClassNetworkDto
+        networkDto: ClassNetworkDto,
+        needToEmphasize: Boolean
     ): ClassDb =
         ClassDb.Impl(
             id = networkDto.id,
@@ -65,7 +70,8 @@ object ClassDtoMapper {
             classTimeId = networkDto.classTimeId,
             day = networkDto.weekday,
             lecturerId = networkDto.lecturerId,
-            timetableId = networkDto.timetableId
+            timetableId = networkDto.timetableId,
+            needToEmphasize = needToEmphasize
         )
 
     fun toNetworkDto(

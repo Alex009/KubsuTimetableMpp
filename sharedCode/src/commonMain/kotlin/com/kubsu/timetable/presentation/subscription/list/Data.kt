@@ -2,9 +2,9 @@ package com.kubsu.timetable.presentation.subscription.list
 
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.SubscriptionFail
-import com.kubsu.timetable.platform.SerializableModel
-import com.kubsu.timetable.platform.SerializeModel
 import com.kubsu.timetable.presentation.timetable.model.SubscriptionModel
+import platform.SerializableModel
+import platform.SerializeModel
 
 sealed class Action {
     object UpdateData : Action()

@@ -14,7 +14,7 @@ import com.kubsu.timetable.data.network.dto.timetable.data.ClassNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.data.SubscriptionNetworkDto
 import com.kubsu.timetable.data.network.dto.timetable.data.TimetableNetworkDto
 import com.kubsu.timetable.data.storage.user.session.Session
-import com.kubsu.timetable.domain.interactor.timetable.AppInfoGateway
+import com.kubsu.timetable.domain.interactor.appinfo.AppInfoGateway
 import com.kubsu.timetable.extensions.toEitherList
 
 class AppInfoGatewayImpl(
@@ -37,6 +37,10 @@ class AppInfoGatewayImpl(
             subscriptionNetworkClient
                 .selectSubscriptionsForUser(session)
                 .flatMap {
+                    for (networkDto in it)
+                        subscriptionQueries.update(
+                            SubscriptionDtoMapper.toDbDto(networkDto)
+                        )
                     checkSubscriptionDependencies(it)
                 }
         else
@@ -47,13 +51,7 @@ class AppInfoGatewayImpl(
         list: List<SubscriptionNetworkDto>
     ): Either<DataFailure, Unit> =
         list
-            .map { subscription ->
-                checkAvailabilityOfTimetables(subscription).map {
-                    subscriptionQueries.update(
-                        SubscriptionDtoMapper.toDbDto(subscription)
-                    )
-                }
-            }
+            .map { checkAvailabilityOfTimetables(it) }
             .toEitherList()
             .map { Unit }
 
@@ -69,6 +67,10 @@ class AppInfoGatewayImpl(
             timetableNetworkClient
                 .selectTimetableList(subgroupId)
                 .flatMap {
+                    for (networkDto in it)
+                        timetableQueries.update(
+                            TimetableDtoMapper.toDbDto(networkDto)
+                        )
                     checkTimetableDependencies(it)
                 }
         else
@@ -81,11 +83,7 @@ class AppInfoGatewayImpl(
         list
             .map { timetable ->
                 checkAvailabilityOfClasses(timetable).flatMap {
-                    checkAvailabilityOfUniversityInfo(timetable).map {
-                        timetableQueries.update(
-                            TimetableDtoMapper.toDbDto(timetable)
-                        )
-                    }
+                    checkAvailabilityOfUniversityInfo(timetable)
                 }
             }
             .toEitherList()
@@ -118,6 +116,10 @@ class AppInfoGatewayImpl(
             timetableNetworkClient
                 .selectClassesByTimetableId(timetableId)
                 .flatMap {
+                    for (networkDto in it)
+                        classQueries.update(
+                            ClassDtoMapper.toDbDto(networkDto, needToEmphasize = false)
+                        )
                     checkClassDependencies(it)
                 }
         else
@@ -130,9 +132,7 @@ class AppInfoGatewayImpl(
         list
             .map { clazz ->
                 checkAvailabilityOfClassTime(clazz).flatMap {
-                    checkAvailabilityOfLecturer(clazz).map {
-                        classQueries.update(ClassDtoMapper.toDbDto(clazz))
-                    }
+                    checkAvailabilityOfLecturer(clazz)
                 }
             }
             .toEitherList()
@@ -162,5 +162,37 @@ class AppInfoGatewayImpl(
                 }
         else
             Either.right(Unit)
+    }
+
+    override suspend fun clearUserInfo(userId: Int) {
+        val subscriptions = subscriptionQueries.selectByUserId(userId).executeAsList()
+        for (subscription in subscriptions) {
+            subscriptionQueries.deleteById(subscription.id)
+            removeAllDependencies(subscription)
+        }
+    }
+
+    private fun removeAllDependencies(subscription: SubscriptionDb) {
+        val timetables =
+            timetableQueries.selectBySubgroupId(subscription.subgroupId).executeAsList()
+        for (timetable in timetables) {
+            timetableQueries.deleteById(timetable.id)
+            removeAllDependencies(timetable)
+        }
+    }
+
+    private fun removeAllDependencies(timetable: TimetableDb) {
+        universityInfoQueries.deleteByFacultyId(timetable.facultyId)
+
+        val classes = classQueries.selectByTimetableId(timetable.id).executeAsList()
+        for (clazz in classes) {
+            classQueries.deleteById(clazz.id)
+            removeAllDependencies(clazz)
+        }
+    }
+
+    private fun removeAllDependencies(clazz: ClassDb) {
+        classTimeQueries.deleteById(clazz.classTimeId)
+        lecturerQueries.deleteById(clazz.lecturerId)
     }
 }

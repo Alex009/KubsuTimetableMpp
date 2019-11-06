@@ -17,6 +17,7 @@ internal val mppCommonKodeinModule = Kodein.Module("mpp_common_module") {
     importAll(
         splashPresentationModule,
         settingsPresentationModule,
+        invalidatePresentationModule,
         signInPresentationModule,
         registrationPresentationModule,
         createSubscriptionPresentationModule,
@@ -27,6 +28,7 @@ internal val mppCommonKodeinModule = Kodein.Module("mpp_common_module") {
     // domain
     importAll(
         userDomainModule,
+        appInfoDomainModule,
         timetableDomainModule,
         subscriptionDomainModule,
         authDomainModule,

@@ -1,8 +1,8 @@
 package com.kubsu.timetable.presentation.timetable.model
 
-import com.kubsu.timetable.platform.SerializableModel
-import com.kubsu.timetable.platform.SerializeModel
 import com.soywiz.klock.DayOfWeek
+import platform.SerializableModel
+import platform.SerializeModel
 
 @SerializeModel
 data class ClassModel(
@@ -13,5 +13,6 @@ data class ClassModel(
     val classTime: ClassTimeModel,
     val day: DayOfWeek,
     val lecturer: LecturerModel,
-    val timetableId: Int
+    val timetableId: Int,
+    val needToEmphasize: Boolean
 ) : SerializableModel

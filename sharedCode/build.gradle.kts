@@ -19,7 +19,7 @@ kotlin {
     android()
     // This is for iPhone emulator
     // Switch here to iosArm64 (or iosArm32) to build library for iPhone device
-    iosX64("ios") {
+    iosArm64("ios") {
         binaries {
             framework("Shared")
         }

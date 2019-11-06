@@ -1,11 +1,15 @@
 CREATE TABLE dataDiffDb(
 id INTEGER as Int NOT NULL PRIMARY KEY AUTOINCREMENT,
 basename TEXT NOT NULL,
-userId INTEGER as Int NOT NULL
+userId INTEGER as Int NOT NULL,
+handled INTEGER AS Boolean NOT NULL DEFAULT 0
 );
 
 insert:
-INSERT INTO dataDiffDb(basename, userId) VALUES (?,?);
+INSERT INTO dataDiffDb(basename, userId, handled) VALUES (?,?,?);
+
+update:
+REPLACE INTO dataDiffDb(id, basename, userId, handled) VALUES (?,?,?,?);
 
 selectAll:
 SELECT * FROM dataDiffDb;

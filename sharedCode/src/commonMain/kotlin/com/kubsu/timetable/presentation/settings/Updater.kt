@@ -5,6 +5,12 @@ import com.egroden.teaco.Updater
 
 val settingsUpdater: Updater<State, Action, Subscription, SideEffect> = { state, action ->
     when (action) {
+        Action.Invalidate ->
+            UpdateResponse(
+                state,
+                subscription = Subscription.Navigate(Screen.Invalidate)
+            )
+
         Action.Logout ->
             UpdateResponse(
                 state,

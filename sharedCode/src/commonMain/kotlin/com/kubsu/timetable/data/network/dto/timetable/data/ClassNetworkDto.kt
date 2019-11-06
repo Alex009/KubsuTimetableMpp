@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class ClassNetworkDto(
+data class ClassNetworkDto(
     val id: Int,
     val title: String,
 

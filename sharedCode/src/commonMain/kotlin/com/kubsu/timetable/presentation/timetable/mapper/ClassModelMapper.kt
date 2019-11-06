@@ -13,7 +13,8 @@ object ClassModelMapper {
             classTime = ClassTimeModelMapper.toEntity(model.classTime),
             day = model.day,
             lecturer = LecturerModelMapper.toEntity(model.lecturer),
-            timetableId = model.timetableId
+            timetableId = model.timetableId,
+            needToEmphasize = model.needToEmphasize
         )
 
     fun toModel(entity: ClassEntity): ClassModel =
@@ -25,6 +26,7 @@ object ClassModelMapper {
             classTime = ClassTimeModelMapper.toModel(entity.classTime),
             day = entity.day,
             lecturer = LecturerModelMapper.toModel(entity.lecturer),
-            timetableId = entity.timetableId
+            timetableId = entity.timetableId,
+            needToEmphasize = entity.needToEmphasize
         )
 }

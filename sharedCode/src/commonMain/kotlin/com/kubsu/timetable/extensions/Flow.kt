@@ -4,6 +4,16 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 
+fun <T : Any> Flow<T>.withOldValue(update: (old: T, new: T) -> T): Flow<T> = flow {
+    var old: T? = null
+
+    collect { new ->
+        val result = old?.let { update(it, new) } ?: new
+        old = result
+        emit(result)
+    }
+}
+
 fun <T : Any> Flow<List<T>>.filterPrevious(): Flow<List<T>> = filterPreviousBy { it }
 
 fun <T : Any> Flow<List<T>>.filterPrevious(areEquivalent: (old: T, new: T) -> Boolean): Flow<List<T>> =

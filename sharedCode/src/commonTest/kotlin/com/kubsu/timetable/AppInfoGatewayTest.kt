@@ -67,8 +67,6 @@ class AppInfoGatewayTest {
         mockkObject(appInfoGateway)
         coEvery { appInfoGateway.checkAvailabilityOfClassTime(any()) } returns Either.right(Unit)
         coEvery { appInfoGateway.checkAvailabilityOfLecturer(any()) } returns Either.right(Unit)
-        coEvery { ClassDtoMapper.toDbDto(any<ClassNetworkDto>()) } returns mockk()
-        coEvery { classQueries.update(any()) } returns Unit
 
         val list = List<ClassNetworkDto>(10) {
             mockk {
@@ -89,8 +87,6 @@ class AppInfoGatewayTest {
             appInfoGateway.checkAvailabilityOfClassTime(any())
         } returns Either.left(DataFailure.ConnectionToRepository(""))
         coEvery { appInfoGateway.checkAvailabilityOfLecturer(any()) } returns Either.right(Unit)
-        coEvery { ClassDtoMapper.toDbDto(any<ClassNetworkDto>()) } returns mockk()
-        coEvery { classQueries.update(any()) } returns Unit
 
         val list = List<ClassNetworkDto>(10) {
             mockk {
@@ -111,8 +107,6 @@ class AppInfoGatewayTest {
         coEvery {
             appInfoGateway.checkAvailabilityOfLecturer(any())
         } returns Either.left(DataFailure.ConnectionToRepository(""))
-        coEvery { ClassDtoMapper.toDbDto(any<ClassNetworkDto>()) } returns mockk()
-        coEvery { classQueries.update(any()) } returns Unit
 
         val list = List<ClassNetworkDto>(10) {
             mockk {

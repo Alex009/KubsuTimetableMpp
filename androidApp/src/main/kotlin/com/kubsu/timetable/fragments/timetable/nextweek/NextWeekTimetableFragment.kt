@@ -38,7 +38,7 @@ class NextWeekTimetableFragment : BaseFragment(R.layout.timetable_fragment) {
             }
         }
 
-        val timetableAdapter = TimetableAdapter()
+        val timetableAdapter = TimetableAdapter(wasDisplayed = {})
         with(view.timetable_recycler_view) {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(view.context)

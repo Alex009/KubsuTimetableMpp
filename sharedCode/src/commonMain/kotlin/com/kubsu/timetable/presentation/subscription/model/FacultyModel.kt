@@ -1,7 +1,7 @@
 package com.kubsu.timetable.presentation.subscription.model
 
-import com.kubsu.timetable.platform.SerializableModel
-import com.kubsu.timetable.platform.SerializeModel
+import platform.SerializableModel
+import platform.SerializeModel
 
 @SerializeModel
 data class FacultyModel(

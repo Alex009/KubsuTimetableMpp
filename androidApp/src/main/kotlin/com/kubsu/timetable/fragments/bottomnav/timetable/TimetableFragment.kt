@@ -19,10 +19,7 @@ import com.kubsu.timetable.presentation.timetable.*
 import com.kubsu.timetable.presentation.timetable.model.TimetableModel
 import com.kubsu.timetable.presentation.timetable.model.TypeOfWeekModel
 import com.kubsu.timetable.presentation.timetable.model.UniversityInfoModel
-import com.kubsu.timetable.utils.UiEffect
-import com.kubsu.timetable.utils.bind
-import com.kubsu.timetable.utils.safeNavigate
-import com.kubsu.timetable.utils.unbind
+import com.kubsu.timetable.utils.*
 import kotlinx.android.synthetic.main.progress_bar.view.*
 import kotlinx.android.synthetic.main.timetable_fragment.view.*
 
@@ -31,7 +28,7 @@ class TimetableFragment(
     private val displayedSubscriptionStorage: DisplayedSubscriptionStorage
 ) : BaseFragment(R.layout.timetable_fragment) {
     private val connector by androidConnectors(featureFactory) {
-        bindAction(Action.UpdateData(displayedSubscriptionStorage.get()))
+        bindAction(Action.LoadData(displayedSubscriptionStorage.get()))
     }
 
     private val titleEffect = UiEffect("")
@@ -67,7 +64,9 @@ class TimetableFragment(
                 }
             }
         }
-        val timetableAdapter = TimetableAdapter()
+        val timetableAdapter = TimetableAdapter(
+            wasDisplayed = { connector bindAction Action.WasDisplayed(it) }
+        )
         val linearLayoutManager = LinearLayoutManager(view.context)
         with(view.timetable_recycler_view) {
             setHasFixedSize(true)
@@ -77,11 +76,7 @@ class TimetableFragment(
 
         titleEffect bind view.toolbar::setTitle
         subtitleEffect bind view.toolbar::setSubtitle
-        progressEffect bind {
-            with(view.progress_bar) {
-                if (it) show() else hide()
-            }
-        }
+        progressEffect bind view.progress_bar::setVisibleStatus
         currentTimetableEffect bind { timetableModel ->
             val timetableInfoList = timetableModel?.infoList ?: emptyList()
             val listIsEmpty = timetableInfoList.isEmpty()

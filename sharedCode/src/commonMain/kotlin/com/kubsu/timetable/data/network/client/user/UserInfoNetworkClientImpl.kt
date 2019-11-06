@@ -13,12 +13,12 @@ import com.kubsu.timetable.data.storage.user.session.Session
 import com.kubsu.timetable.data.storage.user.token.Token
 import com.kubsu.timetable.domain.entity.Timestamp
 import com.kubsu.timetable.extensions.*
-import com.kubsu.timetable.platform.currentPlatformName
 import io.ktor.client.request.get
 import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.response.HttpResponse
 import kotlinx.serialization.ImplicitReflectionSerializer
+import platform.currentPlatformName
 
 class UserInfoNetworkClientImpl(
     private val networkSender: NetworkSender
@@ -57,7 +57,7 @@ class UserInfoNetworkClientImpl(
                         "email" to email.toJson(),
                         "password" to password.toJson(),
                         "token" to (token?.value ?: "").toJson(),
-                        "" to currentPlatformName.toJson()
+                        "platform" to currentPlatformName.toJson()
                     )
                 }.also(::validate)
             }
@@ -261,7 +261,7 @@ class UserInfoNetworkClientImpl(
                     addSessionKey(session)
                     body = jsonContent(
                         "token" to token.value.toJson(),
-                        "" to currentPlatformName.toJson()
+                        "platform" to currentPlatformName.toJson()
                     )
                 }
             }.mapLeft(::toNetworkFail)

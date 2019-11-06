@@ -10,5 +10,6 @@ data class ClassEntity(
     val classTime: ClassTimeEntity,
     val day: DayOfWeek,
     val lecturer: LecturerEntity,
-    val timetableId: Int
+    val timetableId: Int,
+    val needToEmphasize: Boolean
 )

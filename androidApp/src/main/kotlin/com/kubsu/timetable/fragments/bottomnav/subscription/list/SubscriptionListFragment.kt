@@ -14,12 +14,9 @@ import com.kubsu.timetable.fragments.bottomnav.BottomNavFragmentDirections
 import com.kubsu.timetable.fragments.bottomnav.subscription.list.adapter.SubscriptionAdapter
 import com.kubsu.timetable.presentation.subscription.list.*
 import com.kubsu.timetable.presentation.timetable.model.SubscriptionModel
-import com.kubsu.timetable.utils.UiEffect
-import com.kubsu.timetable.utils.bind
-import com.kubsu.timetable.utils.safeNavigate
+import com.kubsu.timetable.utils.*
 import com.kubsu.timetable.utils.ui.materialAlert
 import com.kubsu.timetable.utils.ui.sheetMenu
-import com.kubsu.timetable.utils.unbind
 import kotlinx.android.synthetic.main.add_floating_action_button.view.*
 import kotlinx.android.synthetic.main.progress_bar.view.*
 import kotlinx.android.synthetic.main.subscription_list_fragment.view.*
@@ -67,11 +64,7 @@ class SubscriptionListFragment(
             connector bindAction Action.CreateSubscription
         }
 
-        progressEffect bind {
-            with(view.progress_bar) {
-                if (it) show() else hide()
-            }
-        }
+        progressEffect bind view.progress_bar::setVisibleStatus
         subscriptionListEffect bind { subscriptionList ->
             val listIsEmpty = subscriptionList.isEmpty()
             view.empty_list_layout.isVisible = listIsEmpty && !progressEffect.value

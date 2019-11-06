@@ -5,9 +5,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.kubsu.timetable.R
+import com.kubsu.timetable.presentation.timetable.model.ClassModel
 import com.kubsu.timetable.presentation.timetable.model.TimetableInfoToDisplay
 
-class TimetableAdapter : RecyclerView.Adapter<TimetableViewHolder>() {
+class TimetableAdapter(
+    private val wasDisplayed: (ClassModel) -> Unit
+) : RecyclerView.Adapter<TimetableViewHolder>() {
     private var timetableList = listOf<TimetableInfoToDisplay>()
 
     private val classViewHolderId = 0
@@ -31,6 +34,7 @@ class TimetableAdapter : RecyclerView.Adapter<TimetableViewHolder>() {
         return when (viewType) {
             classViewHolderId ->
                 TimetableViewHolder.Class(
+                    wasDisplayed,
                     inflater.inflate(R.layout.item_class, parent, false)
                 )
 

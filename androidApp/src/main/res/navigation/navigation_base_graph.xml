@@ -62,6 +62,9 @@
         <action
             android:id="@+id/action_bottomNavFragment_to_showClassFragment"
             app:destination="@id/showClassFragment" />
+        <action
+            android:id="@+id/action_bottomNavFragment_to_invalidateFragment"
+            app:destination="@id/invalidateFragment" />
     </fragment>
 
     <fragment
@@ -106,4 +109,13 @@
         android:name="com.kubsu.timetable.fragments.timetable.showClass.ShowClassFragment"
         android:label="show_class_fragment"
         tools:layout="@layout/show_class_fragment" />
+    <fragment
+        android:id="@+id/invalidateFragment"
+        android:name="com.kubsu.timetable.fragments.invalidate.InvalidateFragment"
+        android:label="invalidate_fragment"
+        tools:layout="@layout/invalidate_fragment">
+        <action
+            android:id="@+id/action_invalidateFragment_to_bottomNavFragment"
+            app:destination="@id/bottomNavFragment" />
+    </fragment>
 </navigation>

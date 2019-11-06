@@ -2,8 +2,6 @@ package com.kubsu.timetable.data.gateway
 
 import com.kubsu.timetable.data.db.timetable.*
 import com.kubsu.timetable.data.mapper.timetable.data.*
-import com.kubsu.timetable.data.network.dto.timetable.data.ClassNetworkDto
-import com.kubsu.timetable.data.network.dto.timetable.data.TimetableNetworkDto
 import com.kubsu.timetable.domain.entity.timetable.data.*
 import com.kubsu.timetable.domain.interactor.timetable.TimetableGateway
 import com.kubsu.timetable.extensions.getWeekNumber
@@ -57,12 +55,11 @@ class TimetableGatewayImpl(
             .selectBySubgroupId(subgroupId)
             .asFlow()
             .mapToList()
-            .map { it.map(TimetableDtoMapper::toNetworkDto) }
             .flatMapLatest { toTimetableEntityList(it) }
 
     @UseExperimental(ExperimentalCoroutinesApi::class)
     private fun toTimetableEntityList(
-        timetableList: List<TimetableNetworkDto>
+        timetableList: List<TimetableDb>
     ): Flow<List<TimetableEntity>> {
         val flows = timetableList.map { timetable ->
             selectClassList(timetable.id).map {
@@ -83,12 +80,11 @@ class TimetableGatewayImpl(
             .selectByTimetableId(timetableId)
             .asFlow()
             .mapToList()
-            .map { it.map(ClassDtoMapper::toNetworkDto) }
             .flatMapLatest { toClassEntityListFlow(it) }
 
     @UseExperimental(ExperimentalCoroutinesApi::class)
     private fun toClassEntityListFlow(
-        classList: List<ClassNetworkDto>
+        classList: List<ClassDb>
     ): Flow<List<ClassEntity>> {
         val flows = classList.map { clazz ->
             selectClassTimeFlow(clazz.classTimeId)
@@ -115,4 +111,10 @@ class TimetableGatewayImpl(
             .asFlow()
             .mapToOne()
             .map { LecturerDtoMapper.toEntity(it) }
+
+    override suspend fun changesWasDisplayed(clazz: ClassEntity) {
+        val classDb = classQueries.selectById(clazz.id).executeAsOne()
+        if (classDb.needToEmphasize)
+            classQueries.update(ClassDtoMapper.toDbDto(clazz.copy(needToEmphasize = false)))
+    }
 }

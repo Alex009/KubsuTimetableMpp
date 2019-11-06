@@ -6,7 +6,7 @@ import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SignInFail
 import com.kubsu.timetable.UserInfoFail
 import com.kubsu.timetable.domain.entity.UserEntity
-import com.kubsu.timetable.domain.interactor.timetable.AppInfoGateway
+import com.kubsu.timetable.domain.interactor.appinfo.AppInfoGateway
 import com.kubsu.timetable.domain.interactor.userInfo.UserInfoGateway
 import com.kubsu.timetable.extensions.def
 
