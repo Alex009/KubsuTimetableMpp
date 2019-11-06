@@ -11,6 +11,7 @@ import com.kubsu.timetable.fragments.registration.RegistrationFragment
 import com.kubsu.timetable.fragments.signin.SignInFragment
 import com.kubsu.timetable.fragments.splash.SplashFragment
 import com.kubsu.timetable.fragments.subscription.create.CreateSubscriptionFragment
+import com.kubsu.timetable.fragments.timetable.nextweek.NextWeekTimetableFragment
 import com.kubsu.timetable.utils.nameOf
 import org.kodein.di.DKodeinAware
 import org.kodein.di.erased.instance
@@ -36,6 +37,8 @@ class MyFragmentFactory(private val kodein: DKodeinAware) : FragmentFactory() {
                 instance<SubscriptionListFragment>()
             nameOf<TimetableFragment>() ->
                 instance<TimetableFragment>()
+            nameOf<NextWeekTimetableFragment>() ->
+                instance<NextWeekTimetableFragment>()
             else ->
                 super.instantiate(classLoader, className)
         }
