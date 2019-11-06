@@ -37,7 +37,14 @@ class InformationSynchronizerImpl(
         syncJob?.cancel()
         syncJob = scope.launch(Dispatchers.Default) {
             updateToken(onFailure)
-            syncData(onFailure)
+
+            // because at the first start there will be a fail
+            // and you need to listen to the push
+            syncMixinInteractor
+                .syncData()
+                .mapLeft(onFailure)
+
+            subscribeOnPushUpdates(onFailure)
         }
     }
 
@@ -47,9 +54,9 @@ class InformationSynchronizerImpl(
         }
     }
 
-    private suspend fun syncData(onFailure: (DataFailure) -> Unit) =
+    private suspend fun subscribeOnPushUpdates(onFailure: (DataFailure) -> Unit) =
         syncMixinInteractor
-            .syncDataAndObserveUpdates()
+            .subscribeOnPushUpdates()
             .collect { either ->
                 either.mapLeft(onFailure)
             }

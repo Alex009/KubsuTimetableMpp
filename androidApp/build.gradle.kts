@@ -20,7 +20,7 @@ android {
         minSdkVersion(21)
         targetSdkVersion(29)
 
-        versionName = "0.3.3-rc02"
+        versionName = "0.4.0"
         versionCode = 25
 
         base.archivesBaseName = "${applicationName}_$versionName"

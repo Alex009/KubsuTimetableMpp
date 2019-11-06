@@ -1,6 +1,8 @@
 package com.kubsu.timetable.domain.interactor.sync
 
-import com.egroden.teaco.*
+import com.egroden.teaco.Either
+import com.egroden.teaco.flatMap
+import com.egroden.teaco.right
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.data.storage.user.session.Session
 import com.kubsu.timetable.domain.entity.Basename
@@ -8,7 +10,6 @@ import com.kubsu.timetable.domain.entity.diff.DataDiffEntity
 import com.kubsu.timetable.domain.interactor.userInfo.UserInfoGateway
 import com.kubsu.timetable.extensions.def
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 class SyncMixinInteractorImpl(
@@ -19,38 +20,26 @@ class SyncMixinInteractorImpl(
         mixinGateway.registerDataDiff(entity)
     }
 
-    override suspend fun syncDataAndObserveUpdates(): Flow<Either<DataFailure, Unit>> = def {
+    override suspend fun syncData(): Either<DataFailure, Unit> = def {
         userInfoGateway
             .getCurrentSessionEitherFail()
             .flatMap { session ->
                 mixinGateway
                     .checkMigrations(session, userInfoGateway.getCurrentTokenOrNull())
                     .flatMap {
-                        syncData().map { subscribeOnPushUpdates() }
-                    }
-            }
-            .fold(
-                ifLeft = { flowOf(Either.left(it)) },
-                ifRight = ::identity
-            )
-    }
-
-    override suspend fun syncData(): Either<DataFailure, Unit> = def {
-        userInfoGateway
-            .getCurrentSessionEitherFail()
-            .flatMap { session ->
-                val diffList = mixinGateway.getAvailableDiffList()
-                val rowDiffList = diffList.map(DataDiffEntity.Merged::raw)
-                handleAvailableDiffList(session, rowDiffList).flatMap {
-                    mixinGateway
-                        .diff(session)
-                        .flatMap { (newTimestamp, basenameList) ->
-                            updateData(session, basenameList, diffList).flatMap {
-                                mixinGateway.delete(diffList)
-                                userInfoGateway.updateTimestamp(newTimestamp)
-                            }
+                        val diffList = mixinGateway.getAvailableDiffList()
+                        val rowDiffList = diffList.map(DataDiffEntity.Merged::raw)
+                        handleAvailableDiffList(session, rowDiffList).flatMap {
+                            mixinGateway
+                                .diff(session)
+                                .flatMap { (newTimestamp, basenameList) ->
+                                    updateData(session, basenameList, diffList).flatMap {
+                                        mixinGateway.delete(diffList)
+                                        userInfoGateway.updateTimestamp(newTimestamp)
+                                    }
+                                }
                         }
-                }
+                    }
             }
     }
 
@@ -84,7 +73,7 @@ class SyncMixinInteractorImpl(
             .firstOrNull { it is Either.Left }
             ?: Either.right(Unit)
 
-    private fun subscribeOnPushUpdates(): Flow<Either<DataFailure, Unit>> =
+    override fun subscribeOnPushUpdates(): Flow<Either<DataFailure, Unit>> =
         mixinGateway
             .rowDataDiffListFlow()
             .map { diffList ->

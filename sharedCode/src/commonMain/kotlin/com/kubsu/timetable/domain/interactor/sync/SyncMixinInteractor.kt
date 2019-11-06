@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 interface SyncMixinInteractor {
     suspend fun registerDataDiff(entity: DataDiffEntity.Raw)
 
-    suspend fun syncDataAndObserveUpdates(): Flow<Either<DataFailure, Unit>>
-
     suspend fun syncData(): Either<DataFailure, Unit>
+
+    fun subscribeOnPushUpdates(): Flow<Either<DataFailure, Unit>>
 }
