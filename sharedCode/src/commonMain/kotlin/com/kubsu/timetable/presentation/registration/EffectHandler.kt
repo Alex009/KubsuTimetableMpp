@@ -5,6 +5,7 @@ import com.egroden.teaco.fold
 import com.kubsu.timetable.domain.interactor.auth.AuthInteractor
 import com.kubsu.timetable.extensions.checkWhenAllHandled
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 
 class RegistrationEffectHandler(
@@ -25,8 +26,18 @@ class RegistrationEffectHandler(
                                 ifData = { emit(Action.ShowDataFailure(it)) }
                             )
                         },
-                        ifRight = { emit(Action.ShowResult) }
+                        ifRight = { startSignIn(sideEffect.email, sideEffect.password) }
                     )
         }.checkWhenAllHandled()
     }
+
+    private suspend fun FlowCollector<Action>.startSignIn(email: String, password: String) =
+        authInteractor
+            .signInTransaction(email, password)
+            .fold(
+                ifLeft = { emit(Action.ShowDataFailure(it.data ?: emptyList())) },
+                ifRight = {
+                    emit(Action.ShowResult)
+                }
+            )
 }

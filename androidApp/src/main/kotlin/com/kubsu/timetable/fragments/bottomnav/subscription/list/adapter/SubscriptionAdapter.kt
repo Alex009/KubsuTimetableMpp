@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.kubsu.timetable.R
 import com.kubsu.timetable.presentation.timetable.model.SubscriptionModel
+import com.kubsu.timetable.utils.setColoredBackground
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_subscription.view.*
 
@@ -53,12 +54,20 @@ class SubscriptionAdapter(
     ) : RecyclerView.ViewHolder(containerView),
         LayoutContainer {
         fun bind(subscription: SubscriptionModel) = with(containerView) {
-            text_view.text = subscription.title
-            text_view.setOnClickListener { onClick(subscription) }
-            text_view.setOnLongClickListener {
+            name_text_view.text = subscription.title
+            name_text_view.setOnClickListener { onClick(subscription) }
+            name_text_view.setOnLongClickListener {
                 onLongClick(subscription)
                 true
             }
+
+            val (color, text) = if (subscription.numberOfUpdatedClasses > 0)
+                getColorAccent(subscription) to subscription.numberOfUpdatedClasses.toString()
+            else
+                android.R.color.transparent to ""
+
+            count_text_view.setColoredBackground(color)
+            count_text_view.text = text
 
             image_button.setImageResource(
                 if (subscription.isMain)
@@ -70,5 +79,11 @@ class SubscriptionAdapter(
                 changeSubscriptionStatus(subscription)
             }
         }
+
+        private fun getColorAccent(subscription: SubscriptionModel) =
+            if (subscription.isMain)
+                R.color.colorAccentPrimary
+            else
+                R.color.colorAccentSecondary
     }
 }

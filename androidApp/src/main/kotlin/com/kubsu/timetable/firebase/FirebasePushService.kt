@@ -2,18 +2,16 @@ package com.kubsu.timetable.firebase
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC
 import androidx.core.app.NotificationManagerCompat
+import androidx.navigation.NavDeepLinkBuilder
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.kubsu.timetable.R
 import com.kubsu.timetable.base.App
-import com.kubsu.timetable.base.AppActivity
 import com.kubsu.timetable.data.mapper.diff.DataDiffDtoMapper
 import com.kubsu.timetable.data.network.dto.diff.DataDiffNetworkDto
 import com.kubsu.timetable.data.storage.user.token.UndeliveredToken
@@ -53,8 +51,10 @@ class FirebasePushService : FirebaseMessagingService(), KodeinAware {
     }
 
     private fun showNotification(notificationId: Int) {
-        val intent = Intent(this, AppActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
+        val pendingIntent = NavDeepLinkBuilder(this)
+            .setGraph(R.navigation.bottom_nav_graph)
+            .setDestination(R.id.subscriptionListFragment)
+            .createPendingIntent()
 
         val channelId = getString(R.string.default_notification_channel_id)
         val notificationBuilder = NotificationCompat.Builder(this, channelId)

@@ -1,6 +1,8 @@
 package com.kubsu.timetable.utils
 
 import android.content.Context
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.view.MenuItem
 import android.widget.Spinner
 import android.widget.TextView
@@ -15,10 +17,10 @@ import com.google.android.material.textfield.TextInputLayout
 inline fun <reified T> nameOf(): String =
     T::class.java.name
 
-fun ComponentActivity.toast(resId: Int) =
+fun ComponentActivity.toast(resId: Int): Unit =
     Toast.makeText(this, resId, Toast.LENGTH_SHORT).show()
 
-fun Context.getCompatColor(resId: Int) =
+fun Context.getCompatColor(resId: Int): Int =
     ContextCompat.getColor(this, resId)
 
 fun Context.convertDpToPx(dp: Int): Int =
@@ -53,6 +55,12 @@ fun TextInputLayout.showErrorMessage(messageRes: Int) {
 val TextInputLayout.text: String
     inline get() = editText?.text.toString()
 
+fun TextView.setColoredBackground(colorRes: Int) {
+    background.colorFilter = PorterDuffColorFilter(
+        context.getCompatColor(colorRes),
+        PorterDuff.Mode.SRC_OVER
+    )
+}
 fun Spinner.showErrorMessage(messageRes: Int) {
     val view = selectedView as TextView
     view.error = null

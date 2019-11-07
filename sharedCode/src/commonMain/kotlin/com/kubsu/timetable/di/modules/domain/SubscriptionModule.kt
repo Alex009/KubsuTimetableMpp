@@ -16,6 +16,12 @@ internal val subscriptionDomainModule = Kodein.Module("subscription_domain") {
     }
     bind<SubscriptionGateway>() with singleton {
         val db = instance<MyDatabase>()
-        SubscriptionGatewayImpl(db.subscriptionQueries, instance(), instance())
+        SubscriptionGatewayImpl(
+            subscriptionQueries = db.subscriptionQueries,
+            timetableQueries = db.timetableQueries,
+            classQueries = db.classQueries,
+            universityDataNetworkClient = instance(),
+            subscriptionNetworkClient = instance()
+        )
     }
 }

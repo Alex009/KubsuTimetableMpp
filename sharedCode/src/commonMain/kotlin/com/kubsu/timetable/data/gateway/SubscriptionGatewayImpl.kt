@@ -7,7 +7,10 @@ import com.egroden.teaco.map
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.SubscriptionFail
+import com.kubsu.timetable.data.db.timetable.ClassQueries
+import com.kubsu.timetable.data.db.timetable.SubscriptionDb
 import com.kubsu.timetable.data.db.timetable.SubscriptionQueries
+import com.kubsu.timetable.data.db.timetable.TimetableQueries
 import com.kubsu.timetable.data.mapper.timetable.data.SubscriptionDtoMapper
 import com.kubsu.timetable.data.mapper.timetable.select.FacultyDtoMapper
 import com.kubsu.timetable.data.mapper.timetable.select.GroupDtoMapper
@@ -25,11 +28,14 @@ import com.kubsu.timetable.domain.entity.timetable.select.SubgroupEntity
 import com.kubsu.timetable.domain.interactor.subscription.SubscriptionGateway
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import com.squareup.sqldelight.runtime.coroutines.mapToOne
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.*
 
 class SubscriptionGatewayImpl(
     private val subscriptionQueries: SubscriptionQueries,
+    private val timetableQueries: TimetableQueries,
+    private val classQueries: ClassQueries,
     private val universityDataNetworkClient: UniversityDataNetworkClient,
     private val subscriptionNetworkClient: SubscriptionNetworkClient
 ) : SubscriptionGateway {
@@ -84,6 +90,7 @@ class SubscriptionGatewayImpl(
                 )
             }
 
+    @UseExperimental(ExperimentalCoroutinesApi::class)
     override fun getAllSubscriptionsFlow(
         user: UserEntity
     ): Flow<List<SubscriptionEntity>> =
@@ -91,7 +98,39 @@ class SubscriptionGatewayImpl(
             .selectByUserId(user.id)
             .asFlow()
             .mapToList()
-            .map { it.map(SubscriptionDtoMapper::toEntity) }
+            .flatMapLatest(::toSubscriptionEntityList)
+
+    @UseExperimental(ExperimentalCoroutinesApi::class)
+    private suspend fun toSubscriptionEntityList(
+        subscriptionList: List<SubscriptionDb>
+    ): Flow<List<SubscriptionEntity>> {
+        val flows = subscriptionList.map { subscription ->
+            numberOfUpdatedClassesFlow(subscription).map {
+                SubscriptionDtoMapper.toEntity(subscription, it)
+            }
+        }
+        return if (flows.isNotEmpty())
+            combine(flows, transform = { it.toList() })
+        else
+            flowOf(emptyList())
+    }
+
+    @UseExperimental(ExperimentalCoroutinesApi::class)
+    private fun numberOfUpdatedClassesFlow(subscription: SubscriptionDb): Flow<Long> {
+        val flows = timetableQueries
+            .selectBySubgroupId(subscription.subgroupId)
+            .executeAsList()
+            .map {
+                classQueries
+                    .countUpdatedForTimetable(it.id)
+                    .asFlow()
+                    .mapToOne()
+            }
+        return if (flows.isNotEmpty())
+            combine(flows, transform = { it.sum() })
+        else
+            flowOf(0)
+    }
 
     override suspend fun update(
         session: Session,

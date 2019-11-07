@@ -27,7 +27,7 @@ class DisplayedSubscriptionStorageImpl(
             && userId != null
             && subgroupId != null
         )
-            SubscriptionModel(id, title, userId, subgroupId, isMain)
+            SubscriptionModel(id, title, userId, subgroupId, isMain, 0)
         else
             null
     }

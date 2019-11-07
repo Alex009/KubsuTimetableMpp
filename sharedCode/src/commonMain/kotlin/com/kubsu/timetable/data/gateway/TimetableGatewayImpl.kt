@@ -55,10 +55,10 @@ class TimetableGatewayImpl(
             .selectBySubgroupId(subgroupId)
             .asFlow()
             .mapToList()
-            .flatMapLatest { toTimetableEntityList(it) }
+            .flatMapLatest(::toTimetableEntityList)
 
     @UseExperimental(ExperimentalCoroutinesApi::class)
-    private fun toTimetableEntityList(
+    private suspend fun toTimetableEntityList(
         timetableList: List<TimetableDb>
     ): Flow<List<TimetableEntity>> {
         val flows = timetableList.map { timetable ->
@@ -80,10 +80,10 @@ class TimetableGatewayImpl(
             .selectByTimetableId(timetableId)
             .asFlow()
             .mapToList()
-            .flatMapLatest { toClassEntityListFlow(it) }
+            .flatMapLatest(::toClassEntityListFlow)
 
     @UseExperimental(ExperimentalCoroutinesApi::class)
-    private fun toClassEntityListFlow(
+    private suspend fun toClassEntityListFlow(
         classList: List<ClassDb>
     ): Flow<List<ClassEntity>> {
         val flows = classList.map { clazz ->

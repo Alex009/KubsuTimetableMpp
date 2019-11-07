@@ -10,7 +10,8 @@ object SubscriptionModelMapper {
             title = model.title,
             userId = model.userId,
             subgroupId = model.subgroupId,
-            isMain = model.isMain
+            isMain = model.isMain,
+            numberOfUpdatedClasses = model.numberOfUpdatedClasses
         )
 
     fun toModel(entity: SubscriptionEntity): SubscriptionModel =
@@ -19,6 +20,7 @@ object SubscriptionModelMapper {
             title = entity.title,
             subgroupId = entity.subgroupId,
             isMain = entity.isMain,
-            userId = entity.userId
+            userId = entity.userId,
+            numberOfUpdatedClasses = entity.numberOfUpdatedClasses
         )
 }

@@ -25,7 +25,7 @@ val registrationUpdater: Updater<State, Action, Subscription, SideEffect> = { st
         Action.ShowResult ->
             UpdateResponse(
                 state = state.copy(progress = false),
-                subscription = Subscription.Navigate(Screen.SignIn)
+                subscription = Subscription.Navigate(Screen.CreateSubscription)
             )
 
         is Action.ShowRegistrationFailure ->

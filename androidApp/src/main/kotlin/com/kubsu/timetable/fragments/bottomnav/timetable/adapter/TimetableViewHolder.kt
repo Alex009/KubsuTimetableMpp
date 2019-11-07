@@ -52,7 +52,7 @@ sealed class TimetableViewHolder(
             finish_class_time_text_view.text = classTime.end
 
             val (color, width) = if (`class`.needToEmphasize)
-                R.color.colorAccent to 3
+                R.color.colorAccentPrimary to 3
             else
                 R.color.colorSecondary to 1
 

@@ -69,7 +69,10 @@ class NextWeekTimetableFragment(
         view.empty_list_layout.isVisible = listIsEmpty
         view.timetable_recycler_view.isVisible = !listIsEmpty
 
-        timetableAdapter.setData(timetableInfoList)
+        timetableAdapter.setData(
+            newList = timetableInfoList,
+            onFirst = {}
+        )
     }
 
     private fun render(state: State) = Unit

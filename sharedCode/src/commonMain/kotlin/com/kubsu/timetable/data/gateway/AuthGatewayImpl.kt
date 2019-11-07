@@ -20,11 +20,13 @@ import com.kubsu.timetable.data.storage.user.token.DeliveredToken
 import com.kubsu.timetable.data.storage.user.token.Token
 import com.kubsu.timetable.data.storage.user.token.TokenStorage
 import com.kubsu.timetable.domain.entity.UserEntity
+import com.kubsu.timetable.domain.interactor.appinfo.AppInfoGateway
 import com.kubsu.timetable.domain.interactor.auth.AuthGateway
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class AuthGatewayImpl(
+    private val appInfoGateway: AppInfoGateway,
     private val dataDiffQueries: DataDiffQueries,
     private val updatedEntityQueries: UpdatedEntityQueries,
     private val deletedEntityQueries: DeletedEntityQueries,
@@ -60,9 +62,12 @@ class AuthGatewayImpl(
         userInfoNetworkClient.registration(email, password)
 
     override suspend fun logout(session: Session) {
-        deleteUserInfo()
-        GlobalScope.launch {
-            userInfoNetworkClient.logout(session)
+        userStorage.get()?.id?.let { userId ->
+            appInfoGateway.clearUserInfo(userId)
+            deleteUserInfo()
+            GlobalScope.launch {
+                userInfoNetworkClient.logout(session)
+            }
         }
     }
 

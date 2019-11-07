@@ -9,5 +9,6 @@ data class SubscriptionModel(
     val title: String,
     val userId: Int,
     val subgroupId: Int,
-    val isMain: Boolean
+    val isMain: Boolean,
+    val numberOfUpdatedClasses: Long
 ) : SerializableModel

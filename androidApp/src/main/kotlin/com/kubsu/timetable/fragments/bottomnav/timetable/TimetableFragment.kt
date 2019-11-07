@@ -83,10 +83,14 @@ class TimetableFragment(
             view.empty_list_layout.isVisible = listIsEmpty && !progressEffect.value
             view.timetable_recycler_view.isVisible = !listIsEmpty
 
-            timetableAdapter.setData(timetableInfoList)
-            timetableInfoList
-                .indexOfNearestDayOrNull()
-                ?.let(linearLayoutManager::scrollToPosition)
+            timetableAdapter.setData(
+                newList = timetableInfoList,
+                onFirst = {
+                    timetableInfoList
+                        .indexOfNearestDayOrNull()
+                        ?.let(linearLayoutManager::scrollToPosition)
+                }
+            )
         }
     }
 

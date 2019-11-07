@@ -27,3 +27,6 @@ DELETE FROM classDb WHERE id = ?;
 
 deleteAll:
 DELETE FROM classDb;
+
+countUpdatedForTimetable:
+SELECT COUNT(*) FROM classDb WHERE timetableId = ? AND needToEmphasize = 1;

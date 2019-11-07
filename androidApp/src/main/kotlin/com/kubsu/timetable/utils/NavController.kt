@@ -8,9 +8,11 @@ import androidx.navigation.findNavController
 import com.egroden.teaco.identity
 import com.kubsu.timetable.R
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicReference
 
 fun Fragment.safePopBackStack(): Boolean {
     if (isStateSaved) return false
@@ -25,17 +27,23 @@ fun ComponentActivity.popBackStackOrClose(): Boolean =
     }
 
 private val clickCount = AtomicInteger(0)
+private val job = AtomicReference<Job?>(null)
 
 private fun ComponentActivity.popBackStackOrClose(viewId: Int): Boolean =
     findNavController(viewId)
         .popBackStack()
         .takeIf(::identity)
         ?: run {
-            GlobalScope.launch {
-                delay(700)
-                clickCount.set(0)
-            }
-            if (clickCount.incrementAndGet() == 2) {
+            val old = job.getAndSet(
+                GlobalScope.launch {
+                    delay(1000)
+                    clickCount.set(0)
+                }
+            )
+            old?.cancel()
+            val count = clickCount.incrementAndGet()
+
+            if (count == 2) {
                 closeApp()
             } else {
                 toast(R.string.сlick_again_to_close)

@@ -16,16 +16,23 @@ class TimetableAdapter(
     private val classViewHolderId = 0
     private val workingDayViewHolderId = 1
 
-    fun setData(list: List<TimetableInfoToDisplay>) {
+    fun setData(
+        newList: List<TimetableInfoToDisplay>,
+        onFirst: () -> Unit
+    ) {
+        val oldList = timetableList
         val diffResult = DiffUtil.calculateDiff(
             TimetableDiffUtilCallback(
-                oldList = timetableList,
-                newList = list
+                oldList = oldList,
+                newList = newList
             ),
-            false
+            true
         )
-        timetableList = list
+        timetableList = newList
         diffResult.dispatchUpdatesTo(this)
+
+        if (oldList.isEmpty() && newList.isNotEmpty())
+            onFirst()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimetableViewHolder {

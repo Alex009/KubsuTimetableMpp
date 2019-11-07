@@ -13,16 +13,18 @@ object SubscriptionDtoMapper {
             title = networkDto.title,
             userId = networkDto.user,
             subgroupId = networkDto.subgroup,
-            isMain = networkDto.isMain
+            isMain = networkDto.isMain,
+            numberOfUpdatedClasses = 0
         )
 
-    fun toEntity(subscription: SubscriptionDb): SubscriptionEntity =
+    fun toEntity(subscription: SubscriptionDb, numberOfUpdatedClasses: Long): SubscriptionEntity =
         SubscriptionEntity(
             id = subscription.id,
             title = subscription.name,
             userId = subscription.userId,
             subgroupId = subscription.subgroupId,
-            isMain = subscription.isMain
+            isMain = subscription.isMain,
+            numberOfUpdatedClasses = numberOfUpdatedClasses
         )
 
     fun toDbDto(entity: SubscriptionEntity): SubscriptionDb =

@@ -44,5 +44,5 @@ sealed class Subscription {
 }
 
 sealed class Screen {
-    object SignIn : Screen()
+    object CreateSubscription : Screen()
 }

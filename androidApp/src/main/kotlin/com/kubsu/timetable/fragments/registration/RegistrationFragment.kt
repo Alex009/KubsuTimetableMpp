@@ -6,7 +6,6 @@ import com.egroden.teaco.Feature
 import com.egroden.teaco.androidConnectors
 import com.egroden.teaco.bindAction
 import com.egroden.teaco.connect
-import com.kubsu.timetable.BaseNavGraphDirections
 import com.kubsu.timetable.R
 import com.kubsu.timetable.UserInfoFail
 import com.kubsu.timetable.base.BaseFragment
@@ -92,8 +91,9 @@ class RegistrationFragment(
     private fun navigation(screen: Screen) =
         safeNavigate(
             when (screen) {
-                Screen.SignIn ->
-                    BaseNavGraphDirections.actionGlobalSignInFragment()
+                Screen.CreateSubscription ->
+                    RegistrationFragmentDirections
+                        .actionRegistrationFragmentToCreateSubscriptionFragment()
             }
         )
 

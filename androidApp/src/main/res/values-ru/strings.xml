@@ -94,6 +94,6 @@
     <string name="numerator_subtitle">Числитель, %1$s неделя</string>
     <string name="denominator_subtitle">Знаменатель, %1$s неделя</string>
     <string name="attention">Внимание!</string>
-    <string name="warning_before_validation">Прежде чем подтвердить, убедитесь, что у вас есть достаточный процент заряда и интернет-соединение стабильно.</string>
+    <string name="warning_before_validation">Убедитесь, что подключение к Интернету доступно. Не закрывайте приложение до конца процесса.</string>
     <string name="cache_invalidation">Отчистка кэша</string>
 </resources>

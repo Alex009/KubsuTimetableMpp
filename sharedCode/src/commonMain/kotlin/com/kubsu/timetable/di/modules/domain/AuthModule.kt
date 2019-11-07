@@ -17,6 +17,7 @@ internal val authDomainModule = Kodein.Module("auth_domain") {
     bind<AuthGateway>() with singleton {
         val db = instance<MyDatabase>()
         AuthGatewayImpl(
+            appInfoGateway = instance(),
             dataDiffQueries = db.dataDiffQueries,
             updatedEntityQueries = db.updatedEntityQueries,
             deletedEntityQueries = db.deletedEntityQueries,

@@ -95,6 +95,6 @@
     <string name="numerator_subtitle">Numerator, %1$s week</string>
     <string name="denominator_subtitle">Denominator, %1$s week</string>
     <string name="attention">Attention!</string>
-    <string name="warning_before_validation">Before you confirm, make sure that you have a sufficient percentage of charge and the Internet connection is stable.</string>
+    <string name="warning_before_validation">Make sure your internet connection is available. Do not close the application until the end of the process.</string>
     <string name="cache_invalidation">Cache invalidation</string>
 </resources>
