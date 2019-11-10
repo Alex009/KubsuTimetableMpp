@@ -14,14 +14,17 @@ import com.kubsu.timetable.data.storage.user.session.Session
 import com.kubsu.timetable.data.storage.user.session.SessionStorage
 import com.kubsu.timetable.data.storage.user.token.TokenStorage
 import com.kubsu.timetable.data.storage.user.token.UndeliveredToken
+import com.kubsu.timetable.domain.interactor.appinfo.AppInfoGateway
 import com.kubsu.timetable.domain.interactor.auth.AuthGateway
 import io.mockk.*
 import runTest
+import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class AuthGatewayTest {
+    private val appInfoGateway = mockk<AppInfoGateway>()
     private val userInfoNetworkClient = mockk<UserInfoNetworkClient>()
     private val dataDiffQueries = mockk<DataDiffQueries>()
     private val updatedEntityQueries = mockk<UpdatedEntityQueries>()
@@ -30,14 +33,17 @@ class AuthGatewayTest {
     private val tokenStorage = mockk<TokenStorage>()
     private val sessionStorage = mockk<SessionStorage>()
 
-    private val authGateway: AuthGateway = AuthGatewayImpl(
-        userInfoNetworkClient = userInfoNetworkClient,
-        dataDiffQueries = dataDiffQueries,
-        updatedEntityQueries = updatedEntityQueries,
-        deletedEntityQueries = deletedEntityQueries,
-        userStorage = userStorage,
-        tokenStorage = tokenStorage,
-        sessionStorage = sessionStorage
+    private val authGateway: AuthGateway = spyk(
+        AuthGatewayImpl(
+            appInfoGateway = appInfoGateway,
+            userInfoNetworkClient = userInfoNetworkClient,
+            dataDiffQueries = dataDiffQueries,
+            updatedEntityQueries = updatedEntityQueries,
+            deletedEntityQueries = deletedEntityQueries,
+            userStorage = userStorage,
+            tokenStorage = tokenStorage,
+            sessionStorage = sessionStorage
+        )
     )
 
     private val email = ""
@@ -52,6 +58,7 @@ class AuthGatewayTest {
 
     @BeforeTest
     fun before() {
+        coEvery { appInfoGateway.clearUserInfo(any()) } returns Unit
         every { dataDiffQueries.deleteAll() } returns Unit
         every { updatedEntityQueries.deleteAll() } returns Unit
         every { deletedEntityQueries.deleteAll() } returns Unit
@@ -64,6 +71,9 @@ class AuthGatewayTest {
 
         coEvery { tokenStorage.set(any()) } returns Unit
     }
+
+    @AfterTest
+    fun after() = unmockkAll()
 
     @Test
     fun signInSuccess() = runTest {
@@ -97,9 +107,7 @@ class AuthGatewayTest {
             .signInTransaction(email, password, token,
                 withTransaction = { Either.right(Unit) }
             )
-            .map {
-                throw IllegalStateException()
-            }
+            .map { throw IllegalStateException() }
 
         verify(inverse = true) { sessionStorage.set(session) }
         verify(inverse = true) { userStorage.set(user) }
@@ -117,9 +125,7 @@ class AuthGatewayTest {
             .signInTransaction(email, password, token,
                 withTransaction = { Either.left(DataFailure.ConnectionToRepository("")) }
             )
-            .map {
-                throw IllegalStateException()
-            }
+            .map { throw IllegalStateException() }
 
         verify(inverse = true) { sessionStorage.set(session) }
         verify(inverse = true) { userStorage.set(user) }
@@ -155,6 +161,7 @@ class AuthGatewayTest {
 
     @Test
     fun logoutSuccess() = runTest {
+        every { userStorage.get() } returns user
         coEvery { userInfoNetworkClient.logout(session) } returns Either.right(Unit)
 
         authGateway.logout(session)
@@ -164,6 +171,7 @@ class AuthGatewayTest {
         verify { deletedEntityQueries.deleteAll() }
         verify { userStorage.set(null) }
         verify { sessionStorage.set(null) }
+        verify { userStorage.get() }
         confirmVerified(
             dataDiffQueries,
             updatedEntityQueries,
@@ -175,9 +183,9 @@ class AuthGatewayTest {
 
     @Test
     fun logoutFailure() = runTest {
-        coEvery {
-            userInfoNetworkClient.logout(session)
-        } returns Either.left(DataFailure.ConnectionToRepository(null))
+        every { userStorage.get() } returns user
+        val logoutResult = Either.left(DataFailure.ConnectionToRepository(null))
+        coEvery { userInfoNetworkClient.logout(session) } returns logoutResult
 
         authGateway.logout(session)
 
@@ -186,6 +194,7 @@ class AuthGatewayTest {
         verify { deletedEntityQueries.deleteAll() }
         verify { userStorage.set(null) }
         verify { sessionStorage.set(null) }
+        verify { userStorage.get() }
         confirmVerified(
             dataDiffQueries,
             updatedEntityQueries,

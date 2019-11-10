@@ -3,5 +3,5 @@
     <item
         android:id="@+id/next_week_timetable"
         android:icon="@drawable/ic_navigate_next_24dp"
-        android:title="@string/show_timetable_for_next_week" />
+        android:title="@string/timetable_for_next_week" />
 </menu>

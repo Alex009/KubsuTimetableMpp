@@ -32,7 +32,6 @@ class AppInfoGatewayImpl(
         val currentList = subscriptionQueries
             .selectByUserId(userId)
             .executeAsList()
-            .map(SubscriptionDtoMapper::toNetworkDto)
         return if (currentList.isEmpty())
             subscriptionNetworkClient
                 .selectSubscriptionsForUser(session)
@@ -44,7 +43,7 @@ class AppInfoGatewayImpl(
                     checkSubscriptionDependencies(it)
                 }
         else
-            checkSubscriptionDependencies(currentList)
+            checkSubscriptionDependencies(currentList.map(SubscriptionDtoMapper::toNetworkDto))
     }
 
     override suspend fun checkSubscriptionDependencies(
@@ -62,7 +61,6 @@ class AppInfoGatewayImpl(
         val currentList = timetableQueries
             .selectBySubgroupId(subgroupId)
             .executeAsList()
-            .map(TimetableDtoMapper::toNetworkDto)
         return if (currentList.isEmpty())
             timetableNetworkClient
                 .selectTimetableList(subgroupId)
@@ -74,7 +72,7 @@ class AppInfoGatewayImpl(
                     checkTimetableDependencies(it)
                 }
         else
-            checkTimetableDependencies(currentList)
+            checkTimetableDependencies(currentList.map(TimetableDtoMapper::toNetworkDto))
     }
 
     override suspend fun checkTimetableDependencies(
@@ -111,7 +109,6 @@ class AppInfoGatewayImpl(
         val currentList = classQueries
             .selectByTimetableId(timetableId)
             .executeAsList()
-            .map(ClassDtoMapper::toNetworkDto)
         return if (currentList.isEmpty())
             timetableNetworkClient
                 .selectClassesByTimetableId(timetableId)
@@ -123,7 +120,7 @@ class AppInfoGatewayImpl(
                     checkClassDependencies(it)
                 }
         else
-            checkClassDependencies(currentList)
+            checkClassDependencies(currentList.map(ClassDtoMapper::toNetworkDto))
     }
 
     override suspend fun checkClassDependencies(

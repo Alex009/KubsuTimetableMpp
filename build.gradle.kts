@@ -9,9 +9,6 @@ allprojects {
         maven(url = "https://dl.bintray.com/indrih17/teaco")
         maven(url = "https://maven.fabric.io/public")
     }
-
-    // workaround for https://youtrack.jetbrains.com/issue/KT-27170
-    configurations.create("compileClasspath")
 }
 
 plugins {

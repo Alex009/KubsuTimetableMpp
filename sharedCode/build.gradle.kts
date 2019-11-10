@@ -185,6 +185,11 @@ android {
     testOptions.unitTests.isIncludeAndroidResources = true
 }
 
+// This task attaches native framework built from ios module to Xcode project
+// (see iosApp directory). Don't run this task directly,
+// Xcode runs this task itself during its build process.
+// Before opening the project from iosApp directory in Xcode,
+// make sure all Gradle infrastructure exists (gradle.wrapper, gradlew).
 task("copyFramework") {
     val buildType = project.findProperty("kotlin.build.type") as? String ?: "DEBUG"
     val framework =
@@ -217,11 +222,13 @@ task("iosTest") {
         }
     }
 }
-// This task attaches native framework built from ios module to Xcode project
-// (see iosApp directory). Don't run this task directly,
-// Xcode runs this task itself during its build process.
-// Before opening the project from iosApp directory in Xcode,
-// make sure all Gradle infrastructure exists (gradle.wrapper, gradlew).
+
+
+// workaround for https://youtrack.jetbrains.com/issue/KT-27170
+configurations {
+    create("compileClasspath")
+}
+
 /*
 task("copyFramework") {
     val buildType = project.findProperty("kotlin.build.type") as? String ?: "DEBUG"
