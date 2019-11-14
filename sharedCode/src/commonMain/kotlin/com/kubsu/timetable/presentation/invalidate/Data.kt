@@ -1,8 +1,8 @@
 package com.kubsu.timetable.presentation.invalidate
 
 import com.kubsu.timetable.DataFailure
-import platform.SerializableModel
-import platform.SerializeModel
+import com.kubsu.timetable.platform.SerializableModel
+import com.kubsu.timetable.platform.SerializeModel
 
 sealed class Action {
     object Invalidate : Action()

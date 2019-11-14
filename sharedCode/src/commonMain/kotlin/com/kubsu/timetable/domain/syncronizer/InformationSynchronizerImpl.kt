@@ -5,13 +5,13 @@ import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.data.storage.user.token.UndeliveredToken
 import com.kubsu.timetable.domain.interactor.sync.SyncMixinInteractor
 import com.kubsu.timetable.domain.interactor.userInfo.UserInteractor
+import com.kubsu.timetable.platform.PlatformArgs
+import com.kubsu.timetable.platform.whenNetworkConnectionBeActive
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import platform.PlatformArgs
-import platform.whenNetworkConnectionBeActive
 
 class InformationSynchronizerImpl(
     private val userInteractor: UserInteractor,

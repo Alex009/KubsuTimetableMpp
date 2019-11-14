@@ -89,7 +89,7 @@ class AppInfoGatewayImpl(
             .toEitherList()
             .map { Unit }
 
-    private suspend fun checkAvailabilityOfUniversityInfo(
+    suspend fun checkAvailabilityOfUniversityInfo(
         timetable: TimetableNetworkDto
     ): Either<DataFailure, Unit> {
         val facultyId = timetable.facultyId
@@ -131,7 +131,9 @@ class AppInfoGatewayImpl(
     ): Either<DataFailure, Unit> =
         list
             .map { clazz ->
-                checkAvailabilityOfClassTime(clazz)
+                checkAvailabilityOfClassTime(clazz).flatMap {
+                    checkAvailabilityOfLecturer(clazz)
+                }
             }
             .toEitherList()
             .map { Unit }
@@ -171,15 +173,16 @@ class AppInfoGatewayImpl(
     }
 
     fun removeAllDependencies(subscription: SubscriptionDb) {
-        val timetables =
-            timetableQueries.selectBySubgroupId(subscription.subgroupId).executeAsList()
+        val timetables = timetableQueries
+            .selectBySubgroupId(subscription.subgroupId)
+            .executeAsList()
         for (timetable in timetables) {
             timetableQueries.deleteById(timetable.id)
             removeAllDependencies(timetable)
         }
     }
 
-    private fun removeAllDependencies(timetable: TimetableDb) {
+    fun removeAllDependencies(timetable: TimetableDb) {
         universityInfoQueries.deleteByFacultyId(timetable.facultyId)
 
         val classes = classQueries.selectByTimetableId(timetable.id).executeAsList()
@@ -189,7 +192,7 @@ class AppInfoGatewayImpl(
         }
     }
 
-    private fun removeAllDependencies(clazz: ClassDb) {
+    fun removeAllDependencies(clazz: ClassDb) {
         classTimeQueries.deleteById(clazz.classTimeId)
         lecturerQueries.deleteById(clazz.lecturerId)
     }

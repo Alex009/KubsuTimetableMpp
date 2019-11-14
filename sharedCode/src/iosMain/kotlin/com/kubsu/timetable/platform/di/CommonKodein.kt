@@ -1,4 +1,4 @@
-package platform.di
+package com.kubsu.timetable.platform.di
 
 import com.kubsu.timetable.di.mppCommonKodeinModule
 import io.ktor.client.engine.HttpClientEngine

@@ -1,7 +1,7 @@
 package com.kubsu.timetable.presentation.subscription.model
 
-import platform.SerializableModel
-import platform.SerializeModel
+import com.kubsu.timetable.platform.SerializableModel
+import com.kubsu.timetable.platform.SerializeModel
 
 @SerializeModel
 data class GroupModel(

@@ -1,4 +1,4 @@
-package platform
+package com.kubsu.timetable.platform
 
 actual fun whenNetworkConnectionBeActive(
     platformArgs: PlatformArgs,

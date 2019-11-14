@@ -3,9 +3,7 @@ package com.kubsu.timetable.data.gateway
 import com.egroden.teaco.*
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.data.db.timetable.*
-import com.kubsu.timetable.data.mapper.timetable.data.ClassDtoMapper
-import com.kubsu.timetable.data.mapper.timetable.data.ClassTimeDtoMapper
-import com.kubsu.timetable.data.mapper.timetable.data.LecturerDtoMapper
+import com.kubsu.timetable.data.mapper.timetable.data.*
 import com.kubsu.timetable.data.network.client.subscription.SubscriptionNetworkClient
 import com.kubsu.timetable.data.network.client.timetable.TimetableNetworkClient
 import com.kubsu.timetable.data.network.client.university.UniversityDataNetworkClient
@@ -54,14 +52,64 @@ class AppInfoGatewayTest {
         lecturerId = lecturer.id,
         timetableId = timetable.id
     )
-
     private val classList = listOf(classNetworkDto)
+    private val universityInfo = UniversityInfoDb.Impl(0, 0, 0, 0)
 
     @BeforeTest fun before() {
     }
 
-    @Test fun classesInDatabase() = runTest {
+    @Test
+    fun universityInfoExistsInDatabase() = runTest {
+        every {
+            universityInfoQueries.selectByFacultyId(timetable.facultyId).executeAsOneOrNull()
+        } returns mockk()
 
+        appInfoGateway
+            .checkAvailabilityOfUniversityInfo(timetable)
+            .mapLeft { throw IllegalStateException() }
+
+        verify { universityInfoQueries.selectByFacultyId(timetable.facultyId).executeAsOneOrNull() }
+        confirmVerified(universityInfoQueries)
+    }
+
+    @Test
+    fun loadingUniversityInfoSuccess() = runTest {
+        every {
+            universityInfoQueries.selectByFacultyId(timetable.facultyId).executeAsOneOrNull()
+        } returns null
+        coEvery {
+            universityDataNetworkClient.selectUniversityInfo(timetable.facultyId)
+        } returns Either.right(UniversityInfoDtoMapper.toNetworkDto(universityInfo))
+        every { universityInfoQueries.update(any()) } returns Unit
+
+        appInfoGateway
+            .checkAvailabilityOfUniversityInfo(timetable)
+            .mapLeft { throw IllegalStateException() }
+
+        verify { universityInfoQueries.selectByFacultyId(timetable.facultyId).executeAsOneOrNull() }
+        coVerify { universityDataNetworkClient.selectUniversityInfo(timetable.facultyId) }
+        verify { universityInfoQueries.update(any()) }
+        confirmVerified(universityInfoQueries, universityDataNetworkClient)
+    }
+
+    @Test
+    fun loadingUniversityInfoFailure() = runTest {
+        every {
+            universityInfoQueries.selectByFacultyId(timetable.facultyId).executeAsOneOrNull()
+        } returns null
+        coEvery {
+            universityDataNetworkClient.selectUniversityInfo(timetable.facultyId)
+        } returns Either.left(DataFailure.ConnectionToRepository(""))
+        every { universityInfoQueries.update(any()) } returns Unit
+
+        appInfoGateway
+            .checkAvailabilityOfUniversityInfo(timetable)
+            .map { throw IllegalStateException() }
+
+        verify { universityInfoQueries.selectByFacultyId(timetable.facultyId).executeAsOneOrNull() }
+        coVerify { universityDataNetworkClient.selectUniversityInfo(timetable.facultyId) }
+        verify(inverse = true) { universityInfoQueries.update(any()) }
+        confirmVerified(universityInfoQueries, universityDataNetworkClient)
     }
 
     @Test fun checkAvailabilityOfClassesForEmptyList() = runTest {
@@ -319,20 +367,92 @@ class AppInfoGatewayTest {
     @Test
     fun clearUserInfo() = runTest {
         val userId = 0
-        every { subscriptionQueries.selectByUserId(userId).executeAsList() } returns listOf(
+        val subscriptionList = listOf<SubscriptionDb>(
             mockk { every { id } returns 0 },
             mockk { every { id } returns 1 },
             mockk { every { id } returns 2 }
         )
+        every {
+            subscriptionQueries.selectByUserId(userId).executeAsList()
+        } returns subscriptionList
         every { subscriptionQueries.deleteById(any()) } returns Unit
-        every { appInfoGateway.removeAllDependencies(any()) } returns Unit
+        every { appInfoGateway.removeAllDependencies(any<SubscriptionDb>()) } returns Unit
 
         appInfoGateway.clearUserInfo(userId)
 
         verify { subscriptionQueries.selectByUserId(userId).executeAsList() }
-        verify { subscriptionQueries.deleteById(any()) }
-        verify { appInfoGateway.removeAllDependencies(any()) }
+        verify(exactly = subscriptionList.size) { subscriptionQueries.deleteById(any()) }
+        verify(exactly = subscriptionList.size) { appInfoGateway.removeAllDependencies(any<SubscriptionDb>()) }
         coVerify { appInfoGateway.clearUserInfo(userId) }
         confirmVerified(subscriptionQueries, appInfoGateway)
+    }
+
+    @Test
+    fun removeAllDependenciesForSubscription() = runTest {
+        val subscription: SubscriptionDb = mockk {
+            every { id } returns 0
+            every { subgroupId } returns 0
+        }
+        val timetableList = listOf<TimetableDb>(
+            mockk { every { id } returns 0 },
+            mockk { every { id } returns 1 },
+            mockk { every { id } returns 2 }
+        )
+
+        every {
+            timetableQueries
+                .selectBySubgroupId(subscription.subgroupId)
+                .executeAsList()
+        } returns timetableList
+        every { timetableQueries.deleteById(any()) } returns Unit
+        every { appInfoGateway.removeAllDependencies(any<TimetableDb>()) } returns Unit
+
+        appInfoGateway.removeAllDependencies(subscription)
+
+        verify { timetableQueries.selectBySubgroupId(subscription.subgroupId).executeAsList() }
+        verify(exactly = timetableList.size) { timetableQueries.deleteById(any()) }
+        verify(exactly = timetableList.size) { appInfoGateway.removeAllDependencies(any<TimetableDb>()) }
+        verify { appInfoGateway.removeAllDependencies(any<SubscriptionDb>()) }
+        confirmVerified(timetableQueries, appInfoGateway)
+    }
+
+    @Test
+    fun removeAllDependenciesForTimetable() = runTest {
+        val classList = listOf<ClassDb>(
+            mockk { every { id } returns 0 },
+            mockk { every { id } returns 1 },
+            mockk { every { id } returns 2 }
+        )
+
+        every { universityInfoQueries.deleteByFacultyId(timetable.facultyId) } returns Unit
+        every { classQueries.selectByTimetableId(timetable.id).executeAsList() } returns classList
+        every { classQueries.deleteById(any()) } returns Unit
+        every { appInfoGateway.removeAllDependencies(any<ClassDb>()) } returns Unit
+
+        appInfoGateway.removeAllDependencies(TimetableDtoMapper.toDbDto(timetable))
+
+        verify { universityInfoQueries.deleteByFacultyId(timetable.facultyId) }
+        verify { classQueries.selectByTimetableId(timetable.id).executeAsList() }
+        verify(exactly = classList.size) { classQueries.deleteById(any()) }
+        verify(exactly = classList.size) { appInfoGateway.removeAllDependencies(any<ClassDb>()) }
+        verify { appInfoGateway.removeAllDependencies(any<TimetableDb>()) }
+        confirmVerified(classQueries, appInfoGateway, universityInfoQueries)
+    }
+
+    @Test
+    fun removeAllDependenciesForClass() = runTest {
+        val clazz: ClassDb = mockk {
+            every { classTimeId } returns 0
+            every { lecturerId } returns 0
+        }
+        every { classTimeQueries.deleteById(clazz.classTimeId) } returns Unit
+        every { lecturerQueries.deleteById(clazz.lecturerId) } returns Unit
+
+        appInfoGateway.removeAllDependencies(clazz)
+
+        verify { classTimeQueries.deleteById(clazz.classTimeId) }
+        verify { lecturerQueries.deleteById(clazz.lecturerId) }
+        verify { appInfoGateway.removeAllDependencies(clazz) }
+        confirmVerified(classTimeQueries, lecturerQueries, appInfoGateway)
     }
 }

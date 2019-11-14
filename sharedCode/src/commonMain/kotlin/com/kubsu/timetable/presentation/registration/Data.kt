@@ -2,8 +2,8 @@ package com.kubsu.timetable.presentation.registration
 
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.UserInfoFail
-import platform.SerializableModel
-import platform.SerializeModel
+import com.kubsu.timetable.platform.SerializableModel
+import com.kubsu.timetable.platform.SerializeModel
 
 sealed class Action {
     class Registration(

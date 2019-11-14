@@ -2,8 +2,8 @@ package com.kubsu.timetable.presentation.signin
 
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.SignInFail
-import platform.SerializableModel
-import platform.SerializeModel
+import com.kubsu.timetable.platform.SerializableModel
+import com.kubsu.timetable.platform.SerializeModel
 
 sealed class Action {
     class SignIn(val email: String, val password: String) : Action()

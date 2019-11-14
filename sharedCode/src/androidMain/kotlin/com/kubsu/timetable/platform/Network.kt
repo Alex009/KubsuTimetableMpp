@@ -1,4 +1,4 @@
-package platform
+package com.kubsu.timetable.platform
 
 import android.content.Context
 import android.net.ConnectivityManager

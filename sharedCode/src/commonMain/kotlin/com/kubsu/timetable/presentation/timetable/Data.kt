@@ -1,11 +1,11 @@
 package com.kubsu.timetable.presentation.timetable
 
+import com.kubsu.timetable.platform.SerializableModel
+import com.kubsu.timetable.platform.SerializeModel
 import com.kubsu.timetable.presentation.timetable.model.ClassModel
 import com.kubsu.timetable.presentation.timetable.model.SubscriptionModel
 import com.kubsu.timetable.presentation.timetable.model.TimetableModel
 import com.kubsu.timetable.presentation.timetable.model.UniversityInfoModel
-import platform.SerializableModel
-import platform.SerializeModel
 
 sealed class Action {
     class LoadData(val subscription: SubscriptionModel?) : Action()
