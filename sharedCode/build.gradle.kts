@@ -230,33 +230,5 @@ configurations {
 }
 
 /*
-task("copyFramework") {
-    val buildType = project.findProperty("kotlin.build.type") as? String ?: "DEBUG"
-    val framework = (kotlin.targets["ios"] as KotlinNativeTarget).compilations["main"].target.binaries.findFramework("Shared", buildType)!!
-    dependsOn(framework.linkTask)
-
-    doLast {
-        val srcFile = framework.outputFile
-        val targetDir = project.property("configuration.build.dir") as? String ?: ""
-        copy {
-            from(srcFile.parent)
-            into(targetDir)
-            include("Shared.framework/**")
-            include("Shared.framework.dSYM")
-        }
-    }
-}
+tasks["check"].dependsOn("iosTest")
 */
-
-/*
-task("iosTest") {
-    dependsOn("linkDebugTestIos")
-    doLast {
-        val testBinaryPath =
-            (kotlin.targets["ios"] as KotlinNativeTarget).binaries.getTest("DEBUG").outputFile.absolutePath
-        exec {
-            commandLine("xcrun", "simctl", "spawn", "iPhone Xʀ", testBinaryPath)
-        }
-    }
-}
-tasks["check"].dependsOn("iosTest")*/

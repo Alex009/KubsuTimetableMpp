@@ -32,6 +32,7 @@ class AppInfoGatewayImpl(
         val currentList = subscriptionQueries
             .selectByUserId(userId)
             .executeAsList()
+            .map(SubscriptionDtoMapper::toNetworkDto)
         return if (currentList.isEmpty())
             subscriptionNetworkClient
                 .selectSubscriptionsForUser(session)
@@ -43,7 +44,7 @@ class AppInfoGatewayImpl(
                     checkSubscriptionDependencies(it)
                 }
         else
-            checkSubscriptionDependencies(currentList.map(SubscriptionDtoMapper::toNetworkDto))
+            checkSubscriptionDependencies(currentList)
     }
 
     override suspend fun checkSubscriptionDependencies(
@@ -61,6 +62,7 @@ class AppInfoGatewayImpl(
         val currentList = timetableQueries
             .selectBySubgroupId(subgroupId)
             .executeAsList()
+            .map(TimetableDtoMapper::toNetworkDto)
         return if (currentList.isEmpty())
             timetableNetworkClient
                 .selectTimetableList(subgroupId)
@@ -72,7 +74,7 @@ class AppInfoGatewayImpl(
                     checkTimetableDependencies(it)
                 }
         else
-            checkTimetableDependencies(currentList.map(TimetableDtoMapper::toNetworkDto))
+            checkTimetableDependencies(currentList)
     }
 
     override suspend fun checkTimetableDependencies(
@@ -109,6 +111,7 @@ class AppInfoGatewayImpl(
         val currentList = classQueries
             .selectByTimetableId(timetableId)
             .executeAsList()
+            .map(ClassDtoMapper::toNetworkDto)
         return if (currentList.isEmpty())
             timetableNetworkClient
                 .selectClassesByTimetableId(timetableId)
@@ -120,7 +123,7 @@ class AppInfoGatewayImpl(
                     checkClassDependencies(it)
                 }
         else
-            checkClassDependencies(currentList.map(ClassDtoMapper::toNetworkDto))
+            checkClassDependencies(currentList)
     }
 
     override suspend fun checkClassDependencies(
@@ -128,9 +131,7 @@ class AppInfoGatewayImpl(
     ): Either<DataFailure, Unit> =
         list
             .map { clazz ->
-                checkAvailabilityOfClassTime(clazz).flatMap {
-                    checkAvailabilityOfLecturer(clazz)
-                }
+                checkAvailabilityOfClassTime(clazz)
             }
             .toEitherList()
             .map { Unit }
@@ -169,7 +170,7 @@ class AppInfoGatewayImpl(
         }
     }
 
-    private fun removeAllDependencies(subscription: SubscriptionDb) {
+    fun removeAllDependencies(subscription: SubscriptionDb) {
         val timetables =
             timetableQueries.selectBySubgroupId(subscription.subgroupId).executeAsList()
         for (timetable in timetables) {

@@ -1,5 +1,5 @@
 import XCTest
-import app
+import sharedCode
 
 class iosAppTests: XCTestCase {
     func testExample() {

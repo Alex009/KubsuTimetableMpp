@@ -1,10 +1,11 @@
-package com.kubsu.timetable
+package com.kubsu.timetable.data.gateway
 
 import com.egroden.teaco.*
+import com.kubsu.timetable.DataFailure
+import com.kubsu.timetable.RequestFailure
 import com.kubsu.timetable.data.db.diff.DataDiffQueries
 import com.kubsu.timetable.data.db.diff.DeletedEntityQueries
 import com.kubsu.timetable.data.db.diff.UpdatedEntityQueries
-import com.kubsu.timetable.data.gateway.AuthGatewayImpl
 import com.kubsu.timetable.data.mapper.UserDtoMapper
 import com.kubsu.timetable.data.network.client.user.UserInfoNetworkClient
 import com.kubsu.timetable.data.network.dto.UserData
@@ -15,7 +16,6 @@ import com.kubsu.timetable.data.storage.user.session.SessionStorage
 import com.kubsu.timetable.data.storage.user.token.TokenStorage
 import com.kubsu.timetable.data.storage.user.token.UndeliveredToken
 import com.kubsu.timetable.domain.interactor.appinfo.AppInfoGateway
-import com.kubsu.timetable.domain.interactor.auth.AuthGateway
 import io.mockk.*
 import runTest
 import kotlin.test.AfterTest
@@ -33,7 +33,7 @@ class AuthGatewayTest {
     private val tokenStorage = mockk<TokenStorage>()
     private val sessionStorage = mockk<SessionStorage>()
 
-    private val authGateway: AuthGateway = spyk(
+    private val authGateway = spyk(
         AuthGatewayImpl(
             appInfoGateway = appInfoGateway,
             userInfoNetworkClient = userInfoNetworkClient,
@@ -105,7 +105,7 @@ class AuthGatewayTest {
 
         authGateway
             .signInTransaction(email, password, token,
-                withTransaction = { Either.right(Unit) }
+                withTransaction = { throw IllegalStateException() }
             )
             .map { throw IllegalStateException() }
 

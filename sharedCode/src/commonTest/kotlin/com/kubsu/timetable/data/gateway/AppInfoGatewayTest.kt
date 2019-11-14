@@ -3,7 +3,7 @@ package com.kubsu.timetable.data.gateway
 import com.egroden.teaco.*
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.data.db.timetable.*
-import com.kubsu.timetable.data.gateway.AppInfoGatewayImpl
+import com.kubsu.timetable.data.mapper.timetable.data.ClassDtoMapper
 import com.kubsu.timetable.data.mapper.timetable.data.ClassTimeDtoMapper
 import com.kubsu.timetable.data.mapper.timetable.data.LecturerDtoMapper
 import com.kubsu.timetable.data.network.client.subscription.SubscriptionNetworkClient
@@ -44,10 +44,18 @@ class AppInfoGatewayTest {
     private val timetable = TimetableNetworkDto(0, 0, 0, 0)
     private val classTime = ClassTimeDb.Impl(0, 0, "", "")
     private val lecturer = LecturerDb.Impl(0, "", "", "")
-    private val classNetworkDto = mockk<ClassNetworkDto> {
-        every { classTimeId } returns classTime.id
-        every { lecturerId } returns lecturer.id
-    }
+    private val classNetworkDto = ClassNetworkDto(
+        id = 0,
+        title = "",
+        typeOfClass = 0,
+        classroom = "",
+        classTimeId = classTime.id,
+        weekday = 0,
+        lecturerId = lecturer.id,
+        timetableId = timetable.id
+    )
+
+    private val classList = listOf(classNetworkDto)
 
     @BeforeTest fun before() {
     }
@@ -58,32 +66,82 @@ class AppInfoGatewayTest {
 
     @Test fun checkAvailabilityOfClassesForEmptyList() = runTest {
         every { classQueries.selectByTimetableId(any()).executeAsList() } returns emptyList()
-        coEvery { timetableNetworkClient.selectClassesByTimetableId(any()) } returns Either.right(emptyList())
+        every { classQueries.update(any()) } returns Unit
+        coEvery { timetableNetworkClient.selectClassesByTimetableId(any()) } returns Either.right(
+            classList
+        )
         coEvery { appInfoGateway.checkClassDependencies(any()) } returns Either.right(Unit)
 
         appInfoGateway
             .checkAvailabilityOfClasses(timetable)
             .mapLeft { throw IllegalStateException() }
 
+        verify { classQueries.selectByTimetableId(any()).executeAsList() }
+        verify(exactly = classList.size) { classQueries.update(any()) }
         coVerify { timetableNetworkClient.selectClassesByTimetableId(any()) }
         coVerify { appInfoGateway.checkAvailabilityOfClasses(any()) }
-        coVerify { appInfoGateway.checkClassDependencies(any()) }
-        confirmVerified(appInfoGateway, timetableNetworkClient)
+        coVerify { appInfoGateway.checkClassDependencies(classList) }
+        confirmVerified(appInfoGateway, timetableNetworkClient, classQueries)
     }
 
     @Test fun checkAvailabilityOfClassesForNotEmptyList() = runTest {
-        every { classQueries.selectByTimetableId(any()).executeAsList() } returns emptyList()
-        coEvery { timetableNetworkClient.selectClassesByTimetableId(any()) } returns Either.right(emptyList())
-        coEvery { appInfoGateway.checkClassDependencies(any()) } returns Either.right(Unit)
+        every {
+            classQueries
+                .selectByTimetableId(any())
+                .executeAsList()
+        } returns classList.map { ClassDtoMapper.toDbDto(it, false) }
+        coEvery { appInfoGateway.checkClassDependencies(classList) } returns Either.right(Unit)
 
         appInfoGateway
             .checkAvailabilityOfClasses(timetable)
             .mapLeft { throw IllegalStateException() }
 
+        coVerify { appInfoGateway.checkAvailabilityOfClasses(any()) }
+        coVerify { appInfoGateway.checkClassDependencies(classList) }
+        confirmVerified(appInfoGateway)
+    }
+
+    @Test
+    fun checkAvailabilityOfClassesFail1() = runTest {
+        every { classQueries.selectByTimetableId(any()).executeAsList() } returns emptyList()
+        every { classQueries.update(any()) } returns Unit
+        coEvery { timetableNetworkClient.selectClassesByTimetableId(any()) } returns Either.right(
+            classList
+        )
+        coEvery {
+            appInfoGateway.checkClassDependencies(any())
+        } returns Either.left(DataFailure.ConnectionToRepository(""))
+
+        appInfoGateway
+            .checkAvailabilityOfClasses(timetable)
+            .map { throw IllegalStateException() }
+
+        verify { classQueries.selectByTimetableId(any()).executeAsList() }
+        verify(exactly = classList.size) { classQueries.update(any()) }
         coVerify { timetableNetworkClient.selectClassesByTimetableId(any()) }
         coVerify { appInfoGateway.checkAvailabilityOfClasses(any()) }
-        coVerify { appInfoGateway.checkClassDependencies(any()) }
-        confirmVerified(appInfoGateway, timetableNetworkClient)
+        coVerify { appInfoGateway.checkClassDependencies(classList) }
+        confirmVerified(appInfoGateway, timetableNetworkClient, classQueries)
+    }
+
+    @Test
+    fun checkAvailabilityOfClassesFail2() = runTest {
+        every {
+            classQueries
+                .selectByTimetableId(any())
+                .executeAsList()
+        } returns classList.map { ClassDtoMapper.toDbDto(it, false) }
+        coEvery {
+            appInfoGateway.checkClassDependencies(classList)
+        } returns Either.left(DataFailure.ConnectionToRepository(""))
+
+        appInfoGateway
+            .checkAvailabilityOfClasses(timetable)
+            .map { throw IllegalStateException() }
+
+        coVerify { appInfoGateway.checkAvailabilityOfClasses(any()) }
+        coVerify { appInfoGateway.checkClassDependencies(classList) }
+        confirmVerified(appInfoGateway)
     }
 
     @Test fun checkClassDependenciesForEmptyList() = runTest {
@@ -256,5 +314,25 @@ class AppInfoGatewayTest {
         verify(inverse = true) { lecturerQueries.update(any()) }
         coVerify { timetableNetworkClient.selectLecturerById(lecturer.id) }
         confirmVerified(lecturerQueries, timetableNetworkClient)
+    }
+
+    @Test
+    fun clearUserInfo() = runTest {
+        val userId = 0
+        every { subscriptionQueries.selectByUserId(userId).executeAsList() } returns listOf(
+            mockk { every { id } returns 0 },
+            mockk { every { id } returns 1 },
+            mockk { every { id } returns 2 }
+        )
+        every { subscriptionQueries.deleteById(any()) } returns Unit
+        every { appInfoGateway.removeAllDependencies(any()) } returns Unit
+
+        appInfoGateway.clearUserInfo(userId)
+
+        verify { subscriptionQueries.selectByUserId(userId).executeAsList() }
+        verify { subscriptionQueries.deleteById(any()) }
+        verify { appInfoGateway.removeAllDependencies(any()) }
+        coVerify { appInfoGateway.clearUserInfo(userId) }
+        confirmVerified(subscriptionQueries, appInfoGateway)
     }
 }
