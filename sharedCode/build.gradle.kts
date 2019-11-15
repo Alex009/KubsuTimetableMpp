@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("multiplatform")
+    kotlin("native.cocoapods")
     id("kotlinx-serialization")
     id("com.android.library")
     id("kotlin-android-extensions")
@@ -16,15 +17,30 @@ sqldelight {
 }
 
 kotlin {
+    // Android
     android()
-    // This is for iPhone emulator
-    // Switch here to iosArm64 (or iosArm32) to build library for iPhone device
-    iosArm64("ios") {
+
+    // iOS
+    val iOSTarget: (String, KotlinNativeTarget.() -> Unit) -> KotlinNativeTarget =
+        if (System.getenv("SDK_NAME")?.startsWith("iphoneos") == true)
+            ::iosArm64
+        else
+            ::iosX64
+    iOSTarget("ios") {
         binaries {
             framework("Shared")
         }
     }
 
+    // Cocoa pods
+    version = "0.1.0"
+    cocoapods {
+        // Configure fields required by CocoaPods.
+        summary = "Kubsu timetable"
+        homepage = "https://github.com/indrih17/KubsuTimetableMpp"
+    }
+
+    // Sources
     sourceSets {
         val commonMain by getting {
             dependencies {
