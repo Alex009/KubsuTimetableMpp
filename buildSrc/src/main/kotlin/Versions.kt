@@ -20,7 +20,7 @@ object Versions {
 
     const val androidx_navigation: String = "2.1.0"
 
-    const val com_egroden_teaco: String = "0.2.2"
+    const val com_egroden_teaco: String = "0.2.3"
 
     const val androidx_test: String = "1.2.0"
 
@@ -34,7 +34,7 @@ object Versions {
 
     const val io_fabric_tools_gradle: String = "1.31.2"
 
-    const val de_fayard_refreshversions_gradle_plugin: String = "0.7.0" // available: "0.8.3"
+    const val de_fayard_refreshversions_gradle_plugin: String = "0.8.4"
 
     const val multiplatform_settings: String = "0.3.3"
 
