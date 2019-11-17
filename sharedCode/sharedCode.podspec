@@ -15,9 +15,9 @@ Pod::Spec.new do |spec|
             
 
     spec.pod_target_xcconfig = {
-        'KOTLIN_TARGET[sdk=iphonesimulator*]' => 'ios_x64',
-        'KOTLIN_TARGET[sdk=iphoneos*]' => 'ios_arm',
-        'KOTLIN_TARGET[sdk=macosx*]' => 'macos_x64'
+
+        'KOTLIN_TARGET[sdk=iphoneos*]' => 'ios_arm'
+
     }
 
     spec.script_phases = [

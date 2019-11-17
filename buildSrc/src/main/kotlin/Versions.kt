@@ -16,7 +16,7 @@ object Versions {
 
     const val com_squareup_sqldelight: String = "1.2.0"
 
-    const val org_jetbrains_kotlin: String = "1.3.60"
+    const val org_jetbrains_kotlin: String = "1.3.50"
 
     const val androidx_navigation: String = "2.1.0"
 
