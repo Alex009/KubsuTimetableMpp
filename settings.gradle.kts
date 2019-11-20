@@ -1,5 +1,5 @@
-rootProject.name = "KubsuTimetable"
+enableFeaturePreview("GRADLE_METADATA")
 
 include(":sharedCode", ":androidApp")
 
-enableFeaturePreview("GRADLE_METADATA")
+rootProject.name = "KubsuTimetable"

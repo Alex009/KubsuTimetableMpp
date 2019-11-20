@@ -33,7 +33,7 @@ kotlin {
     }
 
     // Cocoa pods
-    version = "0.1.3"
+    version = "0.1.4"
     cocoapods {
         // Configure fields required by CocoaPods.
         summary = "Kubsu timetable"
@@ -63,7 +63,7 @@ kotlin {
                 implementation(Libs.coroutines_extensions)
 
                 // Presentation logic
-                implementation(Libs.teaco)
+                implementation(Libs.teaco_mpp)
 
                 // Di
                 implementation(Libs.kodein_di_core)
@@ -104,9 +104,6 @@ kotlin {
 
                 // Serialization
                 implementation(Libs.kotlinx_serialization_runtime)
-
-                // Presentation logic
-                implementation(Libs.teaco_android)
 
                 // Db
                 implementation(Libs.android_driver)
@@ -183,12 +180,6 @@ android {
         }
     }
 
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
-        }
-    }
-
     packagingOptions {
         exclude("META-INF/*.kotlin_module")
     }
@@ -244,7 +235,3 @@ task("iosTest") {
 configurations {
     create("compileClasspath")
 }
-
-/*
-tasks["check"].dependsOn("iosTest")
-*/

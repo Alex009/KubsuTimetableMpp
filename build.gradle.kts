@@ -22,10 +22,11 @@ allprojects {
         google()
         jcenter()
         mavenCentral()
+        maven(url = "https://maven.google.com")
         maven(url = "https://dl.bintray.com/florent37/maven")
         maven(url = "https://jitpack.io")
         maven(url = "https://plugins.gradle.org/m2/")
-        maven(url = "https://dl.bintray.com/indrih17/teaco")
+        maven(url = "https://dl.bintray.com/indrih17/teaco-mpp")
         maven(url = "https://maven.fabric.io/public")
     }
 }
