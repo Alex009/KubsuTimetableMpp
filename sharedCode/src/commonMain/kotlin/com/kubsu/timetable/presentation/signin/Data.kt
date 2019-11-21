@@ -2,8 +2,8 @@ package com.kubsu.timetable.presentation.signin
 
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.SignInFail
-import com.kubsu.timetable.platform.SerializableModel
-import com.kubsu.timetable.platform.SerializeModel
+import com.kubsu.timetable.platform.Parcelable
+import com.kubsu.timetable.platform.Parcelize
 
 sealed class Action {
     class SignIn(val email: String, val password: String) : Action()
@@ -14,10 +14,10 @@ sealed class Action {
     internal class ShowDataFailure(val failureList: List<DataFailure>) : Action()
 }
 
-@SerializeModel
+@Parcelize
 data class State(
     val progress: Boolean
-) : SerializableModel
+) : Parcelable
 
 sealed class SideEffect {
     class Authenticate(val email: String, val password: String) : SideEffect()

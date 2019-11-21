@@ -1,6 +1,4 @@
 package com.kubsu.timetable.platform
 
-import kotlinx.serialization.Serializable
-
-actual interface SerializableModel
-actual typealias SerializeModel = Serializable
+actual interface Parcelable
+actual annotation class Parcelize

@@ -2,8 +2,8 @@ package com.kubsu.timetable.presentation.registration
 
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.UserInfoFail
-import com.kubsu.timetable.platform.SerializableModel
-import com.kubsu.timetable.platform.SerializeModel
+import com.kubsu.timetable.platform.Parcelable
+import com.kubsu.timetable.platform.Parcelize
 
 sealed class Action {
     class Registration(
@@ -22,10 +22,10 @@ sealed class Action {
     ) : Action()
 }
 
-@SerializeModel
+@Parcelize
 data class State(
     val progress: Boolean
-) : SerializableModel
+) : Parcelable
 
 sealed class SideEffect {
     data class Registration(

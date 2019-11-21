@@ -1,11 +1,11 @@
 package com.kubsu.timetable.presentation.subscription.model
 
-import com.kubsu.timetable.platform.SerializableModel
-import com.kubsu.timetable.platform.SerializeModel
+import com.kubsu.timetable.platform.Parcelable
+import com.kubsu.timetable.platform.Parcelize
 
-@SerializeModel
+@Parcelize
 data class GroupModel(
     val id: Int,
     val number: Int,
     val occupationId: Int
-) : SerializableModel
+) : Parcelable

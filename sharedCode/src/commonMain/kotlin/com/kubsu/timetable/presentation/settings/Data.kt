@@ -1,7 +1,7 @@
 package com.kubsu.timetable.presentation.settings
 
-import com.kubsu.timetable.platform.SerializableModel
-import com.kubsu.timetable.platform.SerializeModel
+import com.kubsu.timetable.platform.Parcelable
+import com.kubsu.timetable.platform.Parcelize
 
 sealed class Action {
     object Invalidate : Action()
@@ -11,8 +11,8 @@ sealed class Action {
     internal object SuccessLogout : Action()
 }
 
-@SerializeModel
-class State : SerializableModel
+@Parcelize
+class State : Parcelable
 
 sealed class SideEffect {
     object Logout : SideEffect()

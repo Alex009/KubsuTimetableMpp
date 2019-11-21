@@ -98,10 +98,10 @@ class SubscriptionGatewayImpl(
             .selectByUserId(user.id)
             .asFlow()
             .mapToList()
-            .flatMapLatest(::toSubscriptionEntityList)
+            .flatMapLatest { toSubscriptionEntityList(it) }
 
     @UseExperimental(ExperimentalCoroutinesApi::class)
-    private suspend fun toSubscriptionEntityList(
+    private fun toSubscriptionEntityList(
         subscriptionList: List<SubscriptionDb>
     ): Flow<List<SubscriptionEntity>> {
         val flows = subscriptionList.map { subscription ->

@@ -1,23 +1,23 @@
 package com.kubsu.timetable.presentation.timetable.model
 
-import com.kubsu.timetable.platform.SerializableModel
-import com.kubsu.timetable.platform.SerializeModel
+import com.kubsu.timetable.platform.Parcelable
+import com.kubsu.timetable.platform.Parcelize
 import com.soywiz.klock.DayOfWeek
 
-@SerializeModel
+@Parcelize
 data class TimetableModel(
     val id: Int,
     val typeOfWeek: TypeOfWeekModel,
     val facultyId: Int,
     val subgroupId: Int,
     val infoList: List<TimetableInfoToDisplay>
-) : SerializableModel
+) : Parcelable
 
-sealed class TimetableInfoToDisplay : SerializableModel {
-    @SerializeModel
+sealed class TimetableInfoToDisplay : Parcelable {
+    @Parcelize
     data class Class(val classModel: ClassModel) : TimetableInfoToDisplay()
 
-    @SerializeModel
+    @Parcelize
     data class Day(
         val index: Int,
         val dayOfWeek: DayOfWeek

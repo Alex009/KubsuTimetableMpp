@@ -2,8 +2,8 @@ package com.kubsu.timetable.presentation.subscription.create
 
 import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.SubscriptionFail
-import com.kubsu.timetable.platform.SerializableModel
-import com.kubsu.timetable.platform.SerializeModel
+import com.kubsu.timetable.platform.Parcelable
+import com.kubsu.timetable.platform.Parcelize
 import com.kubsu.timetable.presentation.subscription.model.FacultyModel
 import com.kubsu.timetable.presentation.subscription.model.GroupModel
 import com.kubsu.timetable.presentation.subscription.model.OccupationModel
@@ -42,7 +42,7 @@ sealed class Action {
     ) : Action()
 }
 
-@SerializeModel
+@Parcelize
 data class State(
     val progress: Boolean,
     val facultyList: List<FacultyModel>,
@@ -54,7 +54,7 @@ data class State(
     internal val selectedOccupation: OccupationModel?,
     internal val selectedGroup: GroupModel?,
     internal val selectedSubgroup: SubgroupModel?
-) : SerializableModel
+) : Parcelable
 
 sealed class SideEffect {
     object SelectFacultyList : SideEffect()

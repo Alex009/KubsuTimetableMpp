@@ -1,8 +1,8 @@
 package com.kubsu.timetable.presentation.invalidate
 
 import com.kubsu.timetable.DataFailure
-import com.kubsu.timetable.platform.SerializableModel
-import com.kubsu.timetable.platform.SerializeModel
+import com.kubsu.timetable.platform.Parcelable
+import com.kubsu.timetable.platform.Parcelize
 
 sealed class Action {
     object Invalidate : Action()
@@ -11,10 +11,10 @@ sealed class Action {
     internal class Failure(val failure: DataFailure) : Action()
 }
 
-@SerializeModel
+@Parcelize
 data class State(
     val progress: Boolean
-) : SerializableModel
+) : Parcelable
 
 sealed class SideEffect {
     object Invalidate : SideEffect()

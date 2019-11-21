@@ -1,10 +1,10 @@
 package com.kubsu.timetable.presentation.timetable.model
 
-import com.kubsu.timetable.platform.SerializableModel
-import com.kubsu.timetable.platform.SerializeModel
+import com.kubsu.timetable.platform.Parcelable
+import com.kubsu.timetable.platform.Parcelize
 import com.soywiz.klock.DayOfWeek
 
-@SerializeModel
+@Parcelize
 data class ClassModel(
     val id: Int,
     val title: String,
@@ -15,4 +15,4 @@ data class ClassModel(
     val lecturer: LecturerModel,
     val timetableId: Int,
     val needToEmphasize: Boolean
-) : SerializableModel
+) : Parcelable

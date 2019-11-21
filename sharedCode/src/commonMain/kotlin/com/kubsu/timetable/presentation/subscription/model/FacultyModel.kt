@@ -1,10 +1,10 @@
 package com.kubsu.timetable.presentation.subscription.model
 
-import com.kubsu.timetable.platform.SerializableModel
-import com.kubsu.timetable.platform.SerializeModel
+import com.kubsu.timetable.platform.Parcelable
+import com.kubsu.timetable.platform.Parcelize
 
-@SerializeModel
+@Parcelize
 data class FacultyModel(
     val id: Int,
     val title: String
-) : SerializableModel
+) : Parcelable

@@ -1,7 +1,7 @@
 package com.kubsu.timetable.presentation.timetable
 
-import com.kubsu.timetable.platform.SerializableModel
-import com.kubsu.timetable.platform.SerializeModel
+import com.kubsu.timetable.platform.Parcelable
+import com.kubsu.timetable.platform.Parcelize
 import com.kubsu.timetable.presentation.timetable.model.ClassModel
 import com.kubsu.timetable.presentation.timetable.model.SubscriptionModel
 import com.kubsu.timetable.presentation.timetable.model.TimetableModel
@@ -19,14 +19,14 @@ sealed class Action {
     ) : Action()
 }
 
-@SerializeModel
+@Parcelize
 data class State(
     val progress: Boolean,
     val currentSubscription: SubscriptionModel?,
     val universityInfoModel: UniversityInfoModel?,
     val numeratorTimetable: TimetableModel?,
     val denominatorTimetable: TimetableModel?
-) : SerializableModel
+) : Parcelable
 
 sealed class SideEffect {
     class LoadCurrentTimetable(val subscription: SubscriptionModel) : SideEffect()

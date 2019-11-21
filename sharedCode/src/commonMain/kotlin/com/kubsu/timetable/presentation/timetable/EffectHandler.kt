@@ -31,7 +31,7 @@ class TimetableEffectHandler(
                         SubscriptionModelMapper.toEntity(sideEffect.subscription)
                     )
                     .withOldValue(::saveDisplayedStatus)
-                    .flatMapLatest(::toActionFlow)
+                    .flatMapLatest { toActionFlow(it) }
                     .collect(this)
 
             is SideEffect.ChangesWasDisplayed ->
@@ -68,7 +68,7 @@ class TimetableEffectHandler(
         }
     }
 
-    private suspend fun toActionFlow(timetableList: List<TimetableEntity>): Flow<Action> =
+    private fun toActionFlow(timetableList: List<TimetableEntity>): Flow<Action> =
         if (timetableList.isNotEmpty())
             timetableInteractor
                 .getUniversityData(timetableList.first())

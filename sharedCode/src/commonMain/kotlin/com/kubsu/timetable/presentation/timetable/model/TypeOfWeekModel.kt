@@ -1,12 +1,12 @@
 package com.kubsu.timetable.presentation.timetable.model
 
-import com.kubsu.timetable.platform.SerializableModel
-import com.kubsu.timetable.platform.SerializeModel
+import com.kubsu.timetable.platform.Parcelable
+import com.kubsu.timetable.platform.Parcelize
 
-sealed class TypeOfWeekModel : SerializableModel {
-    @SerializeModel
+sealed class TypeOfWeekModel : Parcelable {
+    @Parcelize
     object Numerator : TypeOfWeekModel()
 
-    @SerializeModel
+    @Parcelize
     object Denominator : TypeOfWeekModel()
 }
