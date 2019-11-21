@@ -18,10 +18,10 @@ target 'iosApp' do
 
 end
 
-#target 'sharedCode' do
+target 'sharedCode' do
   # Comment the next line if you don't want to use dynamic frameworks
- # use_frameworks!
+  use_frameworks!
 
   # Pods for sharedCode
 
-#end
+end
