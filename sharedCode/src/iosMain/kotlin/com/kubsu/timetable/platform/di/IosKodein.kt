@@ -1,13 +1,20 @@
 package com.kubsu.timetable.platform.di
 
+import com.kubsu.timetable.di.mppCommonKodeinModule
 import com.kubsu.timetable.platform.PlatformArgs
-import org.kodein.di.Copy
+import io.ktor.client.engine.HttpClientEngine
+import io.ktor.client.engine.ios.Ios
 import org.kodein.di.Kodein
 import org.kodein.di.erased.bind
 import org.kodein.di.erased.singleton
 
-val iosModule = Kodein {
-    extend(iosCommonKodein, copy = Copy.All)
+val iosKodein = Kodein {
+    import(mppCommonKodeinModule)
+
+    bind<HttpClientEngine>() with singleton {
+        Ios.create {}
+    }
+
 
     bind() from singleton { PlatformArgs() }
 }
