@@ -28,7 +28,10 @@ class AppInfoGatewayImpl(
     private val timetableNetworkClient: TimetableNetworkClient,
     private val universityDataNetworkClient: UniversityDataNetworkClient
 ) : AppInfoGateway {
-    override suspend fun updateInfo(session: Session, userId: Int): Either<DataFailure, Unit> {
+    override suspend fun checkAvailabilityOfUserInfo(
+        session: Session,
+        userId: Int
+    ): Either<DataFailure, Unit> {
         val currentList = subscriptionQueries
             .selectByUserId(userId)
             .executeAsList()
@@ -55,7 +58,7 @@ class AppInfoGatewayImpl(
             .toEitherList()
             .map { Unit }
 
-    private suspend fun checkAvailabilityOfTimetables(
+    suspend fun checkAvailabilityOfTimetables(
         subscription: SubscriptionNetworkDto
     ): Either<DataFailure, Unit> {
         val subgroupId = subscription.subgroup
@@ -68,9 +71,7 @@ class AppInfoGatewayImpl(
                 .selectTimetableList(subgroupId)
                 .flatMap {
                     for (networkDto in it)
-                        timetableQueries.update(
-                            TimetableDtoMapper.toDbDto(networkDto)
-                        )
+                        timetableQueries.update(TimetableDtoMapper.toDbDto(networkDto))
                     checkTimetableDependencies(it)
                 }
         else

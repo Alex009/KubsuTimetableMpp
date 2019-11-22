@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
     spec.name                     = 'sharedCode'
-    spec.version                  = '0.1.0'
+    spec.version                  = '0.1.8'
     spec.homepage                 = 'https://github.com/indrih17/KubsuTimetableMpp'
     spec.source                   = { :git => "Not Published", :tag => "Cocoapods/#{spec.name}/#{spec.version}" }
     spec.authors                  = ''
@@ -15,9 +15,9 @@ Pod::Spec.new do |spec|
             
 
     spec.pod_target_xcconfig = {
-
-        'KOTLIN_TARGET[sdk=iphoneos*]' => 'ios_arm'
-
+        'KOTLIN_TARGET[sdk=iphonesimulator*]' => 'ios_x64',
+        'KOTLIN_TARGET[sdk=iphoneos*]' => 'ios_arm',
+        'KOTLIN_TARGET[sdk=macosx*]' => 'macos_x64'
     }
 
     spec.script_phases = [

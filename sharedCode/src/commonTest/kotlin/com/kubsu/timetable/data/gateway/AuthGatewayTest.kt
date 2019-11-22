@@ -123,7 +123,7 @@ class AuthGatewayTest {
 
         authGateway
             .signInTransaction(email, password, token,
-                withTransaction = { Either.left(DataFailure.ConnectionToRepository("")) }
+                withTransaction = { Either.left(DataFailure.ConnectionToRepository()) }
             )
             .map { throw IllegalStateException() }
 

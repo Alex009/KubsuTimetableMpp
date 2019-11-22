@@ -16,7 +16,7 @@ sealed class DataFailure(val debugMessage: String?) : Failure() {
 
     class NotAuthenticated(debugMessage: String? = null) : DataFailure(debugMessage)
 
-    class ConnectionToRepository(debugMessage: String?) : DataFailure(debugMessage)
+    class ConnectionToRepository(debugMessage: String? = null) : DataFailure(debugMessage)
 }
 
 /**

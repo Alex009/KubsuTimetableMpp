@@ -59,7 +59,12 @@ class SubscriptionInteractorImpl(
                         subgroupId = subgroupId,
                         subscriptionName = subscriptionName,
                         isMain = isMain,
-                        withTransaction = { appInfoGateway.updateInfo(session, it.userId) }
+                        withTransaction = {
+                            appInfoGateway.checkAvailabilityOfUserInfo(
+                                session,
+                                it.userId
+                            )
+                        }
                     )
             }
     }

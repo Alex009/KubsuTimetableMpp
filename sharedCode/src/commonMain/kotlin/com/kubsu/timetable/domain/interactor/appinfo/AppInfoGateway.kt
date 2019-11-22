@@ -8,7 +8,10 @@ import com.kubsu.timetable.data.network.dto.timetable.data.TimetableNetworkDto
 import com.kubsu.timetable.data.storage.user.session.Session
 
 interface AppInfoGateway {
-    suspend fun updateInfo(session: Session, userId: Int): Either<DataFailure, Unit>
+    suspend fun checkAvailabilityOfUserInfo(
+        session: Session,
+        userId: Int
+    ): Either<DataFailure, Unit>
 
     suspend fun checkSubscriptionDependencies(
         list: List<SubscriptionNetworkDto>

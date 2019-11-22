@@ -14,7 +14,7 @@ class AppInfoInteractorImpl(
         userInfoGateway.getCurrentUserEitherFailure().flatMap { user ->
             userInfoGateway.getCurrentSessionEitherFail().flatMap { session ->
                 appInfoGateway.clearUserInfo(userId = user.id)
-                appInfoGateway.updateInfo(session, userId = user.id)
+                appInfoGateway.checkAvailabilityOfUserInfo(session, userId = user.id)
             }
         }
     }

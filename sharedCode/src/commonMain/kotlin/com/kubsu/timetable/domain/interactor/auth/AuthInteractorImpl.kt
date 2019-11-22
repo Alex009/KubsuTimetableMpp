@@ -25,7 +25,12 @@ class AuthInteractorImpl(
                 email = email,
                 password = password,
                 token = token,
-                withTransaction = { appInfoGateway.updateInfo(it.session, it.user.id) }
+                withTransaction = {
+                    appInfoGateway.checkAvailabilityOfUserInfo(
+                        it.session,
+                        it.user.id
+                    )
+                }
             )
     }
 
