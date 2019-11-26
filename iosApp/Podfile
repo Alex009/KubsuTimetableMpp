@@ -1,6 +1,10 @@
 # Uncomment the next line to define a global platform for your project
 # platform :ios, '9.0'
 
+# workaround for https://github.com/CocoaPods/CocoaPods/issues/8073
+# нужно чтобы кеш development pods корректно инвалидировался
+install! 'cocoapods', :disable_input_output_paths => true
+
 target 'iosApp' do
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
@@ -18,10 +22,10 @@ target 'iosApp' do
 
 end
 
-target 'sharedCode' do
+#target 'sharedCode' do
   # Comment the next line if you don't want to use dynamic frameworks
-  use_frameworks!
+  #use_frameworks!
 
   # Pods for sharedCode
 
-end
+#end
