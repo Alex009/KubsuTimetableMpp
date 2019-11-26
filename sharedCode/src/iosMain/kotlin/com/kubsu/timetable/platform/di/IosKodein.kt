@@ -15,6 +15,5 @@ val iosKodein = Kodein {
         Ios.create {}
     }
 
-
     bind() from singleton { PlatformArgs() }
 }

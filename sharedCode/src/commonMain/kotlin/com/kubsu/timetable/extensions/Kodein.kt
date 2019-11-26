@@ -1,8 +1,6 @@
 package com.kubsu.timetable.extensions
 
-import org.kodein.di.DKodeinAware
-import org.kodein.di.Kodein
-import org.kodein.di.erased
+import org.kodein.di.*
 import kotlin.reflect.typeOf
 
 @UseExperimental(ExperimentalStdlibApi::class)
@@ -21,5 +19,11 @@ inline fun <reified T : Any> Kodein.Builder.bindGeneric(): Kodein.Builder.TypeBi
 inline fun <reified T : Any> DKodeinAware.instanceGeneric(): T =
     dkodein.Instance(erased(), nameWithGenerics<T>())
 
-inline fun <reified A, reified T : Any> DKodeinAware.instanceGeneric(arg: A) =
-    dkodein.Instance<A, T>(erased(), erased(), nameWithGenerics<T>(), arg)
+inline fun <reified A, reified T : Any> DKodeinAware.instanceGeneric(arg: A): T =
+    dkodein.Instance(erased(), erased(), nameWithGenerics<T>(), arg)
+
+inline fun <reified T : Any> KodeinAware.instanceDep(): T =
+    direct.Instance(erased(), null)
+
+inline fun <reified A, reified T : Any> KodeinAware.instanceDep(arg: A): T =
+    direct.Instance(erased(), erased(), nameWithGenerics<T>(), arg)
