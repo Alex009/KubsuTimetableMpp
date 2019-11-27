@@ -2,22 +2,22 @@ package com.kubsu.timetable.fragments.signin
 
 import android.os.Bundle
 import android.view.View
-import com.egroden.teaco.Feature
-import com.egroden.teaco.androidConnectors
-import com.egroden.teaco.bindAction
-import com.egroden.teaco.connect
+import com.egroden.teaco.*
 import com.kubsu.timetable.R
 import com.kubsu.timetable.SignInFail
 import com.kubsu.timetable.base.BaseFragment
-import com.kubsu.timetable.presentation.signin.*
+import com.kubsu.timetable.presentation.signin.SignIn
 import com.kubsu.timetable.utils.*
 import com.kubsu.timetable.utils.logics.Keyboard
 import kotlinx.android.synthetic.main.progress_bar.view.*
 import kotlinx.android.synthetic.main.sign_in_fragment.view.*
 
 class SignInFragment(
-    featureFactory: (oldState: State?) -> Feature<Action, SideEffect, State, Subscription>
-) : BaseFragment(R.layout.sign_in_fragment) {
+    featureFactory: (
+        oldState: SignIn.State?
+    ) -> Feature<SignIn.Action, SignIn.SideEffect, SignIn.State, SignIn.Subscription>
+) : BaseFragment(R.layout.sign_in_fragment),
+    Render<SignIn.State, SignIn.Subscription> {
     private val connector by androidConnectors(featureFactory)
 
     private val progressEffect = UiEffect(false)
@@ -26,7 +26,7 @@ class SignInFragment(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        connector.connect(::render, ::render, lifecycle)
+        connector.connect(this, lifecycle)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -37,7 +37,7 @@ class SignInFragment(
                 when (menuItem.itemId) {
                     R.id.action_sign_in -> {
                         Keyboard.hide(view)
-                        connector bindAction Action.SignIn(
+                        connector bindAction SignIn.Action.SignIn(
                             email = view.email_input_layout.text,
                             password = view.password_input_layout.text
                         )
@@ -57,7 +57,7 @@ class SignInFragment(
 
         view.registration_clickable_text_view.setOnClickListener {
             Keyboard.hide(view)
-            connector bindAction Action.Registration
+            connector bindAction SignIn.Action.Registration
         }
     }
 
@@ -68,26 +68,26 @@ class SignInFragment(
         passwordErrorEffect.unbind()
     }
 
-    private fun render(state: State) {
+    override fun renderState(state: SignIn.State) {
         progressEffect.value = state.progress
     }
 
-    private fun render(subscription: Subscription) =
+    override fun renderSubscription(subscription: SignIn.Subscription) =
         when (subscription) {
-            is Subscription.Navigate ->
+            is SignIn.Subscription.Navigate ->
                 navigation(subscription.screen)
-            is Subscription.ShowSignInFailure ->
+            is SignIn.Subscription.ShowSignInFailure ->
                 subscription.failureList.forEach(::handleSignInFail)
-            is Subscription.ShowDataFailure ->
+            is SignIn.Subscription.ShowDataFailure ->
                 subscription.failureList.forEach(::notifyUserOfFailure)
         }
 
-    private fun navigation(screen: Screen) =
+    private fun navigation(screen: SignIn.Screen) =
         safeNavigate(
             when (screen) {
-                Screen.Registration ->
+                SignIn.Screen.Registration ->
                     SignInFragmentDirections.actionSignInFragmentToRegistrationFragment()
-                Screen.Timetable ->
+                SignIn.Screen.Timetable ->
                     SignInFragmentDirections.actionSignInFragmentToBottomNavFragment()
             }
         )

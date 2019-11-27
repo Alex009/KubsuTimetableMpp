@@ -2,22 +2,22 @@ package com.kubsu.timetable.fragments.registration
 
 import android.os.Bundle
 import android.view.View
-import com.egroden.teaco.Feature
-import com.egroden.teaco.androidConnectors
-import com.egroden.teaco.bindAction
-import com.egroden.teaco.connect
+import com.egroden.teaco.*
 import com.kubsu.timetable.R
 import com.kubsu.timetable.UserInfoFail
 import com.kubsu.timetable.base.BaseFragment
-import com.kubsu.timetable.presentation.registration.*
+import com.kubsu.timetable.presentation.registration.Registration
 import com.kubsu.timetable.utils.*
 import com.kubsu.timetable.utils.logics.Keyboard
 import kotlinx.android.synthetic.main.progress_bar.view.*
 import kotlinx.android.synthetic.main.registration_fragment.view.*
 
 class RegistrationFragment(
-    featureFactory: (oldState: State?) -> Feature<Action, SideEffect, State, Subscription>
-) : BaseFragment(R.layout.registration_fragment) {
+    featureFactory: (
+        oldState: Registration.State?
+    ) -> Feature<Registration.Action, Registration.SideEffect, Registration.State, Registration.Subscription>
+) : BaseFragment(R.layout.registration_fragment),
+    Render<Registration.State, Registration.Subscription> {
     private val connector by androidConnectors(featureFactory)
 
     private val progressEffect = UiEffect(false)
@@ -27,7 +27,7 @@ class RegistrationFragment(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        connector.connect(::render, ::render, lifecycle)
+        connector.connect(this, lifecycle)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -42,7 +42,7 @@ class RegistrationFragment(
                 when (menuItem.itemId) {
                     R.id.action_confirm -> {
                         Keyboard.hide(view)
-                        connector bindAction Action.Registration(
+                        connector bindAction Registration.Action.Registration(
                             email = view.email_input_layout.text,
                             password = view.password_input_layout.text,
                             repeatedPassword = view.repeat_password_input_layout.text
@@ -72,26 +72,26 @@ class RegistrationFragment(
         passwordsVaryEffects.unbind()
     }
 
-    private fun render(state: State) {
+    override fun renderState(state: Registration.State) {
         progressEffect.value = state.progress
     }
 
-    private fun render(subscription: Subscription) =
+    override fun renderSubscription(subscription: Registration.Subscription) =
         when (subscription) {
-            is Subscription.Navigate ->
+            is Registration.Subscription.Navigate ->
                 navigation(subscription.screen)
-            is Subscription.ShowRegistrationFailure ->
+            is Registration.Subscription.ShowRegistrationFailure ->
                 subscription.failureList.forEach(::handleRegistrationFail)
-            is Subscription.ShowDataFailure ->
+            is Registration.Subscription.ShowDataFailure ->
                 subscription.failureList.forEach(::notifyUserOfFailure)
-            Subscription.PasswordsVary ->
+            Registration.Subscription.PasswordsVary ->
                 passwordsVaryEffects.value = R.string.passwords_vary
         }
 
-    private fun navigation(screen: Screen) =
+    private fun navigation(screen: Registration.Screen) =
         safeNavigate(
             when (screen) {
-                Screen.CreateSubscription ->
+                Registration.Screen.CreateSubscription ->
                     RegistrationFragmentDirections
                         .actionRegistrationFragmentToCreateSubscriptionFragment()
             }

@@ -1,40 +1,40 @@
 package com.kubsu.timetable.fragments.splash
 
 import android.os.Bundle
-import com.egroden.teaco.Feature
-import com.egroden.teaco.androidConnectors
-import com.egroden.teaco.bindAction
-import com.egroden.teaco.connect
+import com.egroden.teaco.*
 import com.kubsu.timetable.BaseNavGraphDirections
 import com.kubsu.timetable.R
 import com.kubsu.timetable.base.BaseFragment
-import com.kubsu.timetable.presentation.splash.*
+import com.kubsu.timetable.presentation.splash.Splash
 import com.kubsu.timetable.utils.safeNavigate
 
 class SplashFragment(
-    featureFactory: (oldState: State?) -> Feature<Action, SideEffect, State, Subscription>
-) : BaseFragment(R.layout.splash_fragment) {
-    private val connector by androidConnectors(featureFactory) { bindAction(Action.Initiate) }
+    featureFactory: (
+        oldState: Splash.State?
+    ) -> Feature<Splash.Action, Splash.SideEffect, Splash.State, Splash.Subscription>
+) : BaseFragment(R.layout.splash_fragment),
+    Render<Splash.State, Splash.Subscription> {
+    private val connector by androidConnectors(featureFactory) { bindAction(Splash.Action.Initiate) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        connector.connect(::render, ::render, lifecycle)
+        connector.connect(this, lifecycle)
     }
 
-    private fun render(state: State) = Unit
+    override fun renderState(state: Splash.State) = Unit
 
-    private fun render(subscription: Subscription) =
+    override fun renderSubscription(subscription: Splash.Subscription) =
         when (subscription) {
-            is Subscription.Navigate -> navigation(subscription.screen)
-            is Subscription.ShowFailure -> notifyUserOfFailure(subscription.failure)
+            is Splash.Subscription.Navigate -> navigation(subscription.screen)
+            is Splash.Subscription.ShowFailure -> notifyUserOfFailure(subscription.failure)
         }
 
-    private fun navigation(screen: Screen) =
+    private fun navigation(screen: Splash.Screen) =
         safeNavigate(
             when (screen) {
-                Screen.SignInScreen ->
+                Splash.Screen.SignInScreen ->
                     BaseNavGraphDirections.actionGlobalSignInFragment()
-                Screen.TimetableScreen ->
+                Splash.Screen.TimetableScreen ->
                     SplashFragmentDirections.actionSplashFragmentToBottomNavFragment()
             }
         )

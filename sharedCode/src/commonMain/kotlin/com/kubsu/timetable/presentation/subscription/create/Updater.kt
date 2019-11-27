@@ -7,193 +7,198 @@ import com.kubsu.timetable.presentation.subscription.model.GroupModel
 import com.kubsu.timetable.presentation.subscription.model.OccupationModel
 import com.kubsu.timetable.presentation.subscription.model.SubgroupModel
 
-val createSubscriptionUpdater: Updater<State, Action, Subscription, SideEffect> = { state, action ->
-    when (action) {
-        Action.LoadFacultyList -> {
-            UpdateResponse(
-                state = state.copy(progress = true),
-                sideEffects = setOf(SideEffect.SelectFacultyList)
-            )
-        }
+val createSubscriptionUpdater = object :
+    Updater<CreateSub.State, CreateSub.Action, CreateSub.Subscription, CreateSub.SideEffect> {
+    override fun invoke(
+        state: CreateSub.State,
+        action: CreateSub.Action
+    ): UpdateResponse<CreateSub.State, CreateSub.Subscription, CreateSub.SideEffect> =
+        when (action) {
+            CreateSub.Action.LoadFacultyList -> {
+                UpdateResponse(
+                    state = state.copy(progress = true),
+                    sideEffects = setOf(CreateSub.SideEffect.SelectFacultyList)
+                )
+            }
 
-        is Action.FacultyWasSelected -> {
-            val faculty = action.id?.let(state.facultyList::get)
-            UpdateResponse(
-                state = state.copy(
-                    occupationList = emptyList(),
-                    groupList = emptyList(),
-                    subgroupList = emptyList(),
-                    nameHint = getHintOrNull(
+            is CreateSub.Action.FacultyWasSelected -> {
+                val faculty = action.id?.let(state.facultyList::get)
+                UpdateResponse(
+                    state = state.copy(
+                        occupationList = emptyList(),
+                        groupList = emptyList(),
+                        subgroupList = emptyList(),
+                        nameHint = getHintOrNull(
+                            selectedFaculty = faculty,
+                            selectedOccupation = null,
+                            selectedGroup = null,
+                            selectedSubgroup = null
+                        ),
                         selectedFaculty = faculty,
                         selectedOccupation = null,
                         selectedGroup = null,
-                        selectedSubgroup = null
+                        selectedSubgroup = null,
+                        progress = faculty != null
                     ),
-                    selectedFaculty = faculty,
-                    selectedOccupation = null,
-                    selectedGroup = null,
-                    selectedSubgroup = null,
-                    progress = faculty != null
-                ),
-                sideEffects = if (faculty != null)
-                    setOf(SideEffect.SelectOccupationList(faculty))
-                else
-                    emptySet()
-            )
-        }
+                    sideEffects = if (faculty != null)
+                        setOf(CreateSub.SideEffect.SelectOccupationList(faculty))
+                    else
+                        emptySet()
+                )
+            }
 
-        is Action.OccupationWasSelected -> {
-            val occupation = action.id?.let(state.occupationList::get)
-            UpdateResponse(
-                state = state.copy(
-                    groupList = emptyList(),
-                    subgroupList = emptyList(),
-                    nameHint = getHintOrNull(
-                        selectedFaculty = state.selectedFaculty,
+            is CreateSub.Action.OccupationWasSelected -> {
+                val occupation = action.id?.let(state.occupationList::get)
+                UpdateResponse(
+                    state = state.copy(
+                        groupList = emptyList(),
+                        subgroupList = emptyList(),
+                        nameHint = getHintOrNull(
+                            selectedFaculty = state.selectedFaculty,
+                            selectedOccupation = occupation,
+                            selectedGroup = null,
+                            selectedSubgroup = null
+                        ),
                         selectedOccupation = occupation,
                         selectedGroup = null,
-                        selectedSubgroup = null
+                        selectedSubgroup = null,
+                        progress = occupation != null
                     ),
-                    selectedOccupation = occupation,
-                    selectedGroup = null,
-                    selectedSubgroup = null,
-                    progress = occupation != null
-                ),
-                sideEffects = if (occupation != null)
-                    setOf(SideEffect.SelectGroupList(occupation))
-                else
-                    emptySet()
-            )
-        }
-
-        is Action.GroupWasSelected -> {
-            val group = action.id?.let(state.groupList::get)
-            UpdateResponse(
-                state = state.copy(
-                    subgroupList = emptyList(),
-                    nameHint = getHintOrNull(
-                        selectedFaculty = state.selectedFaculty,
-                        selectedOccupation = state.selectedOccupation,
-                        selectedGroup = group,
-                        selectedSubgroup = null
-                    ),
-                    selectedGroup = group,
-                    selectedSubgroup = null,
-                    progress = group != null
-                ),
-                sideEffects = if (group != null)
-                    setOf(SideEffect.SelectSubgroupList(group))
-                else
-                    emptySet()
-            )
-        }
-
-        is Action.SubgroupWasSelected -> {
-            val subgroup = action.id?.let(state.subgroupList::get)
-            UpdateResponse(
-                state = state.copy(
-                    selectedSubgroup = subgroup,
-                    nameHint = getHintOrNull(
-                        selectedFaculty = state.selectedFaculty,
-                        selectedOccupation = state.selectedOccupation,
-                        selectedGroup = state.selectedGroup,
-                        selectedSubgroup = subgroup
-                    )
+                    sideEffects = if (occupation != null)
+                        setOf(CreateSub.SideEffect.SelectGroupList(occupation))
+                    else
+                        emptySet()
                 )
-            )
-        }
+            }
 
-        is Action.CreateSubscription -> {
-            when (null) {
-                state.selectedFaculty ->
-                    UpdateResponse<State, Subscription, SideEffect>(
-                        state,
-                        subscription = Subscription.ChooseFaculty
-                    )
+            is CreateSub.Action.GroupWasSelected -> {
+                val group = action.id?.let(state.groupList::get)
+                UpdateResponse(
+                    state = state.copy(
+                        subgroupList = emptyList(),
+                        nameHint = getHintOrNull(
+                            selectedFaculty = state.selectedFaculty,
+                            selectedOccupation = state.selectedOccupation,
+                            selectedGroup = group,
+                            selectedSubgroup = null
+                        ),
+                        selectedGroup = group,
+                        selectedSubgroup = null,
+                        progress = group != null
+                    ),
+                    sideEffects = if (group != null)
+                        setOf(CreateSub.SideEffect.SelectSubgroupList(group))
+                    else
+                        emptySet()
+                )
+            }
 
-                state.selectedOccupation ->
-                    UpdateResponse<State, Subscription, SideEffect>(
-                        state,
-                        subscription = Subscription.ChooseOccupation
-                    )
-
-                state.selectedGroup ->
-                    UpdateResponse<State, Subscription, SideEffect>(
-                        state,
-                        subscription = Subscription.ChooseGroup
-                    )
-
-                state.selectedSubgroup ->
-                    UpdateResponse<State, Subscription, SideEffect>(
-                        state,
-                        subscription = Subscription.ChooseSubgroup
-                    )
-
-                else ->
-                    UpdateResponse<State, Subscription, SideEffect>(
-                        state = state.copy(progress = true),
-                        sideEffects = setOf(
-                            SideEffect.CreateSubscription(
-                                subgroup = state.selectedSubgroup,
-                                subscriptionName = action.subscriptionName,
-                                isMain = action.isMain
-                            )
+            is CreateSub.Action.SubgroupWasSelected -> {
+                val subgroup = action.id?.let(state.subgroupList::get)
+                UpdateResponse(
+                    state = state.copy(
+                        selectedSubgroup = subgroup,
+                        nameHint = getHintOrNull(
+                            selectedFaculty = state.selectedFaculty,
+                            selectedOccupation = state.selectedOccupation,
+                            selectedGroup = state.selectedGroup,
+                            selectedSubgroup = subgroup
                         )
                     )
+                )
             }
+
+            is CreateSub.Action.CreateSubscription -> {
+                when (null) {
+                    state.selectedFaculty ->
+                        UpdateResponse<CreateSub.State, CreateSub.Subscription, CreateSub.SideEffect>(
+                            state,
+                            subscription = CreateSub.Subscription.ChooseFaculty
+                        )
+
+                    state.selectedOccupation ->
+                        UpdateResponse<CreateSub.State, CreateSub.Subscription, CreateSub.SideEffect>(
+                            state,
+                            subscription = CreateSub.Subscription.ChooseOccupation
+                        )
+
+                    state.selectedGroup ->
+                        UpdateResponse<CreateSub.State, CreateSub.Subscription, CreateSub.SideEffect>(
+                            state,
+                            subscription = CreateSub.Subscription.ChooseGroup
+                        )
+
+                    state.selectedSubgroup ->
+                        UpdateResponse<CreateSub.State, CreateSub.Subscription, CreateSub.SideEffect>(
+                            state,
+                            subscription = CreateSub.Subscription.ChooseSubgroup
+                        )
+
+                    else ->
+                        UpdateResponse<CreateSub.State, CreateSub.Subscription, CreateSub.SideEffect>(
+                            state = state.copy(progress = true),
+                            sideEffects = setOf(
+                                CreateSub.SideEffect.CreateSubscription(
+                                    subgroup = state.selectedSubgroup,
+                                    subscriptionName = action.subscriptionName,
+                                    isMain = action.isMain
+                                )
+                            )
+                        )
+                }
+            }
+
+            is CreateSub.Action.SubscriptionWasCreated ->
+                UpdateResponse(
+                    state = state.copy(progress = false),
+                    subscription = CreateSub.Subscription.Navigate(CreateSub.Screen.TimetableScreen),
+                    sideEffects = setOf(CreateSub.SideEffect.DisplayedSubscription(action.subscription))
+                )
+
+            is CreateSub.Action.ShowDataFailure ->
+                UpdateResponse(
+                    state = state.copy(progress = false),
+                    subscription = CreateSub.Subscription.ShowFailure(action.failureList)
+                )
+
+            is CreateSub.Action.ShowSubscriptionFailure ->
+                UpdateResponse(
+                    state = state.copy(progress = false),
+                    subscription = CreateSub.Subscription.ShowSubscriptionFailure(action.failureList)
+                )
+
+            is CreateSub.Action.FacultyListUploaded ->
+                UpdateResponse(
+                    state = state.copy(
+                        facultyList = action.facultyList,
+                        progress = false
+                    )
+                )
+
+            is CreateSub.Action.OccupationListUploaded ->
+                UpdateResponse(
+                    state = state.copy(
+                        occupationList = action.occupationList,
+                        progress = false
+                    )
+                )
+
+            is CreateSub.Action.GroupListUploaded ->
+                UpdateResponse(
+                    state = state.copy(
+                        groupList = action.groupList,
+                        progress = false
+                    )
+                )
+
+            is CreateSub.Action.SubgroupListUploaded ->
+                UpdateResponse(
+                    state = state.copy(
+                        subgroupList = action.subgroupList,
+                        progress = false
+                    )
+                )
         }
-
-        is Action.SubscriptionWasCreated ->
-            UpdateResponse(
-                state = state.copy(progress = false),
-                subscription = Subscription.Navigate(Screen.TimetableScreen),
-                sideEffects = setOf(SideEffect.DisplayedSubscription(action.subscription))
-            )
-
-        is Action.ShowDataFailure ->
-            UpdateResponse(
-                state = state.copy(progress = false),
-                subscription = Subscription.ShowFailure(action.failureList)
-            )
-
-        is Action.ShowSubscriptionFailure ->
-            UpdateResponse(
-                state = state.copy(progress = false),
-                subscription = Subscription.ShowSubscriptionFailure(action.failureList)
-            )
-
-        is Action.FacultyListUploaded ->
-            UpdateResponse(
-                state = state.copy(
-                    facultyList = action.facultyList,
-                    progress = false
-                )
-            )
-
-        is Action.OccupationListUploaded ->
-            UpdateResponse(
-                state = state.copy(
-                    occupationList = action.occupationList,
-                    progress = false
-                )
-            )
-
-        is Action.GroupListUploaded ->
-            UpdateResponse(
-                state = state.copy(
-                    groupList = action.groupList,
-                    progress = false
-                )
-            )
-
-        is Action.SubgroupListUploaded ->
-            UpdateResponse(
-                state = state.copy(
-                    subgroupList = action.subgroupList,
-                    progress = false
-                )
-            )
-    }
 }
 
 private fun getHintOrNull(

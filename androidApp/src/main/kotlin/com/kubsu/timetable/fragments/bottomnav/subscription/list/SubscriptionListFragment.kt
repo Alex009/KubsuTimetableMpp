@@ -4,15 +4,12 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.egroden.teaco.Feature
-import com.egroden.teaco.androidConnectors
-import com.egroden.teaco.bindAction
-import com.egroden.teaco.connect
+import com.egroden.teaco.*
 import com.kubsu.timetable.R
 import com.kubsu.timetable.base.BaseFragment
 import com.kubsu.timetable.fragments.bottomnav.BottomNavFragmentDirections
 import com.kubsu.timetable.fragments.bottomnav.subscription.list.adapter.SubscriptionAdapter
-import com.kubsu.timetable.presentation.subscription.list.*
+import com.kubsu.timetable.presentation.subscription.list.SubList
 import com.kubsu.timetable.presentation.timetable.model.SubscriptionModel
 import com.kubsu.timetable.utils.*
 import com.kubsu.timetable.utils.ui.materialAlert
@@ -23,16 +20,19 @@ import kotlinx.android.synthetic.main.subscription_list_fragment.view.*
 import ru.whalemare.sheetmenu.ActionItem
 
 class SubscriptionListFragment(
-    featureFactory: (oldState: State?) -> Feature<Action, SideEffect, State, Subscription>
-) : BaseFragment(R.layout.subscription_list_fragment) {
-    private val connector by androidConnectors(featureFactory) { bindAction(Action.UpdateData) }
+    featureFactory: (
+        oldState: SubList.State?
+    ) -> Feature<SubList.Action, SubList.SideEffect, SubList.State, SubList.Subscription>
+) : BaseFragment(R.layout.subscription_list_fragment),
+    Render<SubList.State, SubList.Subscription> {
+    private val connector by androidConnectors(featureFactory) { bindAction(SubList.Action.UpdateData) }
 
     private val progressEffect = UiEffect(false)
     private val subscriptionListEffect = UiEffect(emptyList<SubscriptionModel>())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        connector.connect(::render, ::render, lifecycle)
+        connector.connect(this, lifecycle)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -40,7 +40,7 @@ class SubscriptionListFragment(
 
         val subscriptionAdapter = SubscriptionAdapter(
             onClick = {
-                connector bindAction Action.SubscriptionWasSelected(it)
+                connector bindAction SubList.Action.SubscriptionWasSelected(it)
             },
             onLongClick = { subscription ->
                 sheetMenu(
@@ -51,7 +51,7 @@ class SubscriptionListFragment(
                 )
             },
             changeSubscriptionStatus = {
-                connector bindAction Action.ChangeSubscriptionStatus(it)
+                connector bindAction SubList.Action.ChangeSubscriptionStatus(it)
             }
         )
         with(view.subscription_recycler_view) {
@@ -61,7 +61,7 @@ class SubscriptionListFragment(
         }
 
         view.add_floating_action_button.setOnClickListener {
-            connector bindAction Action.CreateSubscription
+            connector bindAction SubList.Action.CreateSubscription
         }
 
         progressEffect bind view.progress_bar::setVisibleStatus
@@ -80,30 +80,30 @@ class SubscriptionListFragment(
         subscriptionListEffect.unbind()
     }
 
-    private fun render(state: State) {
+    override fun renderState(state: SubList.State) {
         progressEffect.value = state.progress
         subscriptionListEffect.value = state.subscriptionList
     }
 
-    private fun render(subscription: Subscription) =
+    override fun renderSubscription(subscription: SubList.Subscription) =
         when (subscription) {
-            is Subscription.Navigate ->
+            is SubList.Subscription.Navigate ->
                 navigation(subscription.screen)
-            is Subscription.ShowSubscriptionFailure ->
+            is SubList.Subscription.ShowSubscriptionFailure ->
                 Unit // because we don't change the subscription data on this screen
-            is Subscription.ShowDataFailure ->
+            is SubList.Subscription.ShowDataFailure ->
                 subscription.failureList.forEach(::notifyUserOfFailure)
         }
 
-    private fun navigation(screen: Screen) =
+    private fun navigation(screen: SubList.Screen) =
         when (screen) {
-            Screen.CreateSubscription ->
+            SubList.Screen.CreateSubscription ->
                 safeNavigate(
                     BottomNavFragmentDirections
                         .actionBottomNavFragmentToCreateSubscriptionFragment()
                 )
 
-            Screen.ShowTimetable ->
+            SubList.Screen.ShowTimetable ->
                 safeNavigate(
                     SubscriptionListFragmentDirections
                         .actionSubscriptionListFragmentToTimetableFragment()
@@ -116,7 +116,7 @@ class SubscriptionListFragment(
                 requireActivity().materialAlert(
                     message = getString(R.string.are_you_sure_you_want_to_unsubscribe),
                     onOkButtonClick = {
-                        connector bindAction Action.DeleteSubscription(subscription)
+                        connector bindAction SubList.Action.DeleteSubscription(subscription)
                     },
                     onNoButtonClick = {}
                 )

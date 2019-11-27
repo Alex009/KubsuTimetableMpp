@@ -5,14 +5,11 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
-import com.egroden.teaco.Feature
-import com.egroden.teaco.androidConnectors
-import com.egroden.teaco.bindAction
-import com.egroden.teaco.connect
+import com.egroden.teaco.*
 import com.kubsu.timetable.R
 import com.kubsu.timetable.SubscriptionFail
 import com.kubsu.timetable.base.BaseFragment
-import com.kubsu.timetable.presentation.subscription.create.*
+import com.kubsu.timetable.presentation.subscription.create.CreateSub
 import com.kubsu.timetable.presentation.subscription.model.FacultyModel
 import com.kubsu.timetable.presentation.subscription.model.GroupModel
 import com.kubsu.timetable.presentation.subscription.model.OccupationModel
@@ -23,9 +20,14 @@ import kotlinx.android.synthetic.main.create_subscription_fragment.view.*
 import kotlinx.android.synthetic.main.progress_bar.view.*
 
 class CreateSubscriptionFragment(
-    featureFactory: (oldState: State?) -> Feature<Action, SideEffect, State, Subscription>
-) : BaseFragment(R.layout.create_subscription_fragment) {
-    private val connector by androidConnectors(featureFactory) { bindAction(Action.LoadFacultyList) }
+    featureFactory: (
+        oldState: CreateSub.State?
+    ) -> Feature<CreateSub.Action, CreateSub.SideEffect, CreateSub.State, CreateSub.Subscription>
+) : BaseFragment(R.layout.create_subscription_fragment),
+    Render<CreateSub.State, CreateSub.Subscription> {
+    private val connector by androidConnectors(featureFactory) {
+        bindAction(CreateSub.Action.LoadFacultyList)
+    }
 
     private val progressEffect = UiEffect(false)
 
@@ -44,7 +46,7 @@ class CreateSubscriptionFragment(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        connector.connect(::render, ::render, lifecycle)
+        connector.connect(this, lifecycle)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -62,7 +64,7 @@ class CreateSubscriptionFragment(
             setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.action_confirm -> {
-                        connector bindAction Action.CreateSubscription(
+                        connector bindAction CreateSub.Action.CreateSubscription(
                             subscriptionName = subscriptionTitle
                                 .text
                                 .takeIf { it.isNotBlank() }
@@ -87,7 +89,7 @@ class CreateSubscriptionFragment(
             convert = { it.title },
             chooseEffect = chooseFacultyEffect,
             errorRes = R.string.choose_faculty,
-            onItemSelected = { connector bindAction Action.FacultyWasSelected(it) }
+            onItemSelected = { connector bindAction CreateSub.Action.FacultyWasSelected(it) }
         )
         view.occupation_spinner.setData(
             parentView = view,
@@ -95,7 +97,7 @@ class CreateSubscriptionFragment(
             convert = { it.title },
             chooseEffect = chooseOccupationEffect,
             errorRes = R.string.choose_occupation,
-            onItemSelected = { connector bindAction Action.OccupationWasSelected(it) }
+            onItemSelected = { connector bindAction CreateSub.Action.OccupationWasSelected(it) }
         )
         view.group_spinner.setData(
             parentView = view,
@@ -103,7 +105,7 @@ class CreateSubscriptionFragment(
             convert = { it.number.toString() },
             chooseEffect = chooseGroupEffect,
             errorRes = R.string.choose_group,
-            onItemSelected = { connector bindAction Action.GroupWasSelected(it) }
+            onItemSelected = { connector bindAction CreateSub.Action.GroupWasSelected(it) }
         )
         view.subgroup_spinner.setData(
             parentView = view,
@@ -111,7 +113,7 @@ class CreateSubscriptionFragment(
             convert = { it.number.toString() },
             chooseEffect = chooseSubgroupEffect,
             errorRes = R.string.choose_subgroup,
-            onItemSelected = { connector bindAction Action.SubgroupWasSelected(it) }
+            onItemSelected = { connector bindAction CreateSub.Action.SubgroupWasSelected(it) }
         )
     }
 
@@ -176,7 +178,7 @@ class CreateSubscriptionFragment(
         titleErrorEffect.unbind()
     }
 
-    private fun render(state: State) {
+    override fun renderState(state: CreateSub.State) {
         progressEffect.value = state.progress
         facultyListEffect.value = state.facultyList
         occupationListEffect.value = state.occupationList
@@ -185,28 +187,28 @@ class CreateSubscriptionFragment(
         titleTextEffect.value = state.nameHint ?: getString(R.string.subscription_title)
     }
 
-    private fun render(subscription: Subscription) =
+    override fun renderSubscription(subscription: CreateSub.Subscription) =
         when (subscription) {
-            is Subscription.Navigate ->
+            is CreateSub.Subscription.Navigate ->
                 navigation(subscription.screen)
-            is Subscription.ShowFailure ->
+            is CreateSub.Subscription.ShowFailure ->
                 subscription.failureList.forEach(::notifyUserOfFailure)
-            is Subscription.ShowSubscriptionFailure ->
+            is CreateSub.Subscription.ShowSubscriptionFailure ->
                 subscription.failureList.forEach(::handleSubscriptionFail)
-            is Subscription.ChooseFaculty ->
+            is CreateSub.Subscription.ChooseFaculty ->
                 chooseFacultyEffect.value = Unit
-            is Subscription.ChooseOccupation ->
+            is CreateSub.Subscription.ChooseOccupation ->
                 chooseOccupationEffect.value = Unit
-            is Subscription.ChooseGroup ->
+            is CreateSub.Subscription.ChooseGroup ->
                 chooseGroupEffect.value = Unit
-            is Subscription.ChooseSubgroup ->
+            is CreateSub.Subscription.ChooseSubgroup ->
                 chooseSubgroupEffect.value = Unit
         }
 
-    private fun navigation(screen: Screen) =
+    private fun navigation(screen: CreateSub.Screen) =
         safeNavigate(
             when (screen) {
-                Screen.TimetableScreen ->
+                CreateSub.Screen.TimetableScreen ->
                     CreateSubscriptionFragmentDirections
                         .actionCreateSubscriptionFragmentToBottomNavFragment()
             }

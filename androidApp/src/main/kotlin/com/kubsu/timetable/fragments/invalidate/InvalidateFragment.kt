@@ -2,27 +2,27 @@ package com.kubsu.timetable.fragments.invalidate
 
 import android.os.Bundle
 import android.view.View
-import com.egroden.teaco.Feature
-import com.egroden.teaco.androidConnectors
-import com.egroden.teaco.bindAction
-import com.egroden.teaco.connect
+import com.egroden.teaco.*
 import com.kubsu.timetable.R
 import com.kubsu.timetable.base.BaseFragment
-import com.kubsu.timetable.presentation.invalidate.*
+import com.kubsu.timetable.presentation.invalidate.Invidate
 import com.kubsu.timetable.utils.*
 import kotlinx.android.synthetic.main.invalidate_fragment.view.*
 import kotlinx.android.synthetic.main.progress_bar.view.*
 
 class InvalidateFragment(
-    featureFactory: (oldState: State?) -> Feature<Action, SideEffect, State, Subscription>
-) : BaseFragment(R.layout.invalidate_fragment) {
+    featureFactory: (
+        oldState: Invidate.State?
+    ) -> Feature<Invidate.Action, Invidate.SideEffect, Invidate.State, Invidate.Subscription>
+) : BaseFragment(R.layout.invalidate_fragment),
+    Render<Invidate.State, Invidate.Subscription> {
     private val connector by androidConnectors(featureFactory)
 
     private val progressEffect = UiEffect(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        connector.connect(::render, ::render, lifecycle)
+        connector.connect(this, lifecycle)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -35,7 +35,7 @@ class InvalidateFragment(
             setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.action_confirm -> {
-                        connector bindAction Action.Invalidate
+                        connector bindAction Invidate.Action.Invalidate
                         true
                     }
 
@@ -58,22 +58,22 @@ class InvalidateFragment(
         progressEffect.unbind()
     }
 
-    private fun render(state: State) {
+    override fun renderState(state: Invidate.State) {
         progressEffect.value = state.progress
     }
 
-    private fun render(subscription: Subscription) =
+    override fun renderSubscription(subscription: Invidate.Subscription) =
         when (subscription) {
-            is Subscription.Navigate ->
+            is Invidate.Subscription.Navigate ->
                 navigation(subscription.screen)
-            is Subscription.ShowFailure ->
+            is Invidate.Subscription.ShowFailure ->
                 notifyUserOfFailure(subscription.failure)
         }
 
-    private fun navigation(screen: Screen) =
+    private fun navigation(screen: Invidate.Screen) =
         safeNavigate(
             when (screen) {
-                Screen.Timetable ->
+                Invidate.Screen.Timetable ->
                     InvalidateFragmentDirections.actionInvalidateFragmentToBottomNavFragment()
             }
         )

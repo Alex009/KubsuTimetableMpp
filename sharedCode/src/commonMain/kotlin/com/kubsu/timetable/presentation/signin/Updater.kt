@@ -3,36 +3,46 @@ package com.kubsu.timetable.presentation.signin
 import com.egroden.teaco.UpdateResponse
 import com.egroden.teaco.Updater
 
-val signInUpdater: Updater<State, Action, Subscription, SideEffect> = { state, action ->
-    when (action) {
-        is Action.SignIn ->
-            UpdateResponse(
-                state = state.copy(progress = true),
-                sideEffects = setOf(SideEffect.Authenticate(action.email, action.password))
-            )
+val signInUpdater =
+    object : Updater<SignIn.State, SignIn.Action, SignIn.Subscription, SignIn.SideEffect> {
+        override fun invoke(
+            state: SignIn.State,
+            action: SignIn.Action
+        ): UpdateResponse<SignIn.State, SignIn.Subscription, SignIn.SideEffect> =
+            when (action) {
+                is SignIn.Action.SignIn ->
+                    UpdateResponse(
+                        state = state.copy(progress = true),
+                        sideEffects = setOf(
+                            SignIn.SideEffect.Authenticate(
+                                action.email,
+                                action.password
+                            )
+                        )
+                    )
 
-        Action.Registration ->
-            UpdateResponse(
-                state,
-                subscription = Subscription.Navigate(Screen.Registration)
-            )
+                SignIn.Action.Registration ->
+                    UpdateResponse(
+                        state,
+                        subscription = SignIn.Subscription.Navigate(SignIn.Screen.Registration)
+                    )
 
-        Action.ShowResult ->
-            UpdateResponse(
-                state = state.copy(progress = false),
-                subscription = Subscription.Navigate(Screen.Timetable)
-            )
+                SignIn.Action.ShowResult ->
+                    UpdateResponse(
+                        state = state.copy(progress = false),
+                        subscription = SignIn.Subscription.Navigate(SignIn.Screen.Timetable)
+                    )
 
-        is Action.ShowSignInFailure ->
-            UpdateResponse(
-                state = state.copy(progress = false),
-                subscription = Subscription.ShowSignInFailure(action.failureList)
-            )
+                is SignIn.Action.ShowSignInFailure ->
+                    UpdateResponse(
+                        state = state.copy(progress = false),
+                        subscription = SignIn.Subscription.ShowSignInFailure(action.failureList)
+                    )
 
-        is Action.ShowDataFailure ->
-            UpdateResponse(
-                state = state.copy(progress = false),
-                subscription = Subscription.ShowDataFailure(action.failureList)
-            )
-    }
+                is SignIn.Action.ShowDataFailure ->
+                    UpdateResponse(
+                        state = state.copy(progress = false),
+                        subscription = SignIn.Subscription.ShowDataFailure(action.failureList)
+                    )
+            }
 }

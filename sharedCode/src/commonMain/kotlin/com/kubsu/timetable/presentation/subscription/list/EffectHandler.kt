@@ -13,18 +13,18 @@ import kotlinx.coroutines.flow.flow
 class SubscriptionListEffectHandler(
     private val subscriptionInteractor: SubscriptionInteractor,
     private val displayedSubscriptionStorage: DisplayedSubscriptionStorage
-) : EffectHandler<SideEffect, Action> {
-    override fun invoke(sideEffect: SideEffect): Flow<Action> = flow {
+) : EffectHandler<SubList.SideEffect, SubList.Action> {
+    override fun invoke(sideEffect: SubList.SideEffect): Flow<SubList.Action> = flow {
         when (sideEffect) {
-            SideEffect.LoadSubscriptionList ->
+            SubList.SideEffect.LoadSubscriptionList ->
                 subscriptionInteractor
                     .getAllSubscriptionsFlow()
                     .fold(
-                        ifLeft = { emit(Action.ShowDataFailure(listOf(it))) },
+                        ifLeft = { emit(SubList.Action.ShowDataFailure(listOf(it))) },
                         ifRight = { flow ->
                             flow.collect {
                                 emit(
-                                    Action.SubscriptionListUploaded(
+                                    SubList.Action.SubscriptionListUploaded(
                                         it.map(SubscriptionModelMapper::toModel)
                                     )
                                 )
@@ -32,30 +32,30 @@ class SubscriptionListEffectHandler(
                         }
                     )
 
-            is SideEffect.UpdateSubscription ->
+            is SubList.SideEffect.UpdateSubscription ->
                 subscriptionInteractor
                     .update(SubscriptionModelMapper.toEntity(sideEffect.subscription))
                     .fold(
                         ifLeft = { requestFailure ->
                             requestFailure.handle(
-                                ifDomain = { emit(Action.ShowSubscriptionFailure(it)) },
-                                ifData = { emit(Action.ShowDataFailure(it)) }
+                                ifDomain = { emit(SubList.Action.ShowSubscriptionFailure(it)) },
+                                ifData = { emit(SubList.Action.ShowDataFailure(it)) }
                             )
                         },
                         ifRight = {}
                     )
 
-            is SideEffect.DeleteSubscription ->
+            is SubList.SideEffect.DeleteSubscription ->
                 subscriptionInteractor
                     .deleteById(sideEffect.subscription.id)
                     .fold(
-                        ifLeft = { emit(Action.ShowDataFailure(listOf(it))) },
+                        ifLeft = { emit(SubList.Action.ShowDataFailure(listOf(it))) },
                         ifRight = {
                             displayedSubscriptionStorage.deleteIfEqual(sideEffect.subscription)
                         }
                     )
 
-            is SideEffect.DisplayedSubscription ->
+            is SubList.SideEffect.DisplayedSubscription ->
                 displayedSubscriptionStorage.set(sideEffect.subscription)
         }.checkWhenAllHandled()
     }

@@ -10,13 +10,13 @@ import kotlinx.coroutines.flow.flow
 class SettingsEffectHandler(
     private val authInteractor: AuthInteractor,
     private val displayedSubscriptionStorage: DisplayedSubscriptionStorage
-) : EffectHandler<SideEffect, Action> {
-    override fun invoke(sideEffect: SideEffect): Flow<Action> = flow {
+) : EffectHandler<Settings.SideEffect, Settings.Action> {
+    override fun invoke(sideEffect: Settings.SideEffect): Flow<Settings.Action> = flow {
         when (sideEffect) {
-            SideEffect.Logout -> {
+            Settings.SideEffect.Logout -> {
                 displayedSubscriptionStorage.set(null)
                 authInteractor.logout()
-                emit(Action.SuccessLogout)
+                emit(Settings.Action.SuccessLogout)
             }
         }.checkWhenAllHandled()
     }

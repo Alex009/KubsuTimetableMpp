@@ -3,24 +3,29 @@ package com.kubsu.timetable.presentation.invalidate
 import com.egroden.teaco.UpdateResponse
 import com.egroden.teaco.Updater
 
-val invalidateUpdater: Updater<State, Action, Subscription, SideEffect> = { state, action ->
-    when (action) {
-        Action.Invalidate ->
-            UpdateResponse(
-                state = state.copy(progress = true),
-                sideEffects = setOf(SideEffect.Invalidate)
-            )
+val invalidateUpdater =
+    object : Updater<Invidate.State, Invidate.Action, Invidate.Subscription, Invidate.SideEffect> {
+        override fun invoke(
+            state: Invidate.State,
+            action: Invidate.Action
+        ): UpdateResponse<Invidate.State, Invidate.Subscription, Invidate.SideEffect> =
+            when (action) {
+                Invidate.Action.Invalidate ->
+                    UpdateResponse(
+                        state = state.copy(progress = true),
+                        sideEffects = setOf(Invidate.SideEffect.Invalidate)
+                    )
 
-        Action.Success ->
-            UpdateResponse(
-                state = state.copy(progress = false),
-                subscription = Subscription.Navigate(Screen.Timetable)
-            )
+                Invidate.Action.Success ->
+                    UpdateResponse(
+                        state = state.copy(progress = false),
+                        subscription = Invidate.Subscription.Navigate(Invidate.Screen.Timetable)
+                    )
 
-        is Action.Failure ->
-            UpdateResponse(
-                state = state.copy(progress = false),
-                subscription = Subscription.ShowFailure(action.failure)
-            )
-    }
+                is Invidate.Action.Failure ->
+                    UpdateResponse(
+                        state = state.copy(progress = false),
+                        subscription = Invidate.Subscription.ShowFailure(action.failure)
+                    )
+            }
 }

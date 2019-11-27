@@ -20,7 +20,7 @@ object Versions {
 
     const val androidx_navigation: String = "2.1.0"
 
-    const val com_egroden_teaco: String = "0.4.2"
+    const val com_egroden_teaco: String = "0.5.0"
 
     const val androidx_test: String = "1.2.0"
 

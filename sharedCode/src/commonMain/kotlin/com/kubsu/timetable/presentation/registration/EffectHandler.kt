@@ -10,10 +10,10 @@ import kotlinx.coroutines.flow.flow
 
 class RegistrationEffectHandler(
     private val authInteractor: AuthInteractor
-) : EffectHandler<SideEffect, Action> {
-    override fun invoke(sideEffect: SideEffect): Flow<Action> = flow {
+) : EffectHandler<Registration.SideEffect, Registration.Action> {
+    override fun invoke(sideEffect: Registration.SideEffect): Flow<Registration.Action> = flow {
         when (sideEffect) {
-            is SideEffect.Registration ->
+            is Registration.SideEffect.Registration ->
                 authInteractor
                     .registrationUser(
                         email = sideEffect.email,
@@ -22,8 +22,8 @@ class RegistrationEffectHandler(
                     .fold(
                         ifLeft = { requestFailure ->
                             requestFailure.handle(
-                                ifDomain = { emit(Action.ShowRegistrationFailure(it)) },
-                                ifData = { emit(Action.ShowDataFailure(it)) }
+                                ifDomain = { emit(Registration.Action.ShowRegistrationFailure(it)) },
+                                ifData = { emit(Registration.Action.ShowDataFailure(it)) }
                             )
                         },
                         ifRight = { startSignIn(sideEffect.email, sideEffect.password) }
@@ -31,13 +31,16 @@ class RegistrationEffectHandler(
         }.checkWhenAllHandled()
     }
 
-    private suspend fun FlowCollector<Action>.startSignIn(email: String, password: String) =
+    private suspend fun FlowCollector<Registration.Action>.startSignIn(
+        email: String,
+        password: String
+    ) =
         authInteractor
             .signInTransaction(email, password)
             .fold(
-                ifLeft = { emit(Action.ShowDataFailure(it.data ?: emptyList())) },
+                ifLeft = { emit(Registration.Action.ShowDataFailure(it.data ?: emptyList())) },
                 ifRight = {
-                    emit(Action.ShowResult)
+                    emit(Registration.Action.ShowResult)
                 }
             )
 }
