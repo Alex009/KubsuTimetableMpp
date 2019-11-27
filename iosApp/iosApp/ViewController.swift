@@ -1,5 +1,6 @@
 import UIKit
-import Shared
+import sharedCode
+
 
 
 
@@ -8,7 +9,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
             // label.text = Proxy().proxyHello()
-        IosKodeinKt.iosKodein
+     
     }
 
     override func didReceiveMemoryWarning() {
