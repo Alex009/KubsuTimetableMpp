@@ -4,34 +4,34 @@ import com.egroden.teaco.UpdateResponse
 import com.egroden.teaco.Updater
 
 val splashUpdater =
-    object : Updater<Splash.State, Splash.Action, Splash.Subscription, Splash.SideEffect> {
+    object : Updater<SplashState, SplashAction, SplashSubscription, SplashSideEffect> {
         override fun invoke(
-            state: Splash.State,
-            action: Splash.Action
-        ): UpdateResponse<Splash.State, Splash.Subscription, Splash.SideEffect> =
+            state: SplashState,
+            action: SplashAction
+        ): UpdateResponse<SplashState, SplashSubscription, SplashSideEffect> =
             when (action) {
-                Splash.Action.Initiate ->
+                SplashAction.Initiate ->
                     UpdateResponse(
                         state,
-                        sideEffects = setOf(Splash.SideEffect.Initiate)
+                        sideEffects = setOf(SplashSideEffect.Initiate)
                     )
 
-                Splash.Action.ShowSignInScreen ->
+                SplashAction.ShowSignInScreen ->
                     UpdateResponse(
                         state,
-                        subscription = Splash.Subscription.Navigate(Splash.Screen.SignInScreen)
+                        subscription = SplashSubscription.Navigate(SplashScreen.SignInScreen)
                     )
 
-                Splash.Action.ShowTimetableScreen ->
+                SplashAction.ShowTimetableScreen ->
                     UpdateResponse(
                         state,
-                        subscription = Splash.Subscription.Navigate(Splash.Screen.TimetableScreen)
+                        subscription = SplashSubscription.Navigate(SplashScreen.TimetableScreen)
                     )
 
-                is Splash.Action.ShowFailure ->
+                is SplashAction.ShowFailure ->
                     UpdateResponse(
                         state,
-                        subscription = Splash.Subscription.ShowFailure(action.failure)
+                        subscription = SplashSubscription.ShowFailure(action.failure)
                     )
             }
 }

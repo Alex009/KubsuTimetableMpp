@@ -9,7 +9,7 @@ import com.kubsu.timetable.R
 import com.kubsu.timetable.base.BaseFragment
 import com.kubsu.timetable.fragments.bottomnav.BottomNavFragmentDirections
 import com.kubsu.timetable.fragments.bottomnav.subscription.list.adapter.SubscriptionAdapter
-import com.kubsu.timetable.presentation.subscription.list.SubList
+import com.kubsu.timetable.presentation.subscription.list.*
 import com.kubsu.timetable.presentation.timetable.model.SubscriptionModel
 import com.kubsu.timetable.utils.*
 import com.kubsu.timetable.utils.ui.materialAlert
@@ -21,11 +21,11 @@ import ru.whalemare.sheetmenu.ActionItem
 
 class SubscriptionListFragment(
     featureFactory: (
-        oldState: SubList.State?
-    ) -> Feature<SubList.Action, SubList.SideEffect, SubList.State, SubList.Subscription>
+        oldState: SubListState?
+    ) -> Feature<SubListAction, SubListSideEffect, SubListState, SubListSubscription>
 ) : BaseFragment(R.layout.subscription_list_fragment),
-    Render<SubList.State, SubList.Subscription> {
-    private val connector by androidConnectors(featureFactory) { bindAction(SubList.Action.UpdateData) }
+    Render<SubListState, SubListSubscription> {
+    private val connector by androidConnectors(featureFactory) { bindAction(SubListAction.UpdateData) }
 
     private val progressEffect = UiEffect(false)
     private val subscriptionListEffect = UiEffect(emptyList<SubscriptionModel>())
@@ -40,7 +40,7 @@ class SubscriptionListFragment(
 
         val subscriptionAdapter = SubscriptionAdapter(
             onClick = {
-                connector bindAction SubList.Action.SubscriptionWasSelected(it)
+                connector bindAction SubListAction.SubscriptionWasSelected(it)
             },
             onLongClick = { subscription ->
                 sheetMenu(
@@ -51,7 +51,7 @@ class SubscriptionListFragment(
                 )
             },
             changeSubscriptionStatus = {
-                connector bindAction SubList.Action.ChangeSubscriptionStatus(it)
+                connector bindAction SubListAction.ChangeSubscriptionStatus(it)
             }
         )
         with(view.subscription_recycler_view) {
@@ -61,7 +61,7 @@ class SubscriptionListFragment(
         }
 
         view.add_floating_action_button.setOnClickListener {
-            connector bindAction SubList.Action.CreateSubscription
+            connector bindAction SubListAction.CreateSubscription
         }
 
         progressEffect bind view.progress_bar::setVisibleStatus
@@ -80,30 +80,30 @@ class SubscriptionListFragment(
         subscriptionListEffect.unbind()
     }
 
-    override fun renderState(state: SubList.State) {
+    override fun renderState(state: SubListState) {
         progressEffect.value = state.progress
         subscriptionListEffect.value = state.subscriptionList
     }
 
-    override fun renderSubscription(subscription: SubList.Subscription) =
+    override fun renderSubscription(subscription: SubListSubscription) =
         when (subscription) {
-            is SubList.Subscription.Navigate ->
+            is SubListSubscription.Navigate ->
                 navigation(subscription.screen)
-            is SubList.Subscription.ShowSubscriptionFailure ->
+            is SubListSubscription.ShowSubscriptionFailure ->
                 Unit // because we don't change the subscription data on this screen
-            is SubList.Subscription.ShowDataFailure ->
+            is SubListSubscription.ShowDataFailure ->
                 subscription.failureList.forEach(::notifyUserOfFailure)
         }
 
-    private fun navigation(screen: SubList.Screen) =
+    private fun navigation(screen: SubListScreen) =
         when (screen) {
-            SubList.Screen.CreateSubscription ->
+            SubListScreen.CreateSubscription ->
                 safeNavigate(
                     BottomNavFragmentDirections
                         .actionBottomNavFragmentToCreateSubscriptionFragment()
                 )
 
-            SubList.Screen.ShowTimetable ->
+            SubListScreen.ShowTimetable ->
                 safeNavigate(
                     SubscriptionListFragmentDirections
                         .actionSubscriptionListFragmentToTimetableFragment()
@@ -116,7 +116,7 @@ class SubscriptionListFragment(
                 requireActivity().materialAlert(
                     message = getString(R.string.are_you_sure_you_want_to_unsubscribe),
                     onOkButtonClick = {
-                        connector bindAction SubList.Action.DeleteSubscription(subscription)
+                        connector bindAction SubListAction.DeleteSubscription(subscription)
                     },
                     onNoButtonClick = {}
                 )

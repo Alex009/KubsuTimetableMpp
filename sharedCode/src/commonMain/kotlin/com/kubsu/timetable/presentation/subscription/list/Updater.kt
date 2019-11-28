@@ -4,25 +4,25 @@ import com.egroden.teaco.UpdateResponse
 import com.egroden.teaco.Updater
 
 val subscriptionListUpdater =
-    object : Updater<SubList.State, SubList.Action, SubList.Subscription, SubList.SideEffect> {
+    object : Updater<SubListState, SubListAction, SubListSubscription, SubListSideEffect> {
         override fun invoke(
-            state: SubList.State,
-            action: SubList.Action
-        ): UpdateResponse<SubList.State, SubList.Subscription, SubList.SideEffect> =
+            state: SubListState,
+            action: SubListAction
+        ): UpdateResponse<SubListState, SubListSubscription, SubListSideEffect> =
             when (action) {
-                SubList.Action.UpdateData ->
+                SubListAction.UpdateData ->
                     UpdateResponse(
                         state = state.copy(progress = true),
-                        sideEffects = setOf(SubList.SideEffect.LoadSubscriptionList)
+                        sideEffects = setOf(SubListSideEffect.LoadSubscriptionList)
                     )
 
-                SubList.Action.CreateSubscription ->
+                SubListAction.CreateSubscription ->
                     UpdateResponse(
                         state,
-                        subscription = SubList.Subscription.Navigate(SubList.Screen.CreateSubscription)
+                        subscription = SubListSubscription.Navigate(SubListScreen.CreateSubscription)
                     )
 
-                is SubList.Action.SubscriptionListUploaded ->
+                is SubListAction.SubscriptionListUploaded ->
                     UpdateResponse(
                         state = state.copy(
                             progress = false,
@@ -30,39 +30,39 @@ val subscriptionListUpdater =
                         )
                     )
 
-                is SubList.Action.SubscriptionWasSelected ->
+                is SubListAction.SubscriptionWasSelected ->
                     UpdateResponse(
                         state,
-                        subscription = SubList.Subscription.Navigate(SubList.Screen.ShowTimetable),
-                        sideEffects = setOf(SubList.SideEffect.DisplayedSubscription(action.subscription))
+                        subscription = SubListSubscription.Navigate(SubListScreen.ShowTimetable),
+                        sideEffects = setOf(SubListSideEffect.DisplayedSubscription(action.subscription))
                     )
 
-                is SubList.Action.DeleteSubscription ->
+                is SubListAction.DeleteSubscription ->
                     UpdateResponse(
                         state = state.copy(progress = true),
-                        sideEffects = setOf(SubList.SideEffect.DeleteSubscription(action.subscription))
+                        sideEffects = setOf(SubListSideEffect.DeleteSubscription(action.subscription))
                     )
 
-                is SubList.Action.ChangeSubscriptionStatus ->
+                is SubListAction.ChangeSubscriptionStatus ->
                     UpdateResponse(
                         state = state.copy(progress = true),
                         sideEffects = setOf(
-                            SubList.SideEffect.UpdateSubscription(
+                            SubListSideEffect.UpdateSubscription(
                                 action.subscription.copy(isMain = !action.subscription.isMain)
                             )
                         )
                     )
 
-                is SubList.Action.ShowSubscriptionFailure ->
+                is SubListAction.ShowSubscriptionFailure ->
                     UpdateResponse(
                         state = state.copy(progress = false),
-                        subscription = SubList.Subscription.ShowSubscriptionFailure(action.failureList)
+                        subscription = SubListSubscription.ShowSubscriptionFailure(action.failureList)
                     )
 
-                is SubList.Action.ShowDataFailure ->
+                is SubListAction.ShowDataFailure ->
                     UpdateResponse(
                         state = state.copy(progress = false),
-                        subscription = SubList.Subscription.ShowDataFailure(action.failureList)
+                        subscription = SubListSubscription.ShowDataFailure(action.failureList)
                     )
             }
 }

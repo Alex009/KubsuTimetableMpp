@@ -6,7 +6,7 @@ import com.egroden.teaco.*
 import com.kubsu.timetable.R
 import com.kubsu.timetable.UserInfoFail
 import com.kubsu.timetable.base.BaseFragment
-import com.kubsu.timetable.presentation.registration.Registration
+import com.kubsu.timetable.presentation.registration.*
 import com.kubsu.timetable.utils.*
 import com.kubsu.timetable.utils.logics.Keyboard
 import kotlinx.android.synthetic.main.progress_bar.view.*
@@ -14,10 +14,10 @@ import kotlinx.android.synthetic.main.registration_fragment.view.*
 
 class RegistrationFragment(
     featureFactory: (
-        oldState: Registration.State?
-    ) -> Feature<Registration.Action, Registration.SideEffect, Registration.State, Registration.Subscription>
+        oldState: RegistrationState?
+    ) -> Feature<RegistrationAction, RegistrationSideEffect, RegistrationState, RegistrationSubscription>
 ) : BaseFragment(R.layout.registration_fragment),
-    Render<Registration.State, Registration.Subscription> {
+    Render<RegistrationState, RegistrationSubscription> {
     private val connector by androidConnectors(featureFactory)
 
     private val progressEffect = UiEffect(false)
@@ -42,7 +42,7 @@ class RegistrationFragment(
                 when (menuItem.itemId) {
                     R.id.action_confirm -> {
                         Keyboard.hide(view)
-                        connector bindAction Registration.Action.Registration(
+                        connector bindAction RegistrationAction.Registration(
                             email = view.email_input_layout.text,
                             password = view.password_input_layout.text,
                             repeatedPassword = view.repeat_password_input_layout.text
@@ -72,26 +72,26 @@ class RegistrationFragment(
         passwordsVaryEffects.unbind()
     }
 
-    override fun renderState(state: Registration.State) {
+    override fun renderState(state: RegistrationState) {
         progressEffect.value = state.progress
     }
 
-    override fun renderSubscription(subscription: Registration.Subscription) =
+    override fun renderSubscription(subscription: RegistrationSubscription) =
         when (subscription) {
-            is Registration.Subscription.Navigate ->
+            is RegistrationSubscription.Navigate ->
                 navigation(subscription.screen)
-            is Registration.Subscription.ShowRegistrationFailure ->
+            is RegistrationSubscription.ShowRegistrationFailure ->
                 subscription.failureList.forEach(::handleRegistrationFail)
-            is Registration.Subscription.ShowDataFailure ->
+            is RegistrationSubscription.ShowDataFailure ->
                 subscription.failureList.forEach(::notifyUserOfFailure)
-            Registration.Subscription.PasswordsVary ->
+            RegistrationSubscription.PasswordsVary ->
                 passwordsVaryEffects.value = R.string.passwords_vary
         }
 
-    private fun navigation(screen: Registration.Screen) =
+    private fun navigation(screen: RegistrationScreen) =
         safeNavigate(
             when (screen) {
-                Registration.Screen.CreateSubscription ->
+                RegistrationScreen.CreateSubscription ->
                     RegistrationFragmentDirections
                         .actionRegistrationFragmentToCreateSubscriptionFragment()
             }

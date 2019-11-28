@@ -12,7 +12,7 @@ import com.kubsu.timetable.extensions.checkWhenAllHandled
 import com.kubsu.timetable.extensions.indexOfNearestDayOrNull
 import com.kubsu.timetable.fragments.bottomnav.BottomNavFragmentDirections
 import com.kubsu.timetable.fragments.bottomnav.timetable.adapter.TimetableAdapter
-import com.kubsu.timetable.presentation.timetable.Timetable
+import com.kubsu.timetable.presentation.timetable.*
 import com.kubsu.timetable.presentation.timetable.model.TimetableModel
 import com.kubsu.timetable.presentation.timetable.model.TypeOfWeekModel
 import com.kubsu.timetable.presentation.timetable.model.UniversityInfoModel
@@ -22,13 +22,13 @@ import kotlinx.android.synthetic.main.timetable_fragment.view.*
 
 class TimetableFragment(
     featureFactory: (
-        oldState: Timetable.State?
-    ) -> Feature<Timetable.Action, Timetable.SideEffect, Timetable.State, Timetable.Subscription>,
+        oldState: TimetableState?
+    ) -> Feature<TimetableAction, TimetableSideEffect, TimetableState, TimetableSubscription>,
     private val displayedSubscriptionStorage: DisplayedSubscriptionStorage
 ) : BaseFragment(R.layout.timetable_fragment),
-    Render<Timetable.State, Timetable.Subscription> {
+    Render<TimetableState, TimetableSubscription> {
     private val connector by androidConnectors(featureFactory) {
-        bindAction(Timetable.Action.LoadData(displayedSubscriptionStorage.get()))
+        bindAction(TimetableAction.LoadData(displayedSubscriptionStorage.get()))
     }
 
     private val titleEffect = UiEffect("")
@@ -52,7 +52,7 @@ class TimetableFragment(
                 when (menuItem.itemId) {
                     R.id.next_week_timetable -> {
                         navigate(
-                            Timetable.Screen.NextWeekTimetable(
+                            TimetableScreen.NextWeekTimetable(
                                 universityInfo = universityInfoEffect.value,
                                 timetable = nextWeekTimetableEffect.value
                             )
@@ -65,7 +65,7 @@ class TimetableFragment(
             }
         }
         val timetableAdapter = TimetableAdapter(
-            wasDisplayed = { connector bindAction Timetable.Action.WasDisplayed(it) }
+            wasDisplayed = { connector bindAction TimetableAction.WasDisplayed(it) }
         )
         val linearLayoutManager = LinearLayoutManager(view.context)
         with(view.timetable_recycler_view) {
@@ -104,7 +104,7 @@ class TimetableFragment(
         nextWeekTimetableEffect.unbind()
     }
 
-    override fun renderState(state: Timetable.State) {
+    override fun renderState(state: TimetableState) {
         titleEffect.value = state.currentSubscription?.title ?: ""
 
         progressEffect.value = state.progress
@@ -135,14 +135,14 @@ class TimetableFragment(
         }.checkWhenAllHandled()
     }
 
-    override fun renderSubscription(subscription: Timetable.Subscription) =
+    override fun renderSubscription(subscription: TimetableSubscription) =
         when (subscription) {
-            is Timetable.Subscription.Navigate -> navigate(subscription.screen)
+            is TimetableSubscription.Navigate -> navigate(subscription.screen)
         }
 
-    private fun navigate(screen: Timetable.Screen) =
+    private fun navigate(screen: TimetableScreen) =
         when (screen) {
-            is Timetable.Screen.NextWeekTimetable ->
+            is TimetableScreen.NextWeekTimetable ->
                 safeNavigate(
                     BottomNavFragmentDirections
                         .actionBottomNavFragmentToNextWeekTimetableFragment(

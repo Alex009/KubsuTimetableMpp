@@ -3,28 +3,26 @@ package com.kubsu.timetable.presentation.settings
 import com.kubsu.timetable.platform.Parcelable
 import com.kubsu.timetable.platform.Parcelize
 
-sealed class Settings {
-    sealed class Action : Settings() {
-        object Invalidate : Action()
+sealed class SettingsAction {
+    object Invalidate : SettingsAction()
 
-        object Logout : Action()
+    object Logout : SettingsAction()
 
-        internal object SuccessLogout : Action()
-    }
+    internal object SuccessLogout : SettingsAction()
+}
 
-    @Parcelize
-    object State : Settings(), Parcelable
+@Parcelize
+object SettingsState : Parcelable
 
-    sealed class SideEffect : Settings() {
-        object Logout : SideEffect()
-    }
+sealed class SettingsSideEffect {
+    object Logout : SettingsSideEffect()
+}
 
-    sealed class Subscription : Settings() {
-        class Navigate(val screen: Screen) : Subscription()
-    }
+sealed class SettingsSubscription {
+    class Navigate(val screen: SettingsScreen) : SettingsSubscription()
+}
 
-    sealed class Screen : Settings() {
-        object SignIn : Screen()
-        object Invalidate : Screen()
-    }
+sealed class SettingsScreen {
+    object SignIn : SettingsScreen()
+    object Invalidate : SettingsScreen()
 }

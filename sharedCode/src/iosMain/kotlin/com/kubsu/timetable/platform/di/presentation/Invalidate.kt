@@ -4,10 +4,13 @@ import com.egroden.teaco.Feature
 import com.egroden.teaco.IosConnector
 import com.kubsu.timetable.extensions.instanceDep
 import com.kubsu.timetable.platform.di.iosKodein
-import com.kubsu.timetable.presentation.invalidate.Invidate
+import com.kubsu.timetable.presentation.invalidate.InvidateAction
+import com.kubsu.timetable.presentation.invalidate.InvidateSideEffect
+import com.kubsu.timetable.presentation.invalidate.InvidateState
+import com.kubsu.timetable.presentation.invalidate.InvidateSubscription
 
 fun invalidateFeature() = IosConnector(
-    iosKodein.instanceDep<Invidate.State?, Feature<Invidate.Action, Invidate.SideEffect, Invidate.State, Invidate.Subscription>>(
+    iosKodein.instanceDep<InvidateState?, Feature<InvidateAction, InvidateSideEffect, InvidateState, InvidateSubscription>>(
         null
     )
 )

@@ -9,16 +9,16 @@ import kotlinx.coroutines.flow.flow
 
 class InvalidateEffectHandler(
     private val appInfoInteractor: AppInfoInteractor
-) : EffectHandler<Invidate.SideEffect, Invidate.Action> {
-    override fun invoke(sideEffect: Invidate.SideEffect): Flow<Invidate.Action> = flow {
+) : EffectHandler<InvidateSideEffect, InvidateAction> {
+    override fun invoke(sideEffect: InvidateSideEffect): Flow<InvidateAction> = flow {
         when (sideEffect) {
-            is Invidate.SideEffect.Invalidate ->
+            is InvidateSideEffect.Invalidate ->
                 emit(
                     appInfoInteractor
                         .invalidate()
                         .fold(
-                            ifLeft = { Invidate.Action.Failure(it) },
-                            ifRight = { Invidate.Action.Success }
+                            ifLeft = { InvidateAction.Failure(it) },
+                            ifRight = { InvidateAction.Success }
                         )
                 )
         }.checkWhenAllHandled()

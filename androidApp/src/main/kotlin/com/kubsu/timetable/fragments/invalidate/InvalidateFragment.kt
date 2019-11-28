@@ -5,17 +5,17 @@ import android.view.View
 import com.egroden.teaco.*
 import com.kubsu.timetable.R
 import com.kubsu.timetable.base.BaseFragment
-import com.kubsu.timetable.presentation.invalidate.Invidate
+import com.kubsu.timetable.presentation.invalidate.*
 import com.kubsu.timetable.utils.*
 import kotlinx.android.synthetic.main.invalidate_fragment.view.*
 import kotlinx.android.synthetic.main.progress_bar.view.*
 
 class InvalidateFragment(
     featureFactory: (
-        oldState: Invidate.State?
-    ) -> Feature<Invidate.Action, Invidate.SideEffect, Invidate.State, Invidate.Subscription>
+        oldState: InvidateState?
+    ) -> Feature<InvidateAction, InvidateSideEffect, InvidateState, InvidateSubscription>
 ) : BaseFragment(R.layout.invalidate_fragment),
-    Render<Invidate.State, Invidate.Subscription> {
+    Render<InvidateState, InvidateSubscription> {
     private val connector by androidConnectors(featureFactory)
 
     private val progressEffect = UiEffect(false)
@@ -35,7 +35,7 @@ class InvalidateFragment(
             setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.action_confirm -> {
-                        connector bindAction Invidate.Action.Invalidate
+                        connector bindAction InvidateAction.Invalidate
                         true
                     }
 
@@ -58,22 +58,22 @@ class InvalidateFragment(
         progressEffect.unbind()
     }
 
-    override fun renderState(state: Invidate.State) {
+    override fun renderState(state: InvidateState) {
         progressEffect.value = state.progress
     }
 
-    override fun renderSubscription(subscription: Invidate.Subscription) =
+    override fun renderSubscription(subscription: InvidateSubscription) =
         when (subscription) {
-            is Invidate.Subscription.Navigate ->
+            is InvidateSubscription.Navigate ->
                 navigation(subscription.screen)
-            is Invidate.Subscription.ShowFailure ->
+            is InvidateSubscription.ShowFailure ->
                 notifyUserOfFailure(subscription.failure)
         }
 
-    private fun navigation(screen: Invidate.Screen) =
+    private fun navigation(screen: InvidateScreen) =
         safeNavigate(
             when (screen) {
-                Invidate.Screen.Timetable ->
+                InvidateScreen.Timetable ->
                     InvalidateFragmentDirections.actionInvalidateFragmentToBottomNavFragment()
             }
         )

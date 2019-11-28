@@ -18,14 +18,14 @@ import kotlinx.coroutines.flow.*
 
 class TimetableEffectHandler(
     private val timetableInteractor: TimetableInteractor
-) : EffectHandler<Timetable.SideEffect, Timetable.Action> {
+) : EffectHandler<TimetableSideEffect, TimetableAction> {
     @UseExperimental(
         InternalCoroutinesApi::class,
         ExperimentalCoroutinesApi::class
     )
-    override fun invoke(sideEffect: Timetable.SideEffect): Flow<Timetable.Action> = flow {
+    override fun invoke(sideEffect: TimetableSideEffect): Flow<TimetableAction> = flow {
         when (sideEffect) {
-            is Timetable.SideEffect.LoadCurrentTimetable ->
+            is TimetableSideEffect.LoadCurrentTimetable ->
                 timetableInteractor
                     .getAllTimetables(
                         SubscriptionModelMapper.toEntity(sideEffect.subscription)
@@ -34,7 +34,7 @@ class TimetableEffectHandler(
                     .flatMapLatest { toActionFlow(it) }
                     .collect(this)
 
-            is Timetable.SideEffect.ChangesWasDisplayed ->
+            is TimetableSideEffect.ChangesWasDisplayed ->
                 timetableInteractor.changesWasDisplayed(
                     ClassModelMapper.toEntity(sideEffect.classModel)
                 )
@@ -68,7 +68,7 @@ class TimetableEffectHandler(
         }
     }
 
-    private fun toActionFlow(timetableList: List<TimetableEntity>): Flow<Timetable.Action> =
+    private fun toActionFlow(timetableList: List<TimetableEntity>): Flow<TimetableAction> =
         if (timetableList.isNotEmpty())
             timetableInteractor
                 .getUniversityData(timetableList.first())
@@ -77,7 +77,7 @@ class TimetableEffectHandler(
                 }
         else
             flowOf(
-                Timetable.Action.ShowTimetable(
+                TimetableAction.ShowTimetable(
                     universityInfoModel = null,
                     numeratorTimetable = null,
                     denominatorTimetable = null
@@ -88,7 +88,7 @@ class TimetableEffectHandler(
         universityInfo: UniversityInfoEntity,
         timetableList: List<TimetableEntity>
     ) =
-        Timetable.Action.ShowTimetable(
+        TimetableAction.ShowTimetable(
             universityInfoModel = universityInfo
                 .let(UniversityInfoModelMapper::toModel),
             numeratorTimetable = timetableList

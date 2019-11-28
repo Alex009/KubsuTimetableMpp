@@ -9,7 +9,7 @@ import com.egroden.teaco.*
 import com.kubsu.timetable.R
 import com.kubsu.timetable.SubscriptionFail
 import com.kubsu.timetable.base.BaseFragment
-import com.kubsu.timetable.presentation.subscription.create.CreateSub
+import com.kubsu.timetable.presentation.subscription.create.*
 import com.kubsu.timetable.presentation.subscription.model.FacultyModel
 import com.kubsu.timetable.presentation.subscription.model.GroupModel
 import com.kubsu.timetable.presentation.subscription.model.OccupationModel
@@ -21,12 +21,12 @@ import kotlinx.android.synthetic.main.progress_bar.view.*
 
 class CreateSubscriptionFragment(
     featureFactory: (
-        oldState: CreateSub.State?
-    ) -> Feature<CreateSub.Action, CreateSub.SideEffect, CreateSub.State, CreateSub.Subscription>
+        oldState: SubCreateState?
+    ) -> Feature<SubCreateAction, SubCreateSideEffect, SubCreateState, SubCreateSubscription>
 ) : BaseFragment(R.layout.create_subscription_fragment),
-    Render<CreateSub.State, CreateSub.Subscription> {
+    Render<SubCreateState, SubCreateSubscription> {
     private val connector by androidConnectors(featureFactory) {
-        bindAction(CreateSub.Action.LoadFacultyList)
+        bindAction(SubCreateAction.LoadFacultyList)
     }
 
     private val progressEffect = UiEffect(false)
@@ -64,7 +64,7 @@ class CreateSubscriptionFragment(
             setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.action_confirm -> {
-                        connector bindAction CreateSub.Action.CreateSubscription(
+                        connector bindAction SubCreateAction.CreateSubscription(
                             subscriptionName = subscriptionTitle
                                 .text
                                 .takeIf { it.isNotBlank() }
@@ -89,7 +89,7 @@ class CreateSubscriptionFragment(
             convert = { it.title },
             chooseEffect = chooseFacultyEffect,
             errorRes = R.string.choose_faculty,
-            onItemSelected = { connector bindAction CreateSub.Action.FacultyWasSelected(it) }
+            onItemSelected = { connector bindAction SubCreateAction.FacultyWasSelected(it) }
         )
         view.occupation_spinner.setData(
             parentView = view,
@@ -97,7 +97,7 @@ class CreateSubscriptionFragment(
             convert = { it.title },
             chooseEffect = chooseOccupationEffect,
             errorRes = R.string.choose_occupation,
-            onItemSelected = { connector bindAction CreateSub.Action.OccupationWasSelected(it) }
+            onItemSelected = { connector bindAction SubCreateAction.OccupationWasSelected(it) }
         )
         view.group_spinner.setData(
             parentView = view,
@@ -105,7 +105,7 @@ class CreateSubscriptionFragment(
             convert = { it.number.toString() },
             chooseEffect = chooseGroupEffect,
             errorRes = R.string.choose_group,
-            onItemSelected = { connector bindAction CreateSub.Action.GroupWasSelected(it) }
+            onItemSelected = { connector bindAction SubCreateAction.GroupWasSelected(it) }
         )
         view.subgroup_spinner.setData(
             parentView = view,
@@ -113,7 +113,7 @@ class CreateSubscriptionFragment(
             convert = { it.number.toString() },
             chooseEffect = chooseSubgroupEffect,
             errorRes = R.string.choose_subgroup,
-            onItemSelected = { connector bindAction CreateSub.Action.SubgroupWasSelected(it) }
+            onItemSelected = { connector bindAction SubCreateAction.SubgroupWasSelected(it) }
         )
     }
 
@@ -178,7 +178,7 @@ class CreateSubscriptionFragment(
         titleErrorEffect.unbind()
     }
 
-    override fun renderState(state: CreateSub.State) {
+    override fun renderState(state: SubCreateState) {
         progressEffect.value = state.progress
         facultyListEffect.value = state.facultyList
         occupationListEffect.value = state.occupationList
@@ -187,28 +187,28 @@ class CreateSubscriptionFragment(
         titleTextEffect.value = state.nameHint ?: getString(R.string.subscription_title)
     }
 
-    override fun renderSubscription(subscription: CreateSub.Subscription) =
+    override fun renderSubscription(subscription: SubCreateSubscription) =
         when (subscription) {
-            is CreateSub.Subscription.Navigate ->
+            is SubCreateSubscription.Navigate ->
                 navigation(subscription.screen)
-            is CreateSub.Subscription.ShowFailure ->
+            is SubCreateSubscription.ShowFailure ->
                 subscription.failureList.forEach(::notifyUserOfFailure)
-            is CreateSub.Subscription.ShowSubscriptionFailure ->
+            is SubCreateSubscription.ShowSubscriptionFailure ->
                 subscription.failureList.forEach(::handleSubscriptionFail)
-            is CreateSub.Subscription.ChooseFaculty ->
+            is SubCreateSubscription.ChooseFaculty ->
                 chooseFacultyEffect.value = Unit
-            is CreateSub.Subscription.ChooseOccupation ->
+            is SubCreateSubscription.ChooseOccupation ->
                 chooseOccupationEffect.value = Unit
-            is CreateSub.Subscription.ChooseGroup ->
+            is SubCreateSubscription.ChooseGroup ->
                 chooseGroupEffect.value = Unit
-            is CreateSub.Subscription.ChooseSubgroup ->
+            is SubCreateSubscription.ChooseSubgroup ->
                 chooseSubgroupEffect.value = Unit
         }
 
-    private fun navigation(screen: CreateSub.Screen) =
+    private fun navigation(screen: SubCreateScreen) =
         safeNavigate(
             when (screen) {
-                CreateSub.Screen.TimetableScreen ->
+                SubCreateScreen.TimetableScreen ->
                     CreateSubscriptionFragmentDirections
                         .actionCreateSubscriptionFragmentToBottomNavFragment()
             }

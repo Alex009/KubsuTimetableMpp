@@ -6,63 +6,61 @@ import com.kubsu.timetable.platform.Parcelable
 import com.kubsu.timetable.platform.Parcelize
 import com.kubsu.timetable.presentation.timetable.model.SubscriptionModel
 
-sealed class SubList {
-    sealed class Action : SubList() {
-        object UpdateData : Action()
-        object CreateSubscription : Action()
-        class SubscriptionWasSelected(
-            val subscription: SubscriptionModel
-        ) : Action()
+sealed class SubListAction {
+    object UpdateData : SubListAction()
+    object CreateSubscription : SubListAction()
+    class SubscriptionWasSelected(
+        val subscription: SubscriptionModel
+    ) : SubListAction()
 
-        class DeleteSubscription(
-            val subscription: SubscriptionModel
-        ) : Action()
+    class DeleteSubscription(
+        val subscription: SubscriptionModel
+    ) : SubListAction()
 
-        class ChangeSubscriptionStatus(
-            val subscription: SubscriptionModel
-        ) : Action()
+    class ChangeSubscriptionStatus(
+        val subscription: SubscriptionModel
+    ) : SubListAction()
 
-        internal class SubscriptionListUploaded(
-            val subscriptionList: List<SubscriptionModel>
-        ) : Action()
-
-        internal class ShowSubscriptionFailure(
-            val failureList: List<SubscriptionFail>
-        ) : Action()
-
-        internal class ShowDataFailure(
-            val failureList: List<DataFailure>
-        ) : Action()
-    }
-
-    @Parcelize
-    data class State(
-        val progress: Boolean,
+    internal class SubscriptionListUploaded(
         val subscriptionList: List<SubscriptionModel>
-    ) : SubList(), Parcelable
+    ) : SubListAction()
 
-    sealed class SideEffect : SubList() {
-        object LoadSubscriptionList : SideEffect()
-        class UpdateSubscription(
-            val subscription: SubscriptionModel
-        ) : SideEffect()
+    internal class ShowSubscriptionFailure(
+        val failureList: List<SubscriptionFail>
+    ) : SubListAction()
 
-        class DeleteSubscription(
-            val subscription: SubscriptionModel
-        ) : SideEffect()
+    internal class ShowDataFailure(
+        val failureList: List<DataFailure>
+    ) : SubListAction()
+}
 
-        class DisplayedSubscription(val subscription: SubscriptionModel) : SideEffect()
-    }
+@Parcelize
+data class SubListState(
+    val progress: Boolean,
+    val subscriptionList: List<SubscriptionModel>
+) : Parcelable
 
-    sealed class Subscription : SubList() {
-        class Navigate(val screen: Screen) : Subscription()
+sealed class SubListSideEffect {
+    object LoadSubscriptionList : SubListSideEffect()
+    class UpdateSubscription(
+        val subscription: SubscriptionModel
+    ) : SubListSideEffect()
 
-        class ShowSubscriptionFailure(val failureList: List<SubscriptionFail>) : Subscription()
-        class ShowDataFailure(val failureList: List<DataFailure>) : Subscription()
-    }
+    class DeleteSubscription(
+        val subscription: SubscriptionModel
+    ) : SubListSideEffect()
 
-    sealed class Screen : SubList() {
-        object CreateSubscription : Screen()
-        object ShowTimetable : Screen()
-    }
+    class DisplayedSubscription(val subscription: SubscriptionModel) : SubListSideEffect()
+}
+
+sealed class SubListSubscription {
+    class Navigate(val screen: SubListScreen) : SubListSubscription()
+
+    class ShowSubscriptionFailure(val failureList: List<SubscriptionFail>) : SubListSubscription()
+    class ShowDataFailure(val failureList: List<DataFailure>) : SubListSubscription()
+}
+
+sealed class SubListScreen {
+    object CreateSubscription : SubListScreen()
+    object ShowTimetable : SubListScreen()
 }

@@ -9,16 +9,19 @@ import com.egroden.teaco.*
 import com.kubsu.timetable.R
 import com.kubsu.timetable.base.BaseFragment
 import com.kubsu.timetable.fragments.bottomnav.timetable.adapter.TimetableAdapter
-import com.kubsu.timetable.presentation.timetable.Timetable
+import com.kubsu.timetable.presentation.timetable.TimetableAction
+import com.kubsu.timetable.presentation.timetable.TimetableSideEffect
+import com.kubsu.timetable.presentation.timetable.TimetableState
+import com.kubsu.timetable.presentation.timetable.TimetableSubscription
 import com.kubsu.timetable.presentation.timetable.model.TypeOfWeekModel
 import kotlinx.android.synthetic.main.timetable_fragment.view.*
 
 class NextWeekTimetableFragment(
     featureFactory: (
-        oldState: Timetable.State?
-    ) -> Feature<Timetable.Action, Timetable.SideEffect, Timetable.State, Timetable.Subscription>
+        oldState: TimetableState?
+    ) -> Feature<TimetableAction, TimetableSideEffect, TimetableState, TimetableSubscription>
 ) : BaseFragment(R.layout.timetable_fragment),
-    Render<Timetable.State, Timetable.Subscription> {
+    Render<TimetableState, TimetableSubscription> {
     private val connector by androidConnectors(featureFactory)
     private val args: NextWeekTimetableFragmentArgs by navArgs()
 
@@ -52,7 +55,7 @@ class NextWeekTimetableFragment(
         }
 
         val timetableAdapter = TimetableAdapter(
-            wasDisplayed = { connector bindAction Timetable.Action.WasDisplayed(it) }
+            wasDisplayed = { connector bindAction TimetableAction.WasDisplayed(it) }
         )
         with(view.timetable_recycler_view) {
             setHasFixedSize(true)
@@ -72,6 +75,6 @@ class NextWeekTimetableFragment(
         )
     }
 
-    override fun renderState(state: Timetable.State) = Unit
-    override fun renderSubscription(subscription: Timetable.Subscription) = Unit
+    override fun renderState(state: TimetableState) = Unit
+    override fun renderSubscription(subscription: TimetableSubscription) = Unit
 }

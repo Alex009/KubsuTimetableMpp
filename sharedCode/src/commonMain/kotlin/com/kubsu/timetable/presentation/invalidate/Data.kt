@@ -4,30 +4,28 @@ import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.platform.Parcelable
 import com.kubsu.timetable.platform.Parcelize
 
-sealed class Invidate {
-    sealed class Action : Invidate() {
-        object Invalidate : Action()
+sealed class InvidateAction {
+    object Invalidate : InvidateAction()
 
-        internal object Success : Action()
-        internal class Failure(val failure: DataFailure) : Action()
-    }
+    internal object Success : InvidateAction()
+    internal class Failure(val failure: DataFailure) : InvidateAction()
+}
 
-    @Parcelize
-    data class State(
-        val progress: Boolean
-    ) : Invidate(), Parcelable
+@Parcelize
+data class InvidateState(
+    val progress: Boolean
+) : Parcelable
 
-    sealed class SideEffect : Invidate() {
-        object Invalidate : SideEffect()
-    }
+sealed class InvidateSideEffect {
+    object Invalidate : InvidateSideEffect()
+}
 
-    sealed class Subscription : Invidate() {
-        class Navigate(val screen: Screen) : Subscription()
+sealed class InvidateSubscription {
+    class Navigate(val screen: InvidateScreen) : InvidateSubscription()
 
-        class ShowFailure(val failure: DataFailure) : Subscription()
-    }
+    class ShowFailure(val failure: DataFailure) : InvidateSubscription()
+}
 
-    sealed class Screen : Invidate() {
-        object Timetable : Screen()
-    }
+sealed class InvidateScreen {
+    object Timetable : InvidateScreen()
 }

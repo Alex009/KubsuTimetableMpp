@@ -10,10 +10,10 @@ import kotlinx.coroutines.flow.flow
 
 class RegistrationEffectHandler(
     private val authInteractor: AuthInteractor
-) : EffectHandler<Registration.SideEffect, Registration.Action> {
-    override fun invoke(sideEffect: Registration.SideEffect): Flow<Registration.Action> = flow {
+) : EffectHandler<RegistrationSideEffect, RegistrationAction> {
+    override fun invoke(sideEffect: RegistrationSideEffect): Flow<RegistrationAction> = flow {
         when (sideEffect) {
-            is Registration.SideEffect.Registration ->
+            is RegistrationSideEffect.Registration ->
                 authInteractor
                     .registrationUser(
                         email = sideEffect.email,
@@ -22,8 +22,8 @@ class RegistrationEffectHandler(
                     .fold(
                         ifLeft = { requestFailure ->
                             requestFailure.handle(
-                                ifDomain = { emit(Registration.Action.ShowRegistrationFailure(it)) },
-                                ifData = { emit(Registration.Action.ShowDataFailure(it)) }
+                                ifDomain = { emit(RegistrationAction.ShowRegistrationFailure(it)) },
+                                ifData = { emit(RegistrationAction.ShowDataFailure(it)) }
                             )
                         },
                         ifRight = { startSignIn(sideEffect.email, sideEffect.password) }
@@ -31,16 +31,16 @@ class RegistrationEffectHandler(
         }.checkWhenAllHandled()
     }
 
-    private suspend fun FlowCollector<Registration.Action>.startSignIn(
+    private suspend fun FlowCollector<RegistrationAction>.startSignIn(
         email: String,
         password: String
     ) =
         authInteractor
             .signInTransaction(email, password)
             .fold(
-                ifLeft = { emit(Registration.Action.ShowDataFailure(it.data ?: emptyList())) },
+                ifLeft = { emit(RegistrationAction.ShowDataFailure(it.data ?: emptyList())) },
                 ifRight = {
-                    emit(Registration.Action.ShowResult)
+                    emit(RegistrationAction.ShowResult)
                 }
             )
 }

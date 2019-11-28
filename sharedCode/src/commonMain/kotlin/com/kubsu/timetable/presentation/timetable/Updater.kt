@@ -4,25 +4,25 @@ import com.egroden.teaco.UpdateResponse
 import com.egroden.teaco.Updater
 
 val timetableUpdater = object :
-    Updater<Timetable.State, Timetable.Action, Timetable.Subscription, Timetable.SideEffect> {
+    Updater<TimetableState, TimetableAction, TimetableSubscription, TimetableSideEffect> {
     override fun invoke(
-        state: Timetable.State,
-        action: Timetable.Action
-    ): UpdateResponse<Timetable.State, Timetable.Subscription, Timetable.SideEffect> =
+        state: TimetableState,
+        action: TimetableAction
+    ): UpdateResponse<TimetableState, TimetableSubscription, TimetableSideEffect> =
         when (action) {
-            is Timetable.Action.LoadData ->
+            is TimetableAction.LoadData ->
                 UpdateResponse(
                     state = state.copy(
                         currentSubscription = action.subscription,
                         progress = action.subscription != null
                     ),
                     sideEffects = if (action.subscription != null)
-                        setOf(Timetable.SideEffect.LoadCurrentTimetable(action.subscription))
+                        setOf(TimetableSideEffect.LoadCurrentTimetable(action.subscription))
                     else
                         emptySet()
                 )
 
-            is Timetable.Action.ShowTimetable ->
+            is TimetableAction.ShowTimetable ->
                 UpdateResponse(
                     state = state.copy(
                         progress = false,
@@ -32,11 +32,11 @@ val timetableUpdater = object :
                     )
                 )
 
-            is Timetable.Action.WasDisplayed ->
+            is TimetableAction.WasDisplayed ->
                 UpdateResponse(
                     state = state,
                     sideEffects = if (action.classModel.needToEmphasize)
-                        setOf(Timetable.SideEffect.ChangesWasDisplayed(action.classModel))
+                        setOf(TimetableSideEffect.ChangesWasDisplayed(action.classModel))
                     else
                         setOf()
                 )

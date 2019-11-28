@@ -8,15 +8,15 @@ import kotlinx.coroutines.flow.flow
 
 class SplashEffectHandler(
     private val userInteractor: UserInteractor
-) : EffectHandler<Splash.SideEffect, Splash.Action> {
-    override fun invoke(sideEffect: Splash.SideEffect): Flow<Splash.Action> = flow {
+) : EffectHandler<SplashSideEffect, SplashAction> {
+    override fun invoke(sideEffect: SplashSideEffect): Flow<SplashAction> = flow {
         when (sideEffect) {
-            is Splash.SideEffect.Initiate -> {
+            is SplashSideEffect.Initiate -> {
                 emit(
                     if (userInteractor.getCurrentUserOrNull() != null)
-                        Splash.Action.ShowTimetableScreen
+                        SplashAction.ShowTimetableScreen
                     else
-                        Splash.Action.ShowSignInScreen
+                        SplashAction.ShowSignInScreen
                 )
             }
         }.checkWhenAllHandled()

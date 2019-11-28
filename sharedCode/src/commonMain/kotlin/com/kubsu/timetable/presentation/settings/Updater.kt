@@ -4,28 +4,28 @@ import com.egroden.teaco.UpdateResponse
 import com.egroden.teaco.Updater
 
 val settingsUpdater =
-    object : Updater<Settings.State, Settings.Action, Settings.Subscription, Settings.SideEffect> {
+    object : Updater<SettingsState, SettingsAction, SettingsSubscription, SettingsSideEffect> {
         override fun invoke(
-            state: Settings.State,
-            action: Settings.Action
-        ): UpdateResponse<Settings.State, Settings.Subscription, Settings.SideEffect> =
+            state: SettingsState,
+            action: SettingsAction
+        ): UpdateResponse<SettingsState, SettingsSubscription, SettingsSideEffect> =
             when (action) {
-                Settings.Action.Invalidate ->
+                SettingsAction.Invalidate ->
                     UpdateResponse(
                         state,
-                        subscription = Settings.Subscription.Navigate(Settings.Screen.Invalidate)
+                        subscription = SettingsSubscription.Navigate(SettingsScreen.Invalidate)
                     )
 
-                Settings.Action.Logout ->
+                SettingsAction.Logout ->
                     UpdateResponse(
                         state,
-                        sideEffects = setOf(Settings.SideEffect.Logout)
+                        sideEffects = setOf(SettingsSideEffect.Logout)
                     )
 
-                Settings.Action.SuccessLogout ->
+                SettingsAction.SuccessLogout ->
                     UpdateResponse(
                         state,
-                        subscription = Settings.Subscription.Navigate(Settings.Screen.SignIn)
+                        subscription = SettingsSubscription.Navigate(SettingsScreen.SignIn)
                     )
             }
 }

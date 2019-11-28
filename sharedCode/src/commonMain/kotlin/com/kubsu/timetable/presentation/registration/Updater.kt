@@ -4,45 +4,45 @@ import com.egroden.teaco.UpdateResponse
 import com.egroden.teaco.Updater
 
 val registrationUpdater = object :
-    Updater<Registration.State, Registration.Action, Registration.Subscription, Registration.SideEffect> {
+    Updater<RegistrationState, RegistrationAction, RegistrationSubscription, RegistrationSideEffect> {
     override fun invoke(
-        state: Registration.State,
-        action: Registration.Action
-    ): UpdateResponse<Registration.State, Registration.Subscription, Registration.SideEffect> =
+        state: RegistrationState,
+        action: RegistrationAction
+    ): UpdateResponse<RegistrationState, RegistrationSubscription, RegistrationSideEffect> =
         when (action) {
-            is Registration.Action.Registration ->
+            is RegistrationAction.Registration ->
                 if (action.password == action.repeatedPassword)
-                    UpdateResponse<Registration.State, Registration.Subscription, Registration.SideEffect>(
+                    UpdateResponse<RegistrationState, RegistrationSubscription, RegistrationSideEffect>(
                         state = state.copy(progress = true),
                         sideEffects = setOf(
-                            Registration.SideEffect.Registration(
+                            RegistrationSideEffect.Registration(
                                 email = action.email,
                                 password = action.password
                             )
                         )
                     )
                 else
-                    UpdateResponse<Registration.State, Registration.Subscription, Registration.SideEffect>(
+                    UpdateResponse<RegistrationState, RegistrationSubscription, RegistrationSideEffect>(
                         state,
-                        subscription = Registration.Subscription.PasswordsVary
+                        subscription = RegistrationSubscription.PasswordsVary
                     )
 
-            Registration.Action.ShowResult ->
+            RegistrationAction.ShowResult ->
                 UpdateResponse(
                     state = state.copy(progress = false),
-                    subscription = Registration.Subscription.Navigate(Registration.Screen.CreateSubscription)
+                    subscription = RegistrationSubscription.Navigate(RegistrationScreen.CreateSubscription)
                 )
 
-            is Registration.Action.ShowRegistrationFailure ->
+            is RegistrationAction.ShowRegistrationFailure ->
                 UpdateResponse(
                     state = state.copy(progress = false),
-                    subscription = Registration.Subscription.ShowRegistrationFailure(action.failureList)
+                    subscription = RegistrationSubscription.ShowRegistrationFailure(action.failureList)
                 )
 
-            is Registration.Action.ShowDataFailure ->
+            is RegistrationAction.ShowDataFailure ->
                 UpdateResponse(
                     state = state.copy(progress = false),
-                    subscription = Registration.Subscription.ShowDataFailure(action.failureList)
+                    subscription = RegistrationSubscription.ShowDataFailure(action.failureList)
                 )
         }
 }

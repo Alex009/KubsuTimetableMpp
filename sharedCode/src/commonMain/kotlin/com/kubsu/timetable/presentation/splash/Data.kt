@@ -4,31 +4,29 @@ import com.kubsu.timetable.DataFailure
 import com.kubsu.timetable.platform.Parcelable
 import com.kubsu.timetable.platform.Parcelize
 
-sealed class Splash {
-    sealed class Action : Splash() {
-        object Initiate : Action()
+sealed class SplashAction {
+    object Initiate : SplashAction()
 
-        internal object ShowTimetableScreen : Action()
-        internal object ShowSignInScreen : Action()
+    internal object ShowTimetableScreen : SplashAction()
+    internal object ShowSignInScreen : SplashAction()
 
-        internal class ShowFailure(val failure: DataFailure) : Action()
-    }
+    internal class ShowFailure(val failure: DataFailure) : SplashAction()
+}
 
-    @Parcelize
-    object State : Splash(), Parcelable
+@Parcelize
+object SplashState : Parcelable
 
-    sealed class SideEffect : Splash() {
-        object Initiate : SideEffect()
-    }
+sealed class SplashSideEffect {
+    object Initiate : SplashSideEffect()
+}
 
-    sealed class Subscription : Splash() {
-        class Navigate(val screen: Screen) : Subscription()
-        class ShowFailure(val failure: DataFailure) : Subscription()
-    }
+sealed class SplashSubscription {
+    class Navigate(val screen: SplashScreen) : SplashSubscription()
+    class ShowFailure(val failure: DataFailure) : SplashSubscription()
+}
 
-    sealed class Screen : Splash() {
-        object SignInScreen : Screen()
+sealed class SplashScreen {
+    object SignInScreen : SplashScreen()
 
-        object TimetableScreen : Screen()
-    }
+    object TimetableScreen : SplashScreen()
 }

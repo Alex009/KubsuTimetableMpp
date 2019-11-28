@@ -5,34 +5,32 @@ import com.kubsu.timetable.SignInFail
 import com.kubsu.timetable.platform.Parcelable
 import com.kubsu.timetable.platform.Parcelize
 
-sealed class SignIn {
-    sealed class Action : SignIn() {
-        class SignIn(val email: String, val password: String) : Action()
-        object Registration : Action()
+sealed class SignInAction {
+    class SignIn(val email: String, val password: String) : SignInAction()
+    object Registration : SignInAction()
 
-        internal object ShowResult : Action()
-        internal class ShowSignInFailure(val failureList: List<SignInFail>) : Action()
-        internal class ShowDataFailure(val failureList: List<DataFailure>) : Action()
-    }
+    internal object ShowResult : SignInAction()
+    internal class ShowSignInFailure(val failureList: List<SignInFail>) : SignInAction()
+    internal class ShowDataFailure(val failureList: List<DataFailure>) : SignInAction()
+}
 
-    @Parcelize
-    data class State(
-        val progress: Boolean
-    ) : SignIn(), Parcelable
+@Parcelize
+data class SignInState(
+    val progress: Boolean
+) : Parcelable
 
-    sealed class SideEffect : SignIn() {
-        class Authenticate(val email: String, val password: String) : SideEffect()
-    }
+sealed class SignInSideEffect {
+    class Authenticate(val email: String, val password: String) : SignInSideEffect()
+}
 
-    sealed class Subscription : SignIn() {
-        class Navigate(val screen: Screen) : Subscription()
+sealed class SignInSubscription {
+    class Navigate(val screen: SignInScreen) : SignInSubscription()
 
-        class ShowDataFailure(val failureList: List<DataFailure>) : Subscription()
-        class ShowSignInFailure(val failureList: List<SignInFail>) : Subscription()
-    }
+    class ShowDataFailure(val failureList: List<DataFailure>) : SignInSubscription()
+    class ShowSignInFailure(val failureList: List<SignInFail>) : SignInSubscription()
+}
 
-    sealed class Screen : SignIn() {
-        object Registration : Screen()
-        object Timetable : Screen()
-    }
+sealed class SignInScreen {
+    object Registration : SignInScreen()
+    object Timetable : SignInScreen()
 }

@@ -6,7 +6,7 @@ import com.egroden.teaco.*
 import com.kubsu.timetable.R
 import com.kubsu.timetable.SignInFail
 import com.kubsu.timetable.base.BaseFragment
-import com.kubsu.timetable.presentation.signin.SignIn
+import com.kubsu.timetable.presentation.signin.*
 import com.kubsu.timetable.utils.*
 import com.kubsu.timetable.utils.logics.Keyboard
 import kotlinx.android.synthetic.main.progress_bar.view.*
@@ -14,10 +14,10 @@ import kotlinx.android.synthetic.main.sign_in_fragment.view.*
 
 class SignInFragment(
     featureFactory: (
-        oldState: SignIn.State?
-    ) -> Feature<SignIn.Action, SignIn.SideEffect, SignIn.State, SignIn.Subscription>
+        oldState: SignInState?
+    ) -> Feature<SignInAction, SignInSideEffect, SignInState, SignInSubscription>
 ) : BaseFragment(R.layout.sign_in_fragment),
-    Render<SignIn.State, SignIn.Subscription> {
+    Render<SignInState, SignInSubscription> {
     private val connector by androidConnectors(featureFactory)
 
     private val progressEffect = UiEffect(false)
@@ -37,7 +37,7 @@ class SignInFragment(
                 when (menuItem.itemId) {
                     R.id.action_sign_in -> {
                         Keyboard.hide(view)
-                        connector bindAction SignIn.Action.SignIn(
+                        connector bindAction SignInAction.SignIn(
                             email = view.email_input_layout.text,
                             password = view.password_input_layout.text
                         )
@@ -57,7 +57,7 @@ class SignInFragment(
 
         view.registration_clickable_text_view.setOnClickListener {
             Keyboard.hide(view)
-            connector bindAction SignIn.Action.Registration
+            connector bindAction SignInAction.Registration
         }
     }
 
@@ -68,26 +68,26 @@ class SignInFragment(
         passwordErrorEffect.unbind()
     }
 
-    override fun renderState(state: SignIn.State) {
+    override fun renderState(state: SignInState) {
         progressEffect.value = state.progress
     }
 
-    override fun renderSubscription(subscription: SignIn.Subscription) =
+    override fun renderSubscription(subscription: SignInSubscription) =
         when (subscription) {
-            is SignIn.Subscription.Navigate ->
+            is SignInSubscription.Navigate ->
                 navigation(subscription.screen)
-            is SignIn.Subscription.ShowSignInFailure ->
+            is SignInSubscription.ShowSignInFailure ->
                 subscription.failureList.forEach(::handleSignInFail)
-            is SignIn.Subscription.ShowDataFailure ->
+            is SignInSubscription.ShowDataFailure ->
                 subscription.failureList.forEach(::notifyUserOfFailure)
         }
 
-    private fun navigation(screen: SignIn.Screen) =
+    private fun navigation(screen: SignInScreen) =
         safeNavigate(
             when (screen) {
-                SignIn.Screen.Registration ->
+                SignInScreen.Registration ->
                     SignInFragmentDirections.actionSignInFragmentToRegistrationFragment()
-                SignIn.Screen.Timetable ->
+                SignInScreen.Timetable ->
                     SignInFragmentDirections.actionSignInFragmentToBottomNavFragment()
             }
         )

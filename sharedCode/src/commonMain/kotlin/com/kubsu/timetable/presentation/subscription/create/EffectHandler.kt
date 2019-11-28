@@ -16,72 +16,72 @@ import kotlinx.coroutines.flow.flow
 class CreateSubscriptionEffectHandler(
     private val interactor: SubscriptionInteractor,
     private val displayedSubscriptionStorage: DisplayedSubscriptionStorage
-) : EffectHandler<CreateSub.SideEffect, CreateSub.Action> {
-    override fun invoke(sideEffect: CreateSub.SideEffect): Flow<CreateSub.Action> = flow {
+) : EffectHandler<SubCreateSideEffect, SubCreateAction> {
+    override fun invoke(sideEffect: SubCreateSideEffect): Flow<SubCreateAction> = flow {
         when (sideEffect) {
-            CreateSub.SideEffect.SelectFacultyList ->
+            SubCreateSideEffect.SelectFacultyList ->
                 interactor
                     .selectFacultyList()
                     .fold(
-                        ifLeft = { emit(CreateSub.Action.ShowDataFailure(listOf(it))) },
+                        ifLeft = { emit(SubCreateAction.ShowDataFailure(listOf(it))) },
                         ifRight = {
                             emit(
-                                CreateSub.Action.FacultyListUploaded(
+                                SubCreateAction.FacultyListUploaded(
                                     it.map(FacultyModelMapper::toModel)
                                 )
                             )
                         }
                     )
 
-            is CreateSub.SideEffect.SelectOccupationList ->
+            is SubCreateSideEffect.SelectOccupationList ->
                 interactor
                     .selectOccupationList(
                         FacultyModelMapper.toEntity(sideEffect.faculty)
                     )
                     .fold(
-                        ifLeft = { emit(CreateSub.Action.ShowDataFailure(listOf(it))) },
+                        ifLeft = { emit(SubCreateAction.ShowDataFailure(listOf(it))) },
                         ifRight = {
                             emit(
-                                CreateSub.Action.OccupationListUploaded(
+                                SubCreateAction.OccupationListUploaded(
                                     it.map(OccupationModelMapper::toModel)
                                 )
                             )
                         }
                     )
 
-            is CreateSub.SideEffect.SelectGroupList ->
+            is SubCreateSideEffect.SelectGroupList ->
                 interactor
                     .selectGroupList(
                         OccupationModelMapper.toEntity(sideEffect.occupation)
                     )
                     .fold(
-                        ifLeft = { emit(CreateSub.Action.ShowDataFailure(listOf(it))) },
+                        ifLeft = { emit(SubCreateAction.ShowDataFailure(listOf(it))) },
                         ifRight = {
                             emit(
-                                CreateSub.Action.GroupListUploaded(
+                                SubCreateAction.GroupListUploaded(
                                     it.map(GroupModelMapper::toModel)
                                 )
                             )
                         }
                     )
 
-            is CreateSub.SideEffect.SelectSubgroupList ->
+            is SubCreateSideEffect.SelectSubgroupList ->
                 interactor
                     .selectSubgroupList(
                         GroupModelMapper.toEntity(sideEffect.group)
                     )
                     .fold(
-                        ifLeft = { emit(CreateSub.Action.ShowDataFailure(listOf(it))) },
+                        ifLeft = { emit(SubCreateAction.ShowDataFailure(listOf(it))) },
                         ifRight = {
                             emit(
-                                CreateSub.Action.SubgroupListUploaded(
+                                SubCreateAction.SubgroupListUploaded(
                                     it.map(SubgroupModelMapper::toModel)
                                 )
                             )
                         }
                     )
 
-            is CreateSub.SideEffect.CreateSubscription ->
+            is SubCreateSideEffect.CreateSubscription ->
                 interactor
                     .createSubscriptionTransaction(
                         subgroupId = sideEffect.subgroup.id,
@@ -91,20 +91,20 @@ class CreateSubscriptionEffectHandler(
                     .fold(
                         ifLeft = { requestFailure ->
                             requestFailure.handle(
-                                ifDomain = { emit(CreateSub.Action.ShowSubscriptionFailure(it)) },
-                                ifData = { emit(CreateSub.Action.ShowDataFailure(it)) }
+                                ifDomain = { emit(SubCreateAction.ShowSubscriptionFailure(it)) },
+                                ifData = { emit(SubCreateAction.ShowDataFailure(it)) }
                             )
                         },
                         ifRight = {
                             emit(
-                                CreateSub.Action.SubscriptionWasCreated(
+                                SubCreateAction.SubscriptionWasCreated(
                                     SubscriptionModelMapper.toModel(it)
                                 )
                             )
                         }
                     )
 
-            is CreateSub.SideEffect.DisplayedSubscription ->
+            is SubCreateSideEffect.DisplayedSubscription ->
                 displayedSubscriptionStorage.set(sideEffect.subscription)
         }.checkWhenAllHandled()
     }

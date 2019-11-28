@@ -7,21 +7,21 @@ import com.kubsu.timetable.presentation.subscription.model.GroupModel
 import com.kubsu.timetable.presentation.subscription.model.OccupationModel
 import com.kubsu.timetable.presentation.subscription.model.SubgroupModel
 
-val createSubscriptionUpdater = object :
-    Updater<CreateSub.State, CreateSub.Action, CreateSub.Subscription, CreateSub.SideEffect> {
+val createSubscriptionUpdater =
+    object : Updater<SubCreateState, SubCreateAction, SubCreateSubscription, SubCreateSideEffect> {
     override fun invoke(
-        state: CreateSub.State,
-        action: CreateSub.Action
-    ): UpdateResponse<CreateSub.State, CreateSub.Subscription, CreateSub.SideEffect> =
+        state: SubCreateState,
+        action: SubCreateAction
+    ): UpdateResponse<SubCreateState, SubCreateSubscription, SubCreateSideEffect> =
         when (action) {
-            CreateSub.Action.LoadFacultyList -> {
+            SubCreateAction.LoadFacultyList -> {
                 UpdateResponse(
                     state = state.copy(progress = true),
-                    sideEffects = setOf(CreateSub.SideEffect.SelectFacultyList)
+                    sideEffects = setOf(SubCreateSideEffect.SelectFacultyList)
                 )
             }
 
-            is CreateSub.Action.FacultyWasSelected -> {
+            is SubCreateAction.FacultyWasSelected -> {
                 val faculty = action.id?.let(state.facultyList::get)
                 UpdateResponse(
                     state = state.copy(
@@ -41,13 +41,13 @@ val createSubscriptionUpdater = object :
                         progress = faculty != null
                     ),
                     sideEffects = if (faculty != null)
-                        setOf(CreateSub.SideEffect.SelectOccupationList(faculty))
+                        setOf(SubCreateSideEffect.SelectOccupationList(faculty))
                     else
                         emptySet()
                 )
             }
 
-            is CreateSub.Action.OccupationWasSelected -> {
+            is SubCreateAction.OccupationWasSelected -> {
                 val occupation = action.id?.let(state.occupationList::get)
                 UpdateResponse(
                     state = state.copy(
@@ -65,13 +65,13 @@ val createSubscriptionUpdater = object :
                         progress = occupation != null
                     ),
                     sideEffects = if (occupation != null)
-                        setOf(CreateSub.SideEffect.SelectGroupList(occupation))
+                        setOf(SubCreateSideEffect.SelectGroupList(occupation))
                     else
                         emptySet()
                 )
             }
 
-            is CreateSub.Action.GroupWasSelected -> {
+            is SubCreateAction.GroupWasSelected -> {
                 val group = action.id?.let(state.groupList::get)
                 UpdateResponse(
                     state = state.copy(
@@ -87,13 +87,13 @@ val createSubscriptionUpdater = object :
                         progress = group != null
                     ),
                     sideEffects = if (group != null)
-                        setOf(CreateSub.SideEffect.SelectSubgroupList(group))
+                        setOf(SubCreateSideEffect.SelectSubgroupList(group))
                     else
                         emptySet()
                 )
             }
 
-            is CreateSub.Action.SubgroupWasSelected -> {
+            is SubCreateAction.SubgroupWasSelected -> {
                 val subgroup = action.id?.let(state.subgroupList::get)
                 UpdateResponse(
                     state = state.copy(
@@ -108,37 +108,37 @@ val createSubscriptionUpdater = object :
                 )
             }
 
-            is CreateSub.Action.CreateSubscription -> {
+            is SubCreateAction.CreateSubscription -> {
                 when (null) {
                     state.selectedFaculty ->
-                        UpdateResponse<CreateSub.State, CreateSub.Subscription, CreateSub.SideEffect>(
+                        UpdateResponse<SubCreateState, SubCreateSubscription, SubCreateSideEffect>(
                             state,
-                            subscription = CreateSub.Subscription.ChooseFaculty
+                            subscription = SubCreateSubscription.ChooseFaculty
                         )
 
                     state.selectedOccupation ->
-                        UpdateResponse<CreateSub.State, CreateSub.Subscription, CreateSub.SideEffect>(
+                        UpdateResponse<SubCreateState, SubCreateSubscription, SubCreateSideEffect>(
                             state,
-                            subscription = CreateSub.Subscription.ChooseOccupation
+                            subscription = SubCreateSubscription.ChooseOccupation
                         )
 
                     state.selectedGroup ->
-                        UpdateResponse<CreateSub.State, CreateSub.Subscription, CreateSub.SideEffect>(
+                        UpdateResponse<SubCreateState, SubCreateSubscription, SubCreateSideEffect>(
                             state,
-                            subscription = CreateSub.Subscription.ChooseGroup
+                            subscription = SubCreateSubscription.ChooseGroup
                         )
 
                     state.selectedSubgroup ->
-                        UpdateResponse<CreateSub.State, CreateSub.Subscription, CreateSub.SideEffect>(
+                        UpdateResponse<SubCreateState, SubCreateSubscription, SubCreateSideEffect>(
                             state,
-                            subscription = CreateSub.Subscription.ChooseSubgroup
+                            subscription = SubCreateSubscription.ChooseSubgroup
                         )
 
                     else ->
-                        UpdateResponse<CreateSub.State, CreateSub.Subscription, CreateSub.SideEffect>(
+                        UpdateResponse<SubCreateState, SubCreateSubscription, SubCreateSideEffect>(
                             state = state.copy(progress = true),
                             sideEffects = setOf(
-                                CreateSub.SideEffect.CreateSubscription(
+                                SubCreateSideEffect.CreateSubscription(
                                     subgroup = state.selectedSubgroup,
                                     subscriptionName = action.subscriptionName,
                                     isMain = action.isMain
@@ -148,26 +148,26 @@ val createSubscriptionUpdater = object :
                 }
             }
 
-            is CreateSub.Action.SubscriptionWasCreated ->
+            is SubCreateAction.SubscriptionWasCreated ->
                 UpdateResponse(
                     state = state.copy(progress = false),
-                    subscription = CreateSub.Subscription.Navigate(CreateSub.Screen.TimetableScreen),
-                    sideEffects = setOf(CreateSub.SideEffect.DisplayedSubscription(action.subscription))
+                    subscription = SubCreateSubscription.Navigate(SubCreateScreen.TimetableScreen),
+                    sideEffects = setOf(SubCreateSideEffect.DisplayedSubscription(action.subscription))
                 )
 
-            is CreateSub.Action.ShowDataFailure ->
+            is SubCreateAction.ShowDataFailure ->
                 UpdateResponse(
                     state = state.copy(progress = false),
-                    subscription = CreateSub.Subscription.ShowFailure(action.failureList)
+                    subscription = SubCreateSubscription.ShowFailure(action.failureList)
                 )
 
-            is CreateSub.Action.ShowSubscriptionFailure ->
+            is SubCreateAction.ShowSubscriptionFailure ->
                 UpdateResponse(
                     state = state.copy(progress = false),
-                    subscription = CreateSub.Subscription.ShowSubscriptionFailure(action.failureList)
+                    subscription = SubCreateSubscription.ShowSubscriptionFailure(action.failureList)
                 )
 
-            is CreateSub.Action.FacultyListUploaded ->
+            is SubCreateAction.FacultyListUploaded ->
                 UpdateResponse(
                     state = state.copy(
                         facultyList = action.facultyList,
@@ -175,7 +175,7 @@ val createSubscriptionUpdater = object :
                     )
                 )
 
-            is CreateSub.Action.OccupationListUploaded ->
+            is SubCreateAction.OccupationListUploaded ->
                 UpdateResponse(
                     state = state.copy(
                         occupationList = action.occupationList,
@@ -183,7 +183,7 @@ val createSubscriptionUpdater = object :
                     )
                 )
 
-            is CreateSub.Action.GroupListUploaded ->
+            is SubCreateAction.GroupListUploaded ->
                 UpdateResponse(
                     state = state.copy(
                         groupList = action.groupList,
@@ -191,7 +191,7 @@ val createSubscriptionUpdater = object :
                     )
                 )
 
-            is CreateSub.Action.SubgroupListUploaded ->
+            is SubCreateAction.SubgroupListUploaded ->
                 UpdateResponse(
                     state = state.copy(
                         subgroupList = action.subgroupList,

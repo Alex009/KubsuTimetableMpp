@@ -33,7 +33,7 @@ kotlin {
     }
 
     // Cocoa pods
-    version = "0.1.12"
+    version = "0.1.13"
     cocoapods {
         // Configure fields required by CocoaPods.
         summary = "Kubsu timetable"

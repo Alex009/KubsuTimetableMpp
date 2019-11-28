@@ -9,17 +9,17 @@ import com.egroden.teaco.*
 import com.kubsu.timetable.BaseNavGraphDirections
 import com.kubsu.timetable.R
 import com.kubsu.timetable.fragments.bottomnav.BottomNavFragmentDirections
-import com.kubsu.timetable.presentation.settings.Settings
+import com.kubsu.timetable.presentation.settings.*
 import com.kubsu.timetable.utils.logics.DarkThemeStatus
 import com.kubsu.timetable.utils.safeNavigate
 import com.kubsu.timetable.utils.ui.materialAlert
 
 class SettingsFragment(
     featureFactory: (
-        oldState: Settings.State?
-    ) -> Feature<Settings.Action, Settings.SideEffect, Settings.State, Settings.Subscription>
+        oldState: SettingsState?
+    ) -> Feature<SettingsAction, SettingsSideEffect, SettingsState, SettingsSubscription>
 ) : PreferenceFragmentCompat(),
-    Render<Settings.State, Settings.Subscription> {
+    Render<SettingsState, SettingsSubscription> {
     private val connector by androidConnectors(featureFactory)
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -42,7 +42,7 @@ class SettingsFragment(
         }
         findPreference<Preference>("invalidation")?.apply {
             setOnPreferenceClickListener {
-                connector bindAction Settings.Action.Invalidate
+                connector bindAction SettingsAction.Invalidate
                 true
             }
         }
@@ -50,7 +50,7 @@ class SettingsFragment(
             setOnPreferenceClickListener {
                 requireActivity().materialAlert(
                     message = getString(R.string.are_you_sure_you_want_to_logout),
-                    onOkButtonClick = { connector bindAction Settings.Action.Logout },
+                    onOkButtonClick = { connector bindAction SettingsAction.Logout },
                     onNoButtonClick = {}
                 )
                 true
@@ -58,19 +58,19 @@ class SettingsFragment(
         }
     }
 
-    override fun renderState(state: Settings.State) = Unit
+    override fun renderState(state: SettingsState) = Unit
 
-    override fun renderSubscription(subscription: Settings.Subscription) =
+    override fun renderSubscription(subscription: SettingsSubscription) =
         when (subscription) {
-            is Settings.Subscription.Navigate -> navigate(subscription.screen)
+            is SettingsSubscription.Navigate -> navigate(subscription.screen)
         }
 
-    private fun navigate(screen: Settings.Screen) =
+    private fun navigate(screen: SettingsScreen) =
         safeNavigate(
             when (screen) {
-                Settings.Screen.SignIn ->
+                SettingsScreen.SignIn ->
                     BaseNavGraphDirections.actionGlobalSignInFragment()
-                Settings.Screen.Invalidate ->
+                SettingsScreen.Invalidate ->
                     BottomNavFragmentDirections.actionBottomNavFragmentToInvalidateFragment()
             }
         )

@@ -5,36 +5,36 @@ import com.egroden.teaco.*
 import com.kubsu.timetable.BaseNavGraphDirections
 import com.kubsu.timetable.R
 import com.kubsu.timetable.base.BaseFragment
-import com.kubsu.timetable.presentation.splash.Splash
+import com.kubsu.timetable.presentation.splash.*
 import com.kubsu.timetable.utils.safeNavigate
 
 class SplashFragment(
     featureFactory: (
-        oldState: Splash.State?
-    ) -> Feature<Splash.Action, Splash.SideEffect, Splash.State, Splash.Subscription>
+        oldState: SplashState?
+    ) -> Feature<SplashAction, SplashSideEffect, SplashState, SplashSubscription>
 ) : BaseFragment(R.layout.splash_fragment),
-    Render<Splash.State, Splash.Subscription> {
-    private val connector by androidConnectors(featureFactory) { bindAction(Splash.Action.Initiate) }
+    Render<SplashState, SplashSubscription> {
+    private val connector by androidConnectors(featureFactory) { bindAction(SplashAction.Initiate) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         connector.connect(this, lifecycle)
     }
 
-    override fun renderState(state: Splash.State) = Unit
+    override fun renderState(state: SplashState) = Unit
 
-    override fun renderSubscription(subscription: Splash.Subscription) =
+    override fun renderSubscription(subscription: SplashSubscription) =
         when (subscription) {
-            is Splash.Subscription.Navigate -> navigation(subscription.screen)
-            is Splash.Subscription.ShowFailure -> notifyUserOfFailure(subscription.failure)
+            is SplashSubscription.Navigate -> navigation(subscription.screen)
+            is SplashSubscription.ShowFailure -> notifyUserOfFailure(subscription.failure)
         }
 
-    private fun navigation(screen: Splash.Screen) =
+    private fun navigation(screen: SplashScreen) =
         safeNavigate(
             when (screen) {
-                Splash.Screen.SignInScreen ->
+                SplashScreen.SignInScreen ->
                     BaseNavGraphDirections.actionGlobalSignInFragment()
-                Splash.Screen.TimetableScreen ->
+                SplashScreen.TimetableScreen ->
                     SplashFragmentDirections.actionSplashFragmentToBottomNavFragment()
             }
         )

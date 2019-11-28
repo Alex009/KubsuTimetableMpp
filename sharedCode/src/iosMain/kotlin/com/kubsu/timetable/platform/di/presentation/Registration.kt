@@ -4,10 +4,13 @@ import com.egroden.teaco.Feature
 import com.egroden.teaco.IosConnector
 import com.kubsu.timetable.extensions.instanceDep
 import com.kubsu.timetable.platform.di.iosKodein
-import com.kubsu.timetable.presentation.registration.Registration
+import com.kubsu.timetable.presentation.registration.RegistrationAction
+import com.kubsu.timetable.presentation.registration.RegistrationSideEffect
+import com.kubsu.timetable.presentation.registration.RegistrationState
+import com.kubsu.timetable.presentation.registration.RegistrationSubscription
 
 fun registrationFeature() = IosConnector(
-    iosKodein.instanceDep<Registration.State?, Feature<Registration.Action, Registration.SideEffect, Registration.State, Registration.Subscription>>(
+    iosKodein.instanceDep<RegistrationState?, Feature<RegistrationAction, RegistrationSideEffect, RegistrationState, RegistrationSubscription>>(
         null
     )
 )

@@ -4,45 +4,45 @@ import com.egroden.teaco.UpdateResponse
 import com.egroden.teaco.Updater
 
 val signInUpdater =
-    object : Updater<SignIn.State, SignIn.Action, SignIn.Subscription, SignIn.SideEffect> {
+    object : Updater<SignInState, SignInAction, SignInSubscription, SignInSideEffect> {
         override fun invoke(
-            state: SignIn.State,
-            action: SignIn.Action
-        ): UpdateResponse<SignIn.State, SignIn.Subscription, SignIn.SideEffect> =
+            state: SignInState,
+            action: SignInAction
+        ): UpdateResponse<SignInState, SignInSubscription, SignInSideEffect> =
             when (action) {
-                is SignIn.Action.SignIn ->
+                is SignInAction.SignIn ->
                     UpdateResponse(
                         state = state.copy(progress = true),
                         sideEffects = setOf(
-                            SignIn.SideEffect.Authenticate(
+                            SignInSideEffect.Authenticate(
                                 action.email,
                                 action.password
                             )
                         )
                     )
 
-                SignIn.Action.Registration ->
+                SignInAction.Registration ->
                     UpdateResponse(
                         state,
-                        subscription = SignIn.Subscription.Navigate(SignIn.Screen.Registration)
+                        subscription = SignInSubscription.Navigate(SignInScreen.Registration)
                     )
 
-                SignIn.Action.ShowResult ->
+                SignInAction.ShowResult ->
                     UpdateResponse(
                         state = state.copy(progress = false),
-                        subscription = SignIn.Subscription.Navigate(SignIn.Screen.Timetable)
+                        subscription = SignInSubscription.Navigate(SignInScreen.Timetable)
                     )
 
-                is SignIn.Action.ShowSignInFailure ->
+                is SignInAction.ShowSignInFailure ->
                     UpdateResponse(
                         state = state.copy(progress = false),
-                        subscription = SignIn.Subscription.ShowSignInFailure(action.failureList)
+                        subscription = SignInSubscription.ShowSignInFailure(action.failureList)
                     )
 
-                is SignIn.Action.ShowDataFailure ->
+                is SignInAction.ShowDataFailure ->
                     UpdateResponse(
                         state = state.copy(progress = false),
-                        subscription = SignIn.Subscription.ShowDataFailure(action.failureList)
+                        subscription = SignInSubscription.ShowDataFailure(action.failureList)
                     )
             }
 }

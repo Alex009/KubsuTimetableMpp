@@ -10,80 +10,80 @@ import com.kubsu.timetable.presentation.subscription.model.OccupationModel
 import com.kubsu.timetable.presentation.subscription.model.SubgroupModel
 import com.kubsu.timetable.presentation.timetable.model.SubscriptionModel
 
-sealed class CreateSub {
-    sealed class Action : CreateSub() {
-        object LoadFacultyList : Action()
-        class FacultyWasSelected(val id: Int?) : Action()
-        class OccupationWasSelected(val id: Int?) : Action()
-        class GroupWasSelected(val id: Int?) : Action()
-        class SubgroupWasSelected(val id: Int?) : Action()
-        class CreateSubscription(
-            val subscriptionName: String,
-            val isMain: Boolean
-        ) : Action()
+sealed class SubCreateAction {
+    object LoadFacultyList : SubCreateAction()
+    class FacultyWasSelected(val id: Int?) : SubCreateAction()
+    class OccupationWasSelected(val id: Int?) : SubCreateAction()
+    class GroupWasSelected(val id: Int?) : SubCreateAction()
+    class SubgroupWasSelected(val id: Int?) : SubCreateAction()
+    class CreateSubscription(
+        val subscriptionName: String,
+        val isMain: Boolean
+    ) : SubCreateAction()
 
-        internal class SubscriptionWasCreated(val subscription: SubscriptionModel) : Action()
-        internal class ShowSubscriptionFailure(val failureList: List<SubscriptionFail>) : Action()
-        internal class ShowDataFailure(val failureList: List<DataFailure>) : Action()
+    internal class SubscriptionWasCreated(val subscription: SubscriptionModel) : SubCreateAction()
+    internal class ShowSubscriptionFailure(val failureList: List<SubscriptionFail>) :
+        SubCreateAction()
 
-        internal class FacultyListUploaded(
-            val facultyList: List<FacultyModel>
-        ) : Action()
+    internal class ShowDataFailure(val failureList: List<DataFailure>) : SubCreateAction()
 
-        internal class OccupationListUploaded(
-            val occupationList: List<OccupationModel>
-        ) : Action()
+    internal class FacultyListUploaded(
+        val facultyList: List<FacultyModel>
+    ) : SubCreateAction()
 
-        internal class GroupListUploaded(
-            val groupList: List<GroupModel>
-        ) : Action()
+    internal class OccupationListUploaded(
+        val occupationList: List<OccupationModel>
+    ) : SubCreateAction()
 
-        internal class SubgroupListUploaded(
-            val subgroupList: List<SubgroupModel>
-        ) : Action()
-    }
+    internal class GroupListUploaded(
+        val groupList: List<GroupModel>
+    ) : SubCreateAction()
 
-    @Parcelize
-    data class State(
-        val progress: Boolean,
-        val facultyList: List<FacultyModel>,
-        val occupationList: List<OccupationModel>,
-        val groupList: List<GroupModel>,
-        val subgroupList: List<SubgroupModel>,
-        val nameHint: String?,
-        internal val selectedFaculty: FacultyModel?,
-        internal val selectedOccupation: OccupationModel?,
-        internal val selectedGroup: GroupModel?,
-        internal val selectedSubgroup: SubgroupModel?
-    ) : CreateSub(), Parcelable
+    internal class SubgroupListUploaded(
+        val subgroupList: List<SubgroupModel>
+    ) : SubCreateAction()
+}
 
-    sealed class SideEffect : CreateSub() {
-        object SelectFacultyList : SideEffect()
-        class SelectOccupationList(val faculty: FacultyModel) : SideEffect()
-        class SelectGroupList(val occupation: OccupationModel) : SideEffect()
-        class SelectSubgroupList(val group: GroupModel) : SideEffect()
-        class CreateSubscription(
-            val subgroup: SubgroupModel,
-            val subscriptionName: String,
-            val isMain: Boolean
-        ) : SideEffect()
+@Parcelize
+data class SubCreateState(
+    val progress: Boolean,
+    val facultyList: List<FacultyModel>,
+    val occupationList: List<OccupationModel>,
+    val groupList: List<GroupModel>,
+    val subgroupList: List<SubgroupModel>,
+    val nameHint: String?,
+    internal val selectedFaculty: FacultyModel?,
+    internal val selectedOccupation: OccupationModel?,
+    internal val selectedGroup: GroupModel?,
+    internal val selectedSubgroup: SubgroupModel?
+) : Parcelable
 
-        class DisplayedSubscription(val subscription: SubscriptionModel) : SideEffect()
-    }
+sealed class SubCreateSideEffect {
+    object SelectFacultyList : SubCreateSideEffect()
+    class SelectOccupationList(val faculty: FacultyModel) : SubCreateSideEffect()
+    class SelectGroupList(val occupation: OccupationModel) : SubCreateSideEffect()
+    class SelectSubgroupList(val group: GroupModel) : SubCreateSideEffect()
+    class CreateSubscription(
+        val subgroup: SubgroupModel,
+        val subscriptionName: String,
+        val isMain: Boolean
+    ) : SubCreateSideEffect()
 
-    sealed class Subscription : CreateSub() {
-        class Navigate(val screen: Screen) : Subscription()
+    class DisplayedSubscription(val subscription: SubscriptionModel) : SubCreateSideEffect()
+}
 
-        class ShowSubscriptionFailure(val failureList: List<SubscriptionFail>) : Subscription()
-        class ShowFailure(val failureList: List<DataFailure>) : Subscription()
+sealed class SubCreateSubscription {
+    class Navigate(val screen: SubCreateScreen) : SubCreateSubscription()
 
-        object ChooseFaculty : Subscription()
-        object ChooseOccupation : Subscription()
-        object ChooseGroup : Subscription()
-        object ChooseSubgroup : Subscription()
-    }
+    class ShowSubscriptionFailure(val failureList: List<SubscriptionFail>) : SubCreateSubscription()
+    class ShowFailure(val failureList: List<DataFailure>) : SubCreateSubscription()
 
-    sealed class Screen : CreateSub() {
-        object TimetableScreen : Screen()
-    }
+    object ChooseFaculty : SubCreateSubscription()
+    object ChooseOccupation : SubCreateSubscription()
+    object ChooseGroup : SubCreateSubscription()
+    object ChooseSubgroup : SubCreateSubscription()
+}
+
+sealed class SubCreateScreen {
+    object TimetableScreen : SubCreateScreen()
 }

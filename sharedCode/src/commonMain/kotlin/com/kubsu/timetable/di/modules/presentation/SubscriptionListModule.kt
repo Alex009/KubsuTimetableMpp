@@ -3,17 +3,15 @@ package com.kubsu.timetable.di.modules.presentation
 import com.egroden.teaco.Feature
 import com.egroden.teaco.TeaFeature
 import com.kubsu.timetable.extensions.bindGeneric
-import com.kubsu.timetable.presentation.subscription.list.SubList
-import com.kubsu.timetable.presentation.subscription.list.SubscriptionListEffectHandler
-import com.kubsu.timetable.presentation.subscription.list.subscriptionListUpdater
+import com.kubsu.timetable.presentation.subscription.list.*
 import org.kodein.di.Kodein
 import org.kodein.di.erased.factory
 import org.kodein.di.erased.instance
 
 internal val subscriptionListPresentationModule = Kodein.Module("subscription_list_presentation") {
-    bindGeneric<Feature<SubList.Action, SubList.SideEffect, SubList.State, SubList.Subscription>>() with factory { defaultState: SubList.State? ->
+    bindGeneric<Feature<SubListAction, SubListSideEffect, SubListState, SubListSubscription>>() with factory { defaultState: SubListState? ->
         TeaFeature(
-            initialState = defaultState ?: SubList.State(
+            initialState = defaultState ?: SubListState(
                 progress = false,
                 subscriptionList = emptyList()
             ),

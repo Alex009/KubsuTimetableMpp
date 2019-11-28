@@ -9,20 +9,20 @@ import kotlinx.coroutines.flow.flow
 
 class SignInEffectHandler(
     private val authInteractor: AuthInteractor
-) : EffectHandler<SignIn.SideEffect, SignIn.Action> {
-    override fun invoke(sideEffect: SignIn.SideEffect): Flow<SignIn.Action> = flow {
+) : EffectHandler<SignInSideEffect, SignInAction> {
+    override fun invoke(sideEffect: SignInSideEffect): Flow<SignInAction> = flow {
         when (sideEffect) {
-            is SignIn.SideEffect.Authenticate ->
+            is SignInSideEffect.Authenticate ->
                 authInteractor
                     .signInTransaction(sideEffect.email, sideEffect.password)
                     .fold(
                         ifLeft = { requestFailure ->
                             requestFailure.handle(
-                                ifDomain = { emit(SignIn.Action.ShowSignInFailure(it)) },
-                                ifData = { emit(SignIn.Action.ShowDataFailure(it)) }
+                                ifDomain = { emit(SignInAction.ShowSignInFailure(it)) },
+                                ifData = { emit(SignInAction.ShowDataFailure(it)) }
                             )
                         },
-                        ifRight = { emit(SignIn.Action.ShowResult) }
+                        ifRight = { emit(SignInAction.ShowResult) }
                     )
         }.checkWhenAllHandled()
     }

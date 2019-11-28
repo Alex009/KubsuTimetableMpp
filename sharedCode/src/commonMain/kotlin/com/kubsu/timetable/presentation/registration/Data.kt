@@ -5,46 +5,44 @@ import com.kubsu.timetable.UserInfoFail
 import com.kubsu.timetable.platform.Parcelable
 import com.kubsu.timetable.platform.Parcelize
 
-sealed class Registration {
-    sealed class Action : Registration() {
-        class Registration(
-            val email: String,
-            val password: String,
-            val repeatedPassword: String
-        ) : Action()
+sealed class RegistrationAction {
+    class Registration(
+        val email: String,
+        val password: String,
+        val repeatedPassword: String
+    ) : RegistrationAction()
 
-        internal object ShowResult : Action()
-        internal class ShowRegistrationFailure(
-            val failureList: List<UserInfoFail>
-        ) : Action()
+    internal object ShowResult : RegistrationAction()
+    internal class ShowRegistrationFailure(
+        val failureList: List<UserInfoFail>
+    ) : RegistrationAction()
 
-        internal class ShowDataFailure(
-            val failureList: List<DataFailure>
-        ) : Action()
-    }
+    internal class ShowDataFailure(
+        val failureList: List<DataFailure>
+    ) : RegistrationAction()
+}
 
-    @Parcelize
-    data class State(
-        val progress: Boolean
-    ) : Registration(), Parcelable
+@Parcelize
+data class RegistrationState(
+    val progress: Boolean
+) : Parcelable
 
-    sealed class SideEffect : Registration() {
-        data class Registration(
-            val email: String,
-            val password: String
-        ) : SideEffect()
-    }
+sealed class RegistrationSideEffect {
+    data class Registration(
+        val email: String,
+        val password: String
+    ) : RegistrationSideEffect()
+}
 
-    sealed class Subscription : Registration() {
-        class Navigate(val screen: Screen) : Subscription()
+sealed class RegistrationSubscription {
+    class Navigate(val screen: RegistrationScreen) : RegistrationSubscription()
 
-        class ShowRegistrationFailure(val failureList: List<UserInfoFail>) : Subscription()
-        class ShowDataFailure(val failureList: List<DataFailure>) : Subscription()
+    class ShowRegistrationFailure(val failureList: List<UserInfoFail>) : RegistrationSubscription()
+    class ShowDataFailure(val failureList: List<DataFailure>) : RegistrationSubscription()
 
-        object PasswordsVary : Subscription()
-    }
+    object PasswordsVary : RegistrationSubscription()
+}
 
-    sealed class Screen : Registration() {
-        object CreateSubscription : Screen()
-    }
+sealed class RegistrationScreen {
+    object CreateSubscription : RegistrationScreen()
 }
