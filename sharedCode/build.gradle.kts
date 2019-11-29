@@ -28,12 +28,15 @@ kotlin {
             ::iosX64
     iOSTarget("ios") {
         binaries {
-            framework("Shared")
+            framework("sharedCode"){
+                freeCompilerArgs.add("-Xobjc-generics")
+
+            }
         }
     }
 
     // Cocoa pods
-    version = "0.1.13"
+    version = "0.1.16"
     cocoapods {
         // Configure fields required by CocoaPods.
         summary = "Kubsu timetable"
@@ -201,7 +204,7 @@ task("copyFramework") {
     val buildType = project.findProperty("kotlin.build.type") as? String ?: "DEBUG"
     val framework =
         (kotlin.targets["ios"] as KotlinNativeTarget).compilations["main"].target.binaries.findFramework(
-            "Shared",
+            "sharedCode",
             buildType
         )!!
     dependsOn(framework.linkTask)
@@ -212,8 +215,8 @@ task("copyFramework") {
         copy {
             from(srcFile.parent)
             into(targetDir)
-            include("Shared.framework/**")
-            include("Shared.framework.dSYM")
+            include("sharedCode.framework/**")
+            include("sharedCode.framework.dSYM")
         }
     }
 }
