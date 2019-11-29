@@ -2,6 +2,7 @@ package com.kubsu.timetable.presentation.timetable.model
 
 import com.kubsu.timetable.platform.Parcelable
 import com.kubsu.timetable.platform.Parcelize
+import com.kubsu.timetable.presentation.timetable.mapper.DayModelMapper
 import com.soywiz.klock.DayOfWeek
 
 @Parcelize
@@ -19,7 +20,9 @@ sealed class TimetableInfoToDisplay : Parcelable {
 
     @Parcelize
     data class Day(
-        val index: Int,
         val dayOfWeek: DayOfWeek
-    ) : TimetableInfoToDisplay()
+    ) : TimetableInfoToDisplay() {
+        val index: Int
+            get() = DayModelMapper.value(dayOfWeek)
+    }
 }

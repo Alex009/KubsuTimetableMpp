@@ -5,11 +5,14 @@ import com.soywiz.klock.DateTime
 import com.soywiz.klock.DayOfWeek
 import com.soywiz.klock.weekOfYear1
 
+fun currentTime() =
+    DateTime.nowLocal()
+
 fun getCurrentDayOfWeek(): DayOfWeek =
-    DateTime.nowLocal().dayOfWeek
+    currentTime().dayOfWeek
 
 fun getWeekNumber(): Int =
-    DateTime.nowLocal().weekOfYear1
+    currentTime().weekOfYear1
 
 fun List<TimetableInfoToDisplay>.indexOfNearestDayOrNull(): Int? {
     val currentDay = getCurrentDayOfWeek()

@@ -41,10 +41,7 @@ object TimetableModelMapper {
 
             if (classList.isNotEmpty()) {
                 result.add(
-                    TimetableInfoToDisplay.Day(
-                        index = DayModelMapper.value(day),
-                        dayOfWeek = day
-                    )
+                    TimetableInfoToDisplay.Day(day)
                 )
                 result.addAll(
                     classList

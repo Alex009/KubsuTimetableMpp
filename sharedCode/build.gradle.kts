@@ -30,13 +30,12 @@ kotlin {
         binaries {
             framework("sharedCode"){
                 freeCompilerArgs.add("-Xobjc-generics")
-
             }
         }
     }
 
     // Cocoa pods
-    version = "0.1.16"
+    version = "0.1.17"
     cocoapods {
         // Configure fields required by CocoaPods.
         summary = "Kubsu timetable"
