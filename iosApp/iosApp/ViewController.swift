@@ -4,11 +4,11 @@ import sharedCode
 class ViewController: UIViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
-        // label.text = Proxy().proxyHello()
+        Kek<String>()
     }
     
     override func didReceiveMemoryWarning() {
-       super.didReceiveMemoryWarning()
+        super.didReceiveMemoryWarning()
     }
 
     @IBOutlet weak var label: UILabel!

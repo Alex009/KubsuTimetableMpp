@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
     spec.name                     = 'sharedCode'
-    spec.version                  = '0.1.17'
+    spec.version                  = '0.1.18'
     spec.homepage                 = 'https://github.com/indrih17/KubsuTimetableMpp'
     spec.source                   = { :git => "Not Published", :tag => "Cocoapods/#{spec.name}/#{spec.version}" }
     spec.authors                  = ''

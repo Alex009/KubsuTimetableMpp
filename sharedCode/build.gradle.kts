@@ -21,21 +21,18 @@ kotlin {
     android()
 
     // iOS
-    val iOSTarget: (String, KotlinNativeTarget.() -> Unit) -> KotlinNativeTarget =
-        if (System.getenv("SDK_NAME")?.startsWith("iphoneos") == true)
-            ::iosArm64
-        else
-            ::iosX64
-    iOSTarget("ios") {
+    val config: KotlinNativeTarget.() -> Unit = {
         binaries {
-            framework("sharedCode"){
+            framework("sharedCode") {
                 freeCompilerArgs.add("-Xobjc-generics")
             }
         }
     }
+    iosArm64("ios", config)
+    iosX64("iosSim", config)
 
     // Cocoa pods
-    version = "0.1.17"
+    version = "0.1.18"
     cocoapods {
         // Configure fields required by CocoaPods.
         summary = "Kubsu timetable"
@@ -140,8 +137,10 @@ kotlin {
                 implementation(Libs.ios_driver)
             }
         }
-        val iosTest by getting {
-        }
+        val iosTest by getting {}
+
+        val iosSimMain by getting { dependsOn(iosMain) }
+        val iosSimTest by getting { dependsOn(iosMain) }
 
         all {
             languageSettings.apply {

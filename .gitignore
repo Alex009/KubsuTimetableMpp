@@ -10,3 +10,7 @@
 .externalNativeBuild
 .cxx
 /projectFilesBackup/.idea
+iosApp/iosApp.xcworkspace
+iosApp/iosApp.xcodeproj/project.xcworkspace
+iosApp/iosApp.xcodeproj/xcuserdata
+iosApp/Pods
