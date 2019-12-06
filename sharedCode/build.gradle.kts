@@ -21,15 +21,16 @@ kotlin {
     android()
 
     // iOS
-    val config: KotlinNativeTarget.() -> Unit = {
-        binaries {
-            framework("sharedCode") {
-                freeCompilerArgs.add("-Xobjc-generics")
+    val iArm64 = iosArm64("ios")
+    val iX64 = iosX64("iosSim")
+
+    configure(listOf(iArm64, iX64)) {
+        binaries
+            .filterIsInstance<org.jetbrains.kotlin.gradle.plugin.mpp.Framework>()
+            .forEach {
+                it.freeCompilerArgs.add("-Xobjc-generics")
             }
-        }
     }
-    iosArm64("ios", config)
-    iosX64("iosSim", config)
 
     // Cocoa pods
     version = "0.1.18"
@@ -191,32 +192,6 @@ android {
     }
 
     testOptions.unitTests.isIncludeAndroidResources = true
-}
-
-// This task attaches native framework built from ios module to Xcode project
-// (see iosApp directory). Don't run this task directly,
-// Xcode runs this task itself during its build process.
-// Before opening the project from iosApp directory in Xcode,
-// make sure all Gradle infrastructure exists (gradle.wrapper, gradlew).
-task("copyFramework") {
-    val buildType = project.findProperty("kotlin.build.type") as? String ?: "DEBUG"
-    val framework =
-        (kotlin.targets["ios"] as KotlinNativeTarget).compilations["main"].target.binaries.findFramework(
-            "sharedCode",
-            buildType
-        )!!
-    dependsOn(framework.linkTask)
-
-    doLast {
-        val srcFile = framework.outputFile
-        val targetDir = project.property("configuration.build.dir") as? String ?: ""
-        copy {
-            from(srcFile.parent)
-            into(targetDir)
-            include("sharedCode.framework/**")
-            include("sharedCode.framework.dSYM")
-        }
-    }
 }
 
 task("iosTest") {
